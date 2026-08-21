@@ -1,16 +1,25 @@
-// app.js — Alapon Lite (Premium Animations, Clickable Mentions/Tags, Real Comments & Shares)
+// app.js — Alapon Lite (Custom Assets, Advanced Edit Profile, Fixed Auth & Chat Wallpaper)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
-// Clean SVG Icons
+// User Custom Assets
+const ASSETS = {
+  loadingBg: "https://ibb.co.com/Kjdr20zt",
+  logoPng: "https://ibb.co.com/xq3d0n2P",
+  maleAvatar: "https://ibb.co.com/kg4JxF7f",
+  femaleAvatar: "https://ibb.co.com/PZ7gqk4z",
+  chatBg: "https://ibb.co.com/JjFM1m6T"
+};
+
+// SVG Icons
 const ICONS = {
-  home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  plus: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
-  messages: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
-  search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  plus: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  messages: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+  search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
@@ -23,12 +32,8 @@ const ICONS = {
   camera: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
   logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
-  more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`
-};
-
-const DEFAULT_AVATARS = {
-  male: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23315cff"/><circle cx="50" cy="38" r="22" fill="%23ffffff"/><path d="M15 88 C15 65, 30 58, 50 58 C70 58, 85 65, 85 88 Z" fill="%23ffffff"/></svg>`,
-  female: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23ec4899"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`
+  more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
+  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`
 };
 
 // Global App State
@@ -57,36 +62,30 @@ const state = {
 
 const app = document.getElementById('app');
 
+// Helper: Get user's avatar or default
+function getUserAvatar(prof) {
+  if (prof?.avatar_url && prof.avatar_url.length > 5) return prof.avatar_url;
+  return prof?.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
+}
+
 // ----------------------------------------------------
-// 1. RICH TEXT PARSER (#Hashtag, @Username, URLs)
+// 1. RICH TEXT PARSER (#tags, @mentions, URLs)
 // ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
   let text = escapeHtml(rawText);
-
-  // 1. URLs
   text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="rich-link" onclick="event.stopPropagation();">$1</a>');
-
-  // 2. Mentions (@username)
   text = text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="rich-mention" onclick="window.handleMentionClick(event, \'$1\')">@$1</span>');
-
-  // 3. Hashtags (#tag)
   text = text.replace(/#([a-zA-Z0-9_\u0980-\u09FF]+)/g, '<span class="rich-hashtag" onclick="window.handleHashtagClick(event, \'$1\')">#$1</span>');
-
   return text;
 }
 
-// Global Click Handlers for Rich Text
 window.handleMentionClick = async (event, username) => {
   event.stopPropagation();
   const { data } = await supabase.from('profiles').select('*').ilike('username', username).single();
   if (data) {
-    if (data.id === state.user.id) {
-      state.currentView = 'profile';
-    } else {
-      state.activeChatUser = data;
-      state.currentView = 'messages';
-    }
+    if (data.id === state.user?.id) state.currentView = 'profile';
+    else { state.activeChatUser = data; state.currentView = 'messages'; }
     renderApp();
   } else {
     showToast(`User @${username} not found.`);
@@ -112,20 +111,19 @@ function showToast(msg) {
 }
 
 // ----------------------------------------------------
-// 2. INITIALIZATION & 5.5s ANIMATED SPLASH SCREEN
+// 2. 5.5s ANIMATED SPLASH SCREEN & INITIALIZATION
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
-    app.innerHTML = `<div class="boot"><div class="logo">💬</div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
+    app.innerHTML = `<div class="boot"><div class="logo"><img src="${ASSETS.logoPng}" style="width:100%;"></div><h2>Alapon Lite</h2><p class="muted">Check credentials in supabase.js</p></div>`;
     return;
   }
 
-  // Premium Animated Splash Screen (Runs for 5.5s)
+  // Premium Animated Splash Screen
   renderPremiumSplash();
 
   const sessionPromise = supabase.auth.getSession();
   const delayPromise = new Promise(resolve => setTimeout(resolve, 5200));
-
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -155,12 +153,14 @@ async function init() {
 
 function renderPremiumSplash() {
   app.innerHTML = `
-    <div class="splash-screen">
+    <div class="splash-screen" style="background-image: linear-gradient(rgba(10,14,45,0.7), rgba(6,8,24,0.85)), url('${ASSETS.loadingBg}');">
       <div class="splash-bg-glow"></div>
       <div class="splash-content">
         <div class="splash-logo-wrap">
           <div class="splash-logo-pulse"></div>
-          <div class="splash-logo">💬</div>
+          <div class="splash-logo">
+            <img src="${ASSETS.logoPng}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">
+          </div>
         </div>
         <h1 class="splash-title">Alapon Lite</h1>
         <p class="splash-tagline">Connect • Share • Grow</p>
@@ -168,13 +168,13 @@ function renderPremiumSplash() {
         <div class="splash-loader-bar">
           <div class="splash-loader-progress"></div>
         </div>
-        <span class="splash-status">Starting secure connection...</span>
+        <span class="splash-status">Starting secure social environment...</span>
       </div>
     </div>
   `;
 }
 
-// Load Data
+// Data loaders
 async function loadUserProfile() {
   const { data } = await supabase.from('profiles').select('*').eq('id', state.user.id).single();
   if (data) state.profile = data;
@@ -193,7 +193,7 @@ async function loadInitialData() {
 async function loadFeed() {
   const { data } = await supabase
     .from('posts')
-    .select(`*, profiles:user_id (id, full_name, username, avatar_url, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
     .order('created_at', { ascending: false });
   if (data) state.posts = data;
 }
@@ -201,7 +201,7 @@ async function loadFeed() {
 async function loadStories() {
   const { data } = await supabase
     .from('stories')
-    .select(`*, profiles:user_id (id, full_name, username, avatar_url)`)
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender)`)
     .gt('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false });
   if (data) state.stories = data;
@@ -211,14 +211,14 @@ async function loadFriendsData() {
   if (!state.user) return;
   const { data: reqs } = await supabase
     .from('friendships')
-    .select(`*, requester:requester_id (id, full_name, username, avatar_url)`)
+    .select(`*, requester:requester_id (id, full_name, username, avatar_url, gender)`)
     .eq('receiver_id', state.user.id)
     .eq('status', 'pending');
   state.friendRequests = reqs || [];
 
   const { data: fList } = await supabase
     .from('friendships')
-    .select(`*, requester:requester_id(id, full_name, username, avatar_url), receiver:receiver_id(id, full_name, username, avatar_url)`)
+    .select(`*, requester:requester_id(id, full_name, username, avatar_url, gender), receiver:receiver_id(id, full_name, username, avatar_url, gender)`)
     .or(`requester_id.eq.${state.user.id},receiver_id.eq.${state.user.id}`)
     .eq('status', 'accepted');
   state.friends = (fList || []).map(f => f.requester_id === state.user.id ? f.receiver : f.requester);
@@ -228,7 +228,7 @@ async function loadNotifications() {
   if (!state.user) return;
   const { data } = await supabase
     .from('notifications')
-    .select(`*, actor:actor_id (id, full_name, avatar_url)`)
+    .select(`*, actor:actor_id (id, full_name, avatar_url, gender)`)
     .eq('user_id', state.user.id)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -260,7 +260,7 @@ function setupRealtime() {
 }
 
 // ----------------------------------------------------
-// AUTH (Login & 5-Step Wizard)
+// 3. AUTH (Instant Login & 5-Step Wizard)
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -268,7 +268,9 @@ function renderAuth(mode = 'login') {
       <div class="auth">
         <div class="auth-hero">
           <div class="hero-inner">
-            <div class="brand-logo" style="width:68px;height:68px;font-size:32px;">💬</div>
+            <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
+              <img src="${ASSETS.logoPng}" style="width:100%;height:100%;object-fit:contain;">
+            </div>
             <h1>Alapon Lite</h1>
             <p>Connect • Share • Grow</p>
           </div>
@@ -370,7 +372,7 @@ function renderSignupStep() {
       <button class="btn primary full" id="nextStepBtn" style="margin-top:20px;">Next →</button>
     `;
   } else if (step === 5) {
-    const defaultImg = state.signupDraft.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male;
+    const defaultImg = state.signupDraft.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
     stepHtml = `
       <h2>Profile Picture</h2>
       <p class="muted" style="margin-bottom:20px;">Upload your picture or keep the default.</p>
@@ -391,7 +393,9 @@ function renderSignupStep() {
     <div class="auth">
       <div class="auth-hero">
         <div class="hero-inner">
-          <div class="brand-logo" style="width:68px;height:68px;font-size:32px;">💬</div>
+          <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
+            <img src="${ASSETS.logoPng}" style="width:100%;height:100%;object-fit:contain;">
+          </div>
           <h1>Alapon Lite</h1>
           <p>Connect • Share • Grow</p>
         </div>
@@ -476,16 +480,22 @@ function renderSignupStep() {
 
 async function handleFinalSignup() {
   const d = state.signupDraft;
-  const avatarToUse = d.avatarUrl || (d.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
-  const { error } = await supabase.auth.signUp({
+  const avatarToUse = d.avatarUrl || (d.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar);
+  
+  const { data, error } = await supabase.auth.signUp({
     email: d.email,
     password: d.password,
     options: {
       data: { full_name: d.fullName, username: d.username, birth_date: d.birthDate, gender: d.gender, avatar_url: avatarToUse }
     }
   });
-  if (error) alert(error.message);
-  else alert('Account created successfully! Logging you in...');
+
+  if (error) {
+    alert(error.message);
+  } else {
+    // Instant Auto-Login
+    await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
+  }
 }
 
 async function handleLoginSubmit(e) {
@@ -503,18 +513,18 @@ async function handleLoginSubmit(e) {
 }
 
 // ----------------------------------------------------
-// MAIN APPLICATION SHELL
+// 4. MAIN APPLICATION SHELL
 // ----------------------------------------------------
 function renderApp() {
   const p = state.profile || { full_name: 'User', username: 'user' };
-  const currentAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
+  const currentAvatar = getUserAvatar(p);
 
   app.innerHTML = `
     <div class="app-shell">
       <!-- TOP BAR -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
-          <div class="brand-logo">💬</div>
+          <div class="brand-logo"><img src="${ASSETS.logoPng}"></div>
           <span style="font-size:18px;font-weight:900;color:#171a2f;margin-left:4px;">Alapon Lite</span>
         </div>
 
@@ -524,9 +534,13 @@ function renderApp() {
             ${ICONS.bell}
             ${state.unreadNotificationsCount > 0 ? `<span class="badge">${state.unreadNotificationsCount}</span>` : ''}
           </button>
-          <div class="avatar" id="topbarAvatar" style="cursor:pointer;width:38px;height:38px;border:2px solid #eef2ff;">
-            <img src="${currentAvatar}">
-          </div>
+          ${state.currentView !== 'profile' ? `
+            <div class="avatar" id="topbarAvatar" style="cursor:pointer;width:38px;height:38px;border:2px solid #eef2ff;">
+              <img src="${currentAvatar}">
+            </div>
+          ` : `
+            <button class="icon-btn" id="topbarMenuBtn" title="Menu">${ICONS.menu}</button>
+          `}
         </div>
       </header>
 
@@ -587,7 +601,7 @@ function renderFriendRequestsSidebar() {
   return state.friendRequests.slice(0, 3).map(r => `
     <div class="list-row">
       <div class="avatar" style="width:38px;height:38px;">
-        <img src="${r.requester?.avatar_url || DEFAULT_AVATARS.male}">
+        <img src="${getUserAvatar(r.requester)}">
       </div>
       <div class="grow" style="font-size:13px;">
         <b>${escapeHtml(r.requester?.full_name || 'User')}</b>
@@ -612,11 +626,11 @@ function renderCurrentViewContent() {
 }
 
 // ----------------------------------------------------
-// 1. HOME FEED VIEW (Clickable Hashtags & Mentions)
+// 5. HOME FEED VIEW (Clickable Hashtags & Mentions)
 // ----------------------------------------------------
 function renderFeedView() {
   const p = state.profile || {};
-  const userAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
+  const userAvatar = getUserAvatar(p);
   const myStories = state.stories.filter(s => s.user_id === state.user?.id);
   const otherStories = state.stories.filter(s => s.user_id !== state.user?.id);
 
@@ -637,7 +651,7 @@ function renderFeedView() {
       ${otherStories.map(s => `
         <div class="story viewStoryBtn" data-story-id="${s.id}">
           <div class="avatar" style="border:3px solid #315cff;">
-            <img src="${s.profiles?.avatar_url || DEFAULT_AVATARS.male}">
+            <img src="${getUserAvatar(s.profiles)}">
           </div>
           <span>${escapeHtml(s.profiles?.full_name?.split(' ')[0] || 'Friend')}</span>
         </div>
@@ -657,7 +671,7 @@ function renderPostCard(post) {
   const likesCount = post.post_likes?.length || 0;
   const commentsCount = post.comments?.length || 0;
   const sharesCount = post.post_shares?.length || 0;
-  const postAuthorAvatar = post.profiles?.avatar_url || DEFAULT_AVATARS.male;
+  const postAuthorAvatar = getUserAvatar(post.profiles);
 
   return `
     <div class="card-ui post-card" data-post-id="${post.id}">
@@ -676,7 +690,7 @@ function renderPostCard(post) {
         <button class="btn ghost more" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
       </div>
 
-      <!-- RICH TEXT PARSED CAPTION -->
+      <!-- RICH TEXT CAPTION -->
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
 
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
@@ -687,7 +701,7 @@ function renderPostCard(post) {
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
-      <!-- WORKING ACTIONS: Like, Comment, Share -->
+      <!-- ACTIONS -->
       <div class="post-actions">
         <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}">
           ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; Like
@@ -704,11 +718,11 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// 2. PROFILE VIEW (Working Tabs: Posts, Photos, About)
+// 6. PROFILE VIEW (No Default Data, Full Working Tabs)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
-  const userAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
+  const userAvatar = getUserAvatar(p);
   const myPosts = state.posts.filter(item => item.user_id === state.user?.id);
   const myPhotos = myPosts.filter(item => item.media_url);
 
@@ -723,37 +737,53 @@ function renderProfileView() {
         <b>Photos (${myPhotos.length})</b>
         <div class="photos-grid" style="margin-top:12px;">
           ${myPhotos.length === 0 ? `<p class="muted" style="padding:10px 0;">No photos uploaded yet.</p>` : ''}
-          ${myPhotos.map(p => `<img src="${p.media_url}" loading="lazy">`).join('')}
+          ${myPhotos.map(ph => `<img src="${ph.media_url}" loading="lazy">`).join('')}
         </div>
       </div>
     `;
   } else if (state.profileTab === 'about') {
     tabContentHtml = `
       <div class="card-ui">
-        <b>About Hasan</b>
+        <b>About Details</b>
         <div style="margin-top:12px;">
           <div class="list-row">
-            <div class="muted" style="width:110px;">Full Name</div>
-            <b>${escapeHtml(p.full_name || '')}</b>
+            <div class="muted" style="width:120px;">Full Name</div>
+            <b>${escapeHtml(p.full_name || 'Not set')}</b>
           </div>
           <div class="list-row">
-            <div class="muted" style="width:110px;">Username</div>
+            <div class="muted" style="width:120px;">Username</div>
             <b>@${escapeHtml(p.username || '')}</b>
           </div>
           <div class="list-row">
-            <div class="muted" style="width:110px;">Email</div>
+            <div class="muted" style="width:120px;">Email</div>
             <b>${escapeHtml(p.email || state.user?.email || '')}</b>
           </div>
           <div class="list-row">
-            <div class="muted" style="width:110px;">Location</div>
-            <b>${escapeHtml(p.location || 'Dhaka, Bangladesh')}</b>
+            <div class="muted" style="width:120px;">Phone</div>
+            <b>${escapeHtml(p.phone || 'Not added')}</b>
           </div>
           <div class="list-row">
-            <div class="muted" style="width:110px;">Gender</div>
+            <div class="muted" style="width:120px;">Current City</div>
+            <b>${escapeHtml(p.current_city || p.location || 'Not specified')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:120px;">Hometown</div>
+            <b>${escapeHtml(p.hometown || 'Not specified')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:120px;">Workplace</div>
+            <b>${escapeHtml(p.workplace || 'Not specified')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:120px;">Education</div>
+            <b>${escapeHtml(p.education || 'Not specified')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:120px;">Gender</div>
             <b style="text-transform:capitalize;">${escapeHtml(p.gender || 'Male')}</b>
           </div>
           <div class="list-row">
-            <div class="muted" style="width:110px;">Birthday</div>
+            <div class="muted" style="width:120px;">Birthday</div>
             <b>${escapeHtml(p.birth_date || 'Not specified')}</b>
           </div>
         </div>
@@ -779,7 +809,6 @@ function renderProfileView() {
           <input type="file" id="changeAvatarInput" accept="image/*" style="display:none;">
           <div class="row" style="gap:8px;">
             <button class="btn secondary" id="openEditProfileModal" style="padding:8px 14px;font-size:13px;">${ICONS.edit} &nbsp; Edit Profile</button>
-            <button class="icon-btn" id="profileSideMenuTrigger" style="width:38px;height:38px;">${ICONS.more}</button>
           </div>
         </div>
 
@@ -789,8 +818,8 @@ function renderProfileView() {
             ${p.is_verified ? `<span style="color:#245bff;">✔</span>` : ''}
           </h2>
           <span class="muted">@${escapeHtml(p.username || '')}</span>
-          <p style="margin:8px 0;font-size:14.5px;">${escapeHtml(p.bio || 'Welcome to my Alapon profile!')}</p>
-          <small class="muted">📍 ${escapeHtml(p.location || 'Dhaka, Bangladesh')}</small>
+          ${p.bio ? `<p style="margin:8px 0;font-size:14.5px;">${escapeHtml(p.bio)}</p>` : ''}
+          ${(p.current_city || p.location) ? `<small class="muted" style="display:block;margin-top:4px;">📍 ${escapeHtml(p.current_city || p.location)}</small>` : ''}
         </div>
 
         <!-- STATS -->
@@ -815,7 +844,7 @@ function renderProfileView() {
 }
 
 // ----------------------------------------------------
-// 3. FRIENDS VIEW
+// 7. FRIENDS VIEW
 // ----------------------------------------------------
 function renderFriendsView() {
   return `
@@ -830,7 +859,7 @@ function renderFriendsView() {
         ${state.friendRequests.length === 0 ? `<p class="muted" style="padding:10px 0;font-size:13.5px;">No pending friend requests</p>` : ''}
         ${state.friendRequests.map(r => `
           <div class="list-row">
-            <div class="avatar"><img src="${r.requester?.avatar_url || DEFAULT_AVATARS.male}"></div>
+            <div class="avatar"><img src="${getUserAvatar(r.requester)}"></div>
             <div class="grow">
               <b>${escapeHtml(r.requester?.full_name || 'User')}</b>
               <div class="muted" style="font-size:12px;">@${escapeHtml(r.requester?.username || '')}</div>
@@ -848,7 +877,7 @@ function renderFriendsView() {
         ${state.friends.length === 0 ? `<p class="muted" style="padding:10px 0;font-size:13.5px;">No friends added yet.</p>` : ''}
         ${state.friends.map(fr => `
           <div class="list-row">
-            <div class="avatar"><img src="${fr.avatar_url || DEFAULT_AVATARS.male}"></div>
+            <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
             <div class="grow">
               <b>${escapeHtml(fr.full_name || 'Friend')}</b>
               <div style="font-size:12px;color:#12b76a;">🟢 Active Now</div>
@@ -862,11 +891,11 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// 4. MESSENGER VIEW (Parsed Links & Mentions in Chat)
+// 8. MESSENGER VIEW (Custom Chat Wallpaper)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
-    const friendAvatar = state.activeChatUser.avatar_url || DEFAULT_AVATARS.male;
+    const friendAvatar = getUserAvatar(state.activeChatUser);
     return `
       <div class="card-ui chat-view">
         <div class="chat-header">
@@ -877,7 +906,7 @@ function renderMessagesView() {
             <small style="color:#12b76a;font-size:11px;">Active Now</small>
           </div>
         </div>
-        <div class="chat-list" id="chatMessageList">
+        <div class="chat-list" id="chatMessageList" style="background-image: linear-gradient(rgba(244,246,251,0.85), rgba(244,246,251,0.92)), url('${ASSETS.chatBg}');">
           <p class="muted center" style="margin-top:20px;">Loading chat...</p>
         </div>
         <form class="chat-input" id="chatSendForm">
@@ -896,7 +925,7 @@ function renderMessagesView() {
         ${state.friends.length === 0 ? `<p class="muted center" style="padding:20px 0;">Add friends to start messaging!</p>` : ''}
         ${state.friends.map(fr => `
           <div class="list-row startChatBtn" data-user-id="${fr.id}" style="cursor:pointer;">
-            <div class="avatar"><img src="${fr.avatar_url || DEFAULT_AVATARS.male}"></div>
+            <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
             <div class="grow">
               <b>${escapeHtml(fr.full_name)}</b>
               <div class="muted" style="font-size:13px;">Say hello! 👋</div>
@@ -910,11 +939,11 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// 5. SETTINGS VIEW
+// 9. SETTINGS VIEW
 // ----------------------------------------------------
 function renderSettingsView() {
   const p = state.profile || {};
-  const userAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
+  const userAvatar = getUserAvatar(p);
 
   return `
     <div class="card-ui">
@@ -952,7 +981,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// 6. COMMENTS MODAL & REAL SHARE
+// 10. COMMENTS & REAL SHARE
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   state.activeCommentsPostId = postId;
@@ -964,7 +993,7 @@ async function openCommentsModal(postId) {
 async function loadPostComments(postId) {
   const { data } = await supabase
     .from('comments')
-    .select(`*, profiles:user_id (id, full_name, username, avatar_url)`)
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender)`)
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
@@ -977,7 +1006,7 @@ async function loadPostComments(postId) {
       container.innerHTML = state.commentsList.map(c => `
         <div class="list-row" style="align-items:flex-start;padding:10px 0;">
           <div class="avatar" style="width:34px;height:34px;margin-top:2px;">
-            <img src="${c.profiles?.avatar_url || DEFAULT_AVATARS.male}">
+            <img src="${getUserAvatar(c.profiles)}">
           </div>
           <div class="comment-bubble-box">
             <b>${escapeHtml(c.profiles?.full_name || 'User')}</b>
@@ -995,7 +1024,6 @@ async function loadPostComments(postId) {
 
 async function handleSharePost(postId, postText) {
   const shareUrl = window.location.href;
-  
   if (navigator.share) {
     try {
       await navigator.share({
@@ -1007,7 +1035,6 @@ async function handleSharePost(postId, postText) {
       showToast('Shared successfully! 🚀');
     } catch (e) {}
   } else {
-    // Copy link fallback
     navigator.clipboard.writeText(shareUrl).then(async () => {
       await recordShare(postId);
       showToast('Post link copied to clipboard! 📋');
@@ -1022,13 +1049,129 @@ async function recordShare(postId) {
 }
 
 // ----------------------------------------------------
-// MODALS CONTROLLER
+// 11. ADVANCED EDIT PROFILE & ALL MODALS
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'comments') {
+  if (state.modal === 'edit-profile') {
+    const p = state.profile || {};
+    const curAvatar = getUserAvatar(p);
+
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal" style="height:min(720px, 95vh);">
+          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+            <b>Edit Complete Profile</b>
+            <button class="btn ghost" id="closeEditModal">✕</button>
+          </div>
+
+          <div style="overflow-y:auto;flex:1;padding-right:4px;">
+            <!-- Profile Photo & Cover Options -->
+            <div class="row" style="gap:14px;margin-bottom:16px;align-items:center;">
+              <div class="avatar" style="width:68px;height:68px;">
+                <img src="${curAvatar}">
+              </div>
+              <div>
+                <input type="file" id="modalChangeAvatarFile" accept="image/*" style="display:none;">
+                <button class="btn secondary" id="modalChangeAvatarBtn" style="padding:6px 12px;font-size:12px;">Change Avatar</button>
+                <button class="btn ghost" id="modalResetAvatarBtn" style="padding:6px 10px;font-size:12px;color:#d92d20;">Reset Default</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Full Name</label>
+              <input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}">
+            </div>
+            <div class="field">
+              <label>Username</label>
+              <input class="input" type="text" id="editUsername" value="${escapeHtml(p.username || '')}">
+            </div>
+            <div class="field">
+              <label>Bio (About you)</label>
+              <textarea class="input" id="editBio" rows="2" placeholder="Write something about yourself...">${escapeHtml(p.bio || '')}</textarea>
+            </div>
+            <div class="field">
+              <label>Phone Number</label>
+              <input class="input" type="text" id="editPhone" placeholder="+880 1xxxxxxxxx" value="${escapeHtml(p.phone || '')}">
+            </div>
+            <div class="field">
+              <label>Current City (বর্তমান শহর)</label>
+              <input class="input locSearchInput" type="text" id="editCurrentCity" placeholder="Search City..." value="${escapeHtml(p.current_city || p.location || '')}">
+              <div id="citySearchResults" class="search-drop-results"></div>
+            </div>
+            <div class="field">
+              <label>Hometown (নিজ শহর / আদি নিবাস)</label>
+              <input class="input locSearchInput" type="text" id="editHometown" placeholder="Search Hometown..." value="${escapeHtml(p.hometown || '')}">
+              <div id="hometownSearchResults" class="search-drop-results"></div>
+            </div>
+            <div class="field">
+              <label>Workplace / Work City (কর্মস্থল)</label>
+              <input class="input" type="text" id="editWorkplace" placeholder="e.g. Software Engineer at Tech Corp" value="${escapeHtml(p.workplace || '')}">
+            </div>
+            <div class="field">
+              <label>Education (শিক্ষাপ্রতিষ্ঠান)</label>
+              <input class="input" type="text" id="editEducation" placeholder="e.g. Studied at Dhaka University" value="${escapeHtml(p.education || '')}">
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <select class="input" id="editGender">
+                <option value="male" ${p.gender === 'male' ? 'selected' : ''}>👨 Male</option>
+                <option value="female" ${p.gender === 'female' ? 'selected' : ''}>👩 Female</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn primary full" id="saveProfileEditBtn" style="margin-top:14px;">Save All Changes</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeEditModal').onclick = () => { state.modal = null; renderActiveModal(); };
+
+    // Avatar upload / reset
+    document.getElementById('modalChangeAvatarBtn').onclick = () => document.getElementById('modalChangeAvatarFile').click();
+    document.getElementById('modalChangeAvatarFile').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const ext = file.name.split('.').pop();
+      const url = await uploadFile('avatars', `user_${state.user.id}_${Date.now()}.${ext}`, file);
+      await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
+      await loadUserProfile();
+      renderActiveModal();
+    };
+    document.getElementById('modalResetAvatarBtn').onclick = async () => {
+      await supabase.from('profiles').update({ avatar_url: '' }).eq('id', state.user.id);
+      await loadUserProfile();
+      renderActiveModal();
+    };
+
+    // Live Geocoding for City & Hometown
+    setupLocationSearchInput('editCurrentCity', 'citySearchResults');
+    setupLocationSearchInput('editHometown', 'hometownSearchResults');
+
+    document.getElementById('saveProfileEditBtn').onclick = async () => {
+      const full_name = document.getElementById('editFullName').value.trim();
+      const username = document.getElementById('editUsername').value.trim().toLowerCase().replace(/\s+/g, '_');
+      const bio = document.getElementById('editBio').value.trim();
+      const phone = document.getElementById('editPhone').value.trim();
+      const current_city = document.getElementById('editCurrentCity').value.trim();
+      const hometown = document.getElementById('editHometown').value.trim();
+      const workplace = document.getElementById('editWorkplace').value.trim();
+      const education = document.getElementById('editEducation').value.trim();
+      const gender = document.getElementById('editGender').value;
+
+      await supabase.from('profiles').update({
+        full_name, username, bio, phone, current_city, location: current_city, hometown, workplace, education, gender
+      }).eq('id', state.user.id);
+
+      await loadUserProfile();
+      state.modal = null;
+      renderApp();
+      showToast('Profile updated successfully! ✅');
+    };
+  } else if (state.modal === 'comments') {
     container.innerHTML = `
       <div class="full-modal-back">
         <div class="full-modal comments-modal">
@@ -1065,7 +1208,7 @@ function renderActiveModal() {
     };
   } else if (state.modal === 'create-post') {
     const p = state.profile || {};
-    const userAvatar = p.avatar_url || DEFAULT_AVATARS.male;
+    const userAvatar = getUserAvatar(p);
 
     container.innerHTML = `
       <div class="full-modal-back">
@@ -1099,7 +1242,6 @@ function renderActiveModal() {
             ${state.postDraft.mediaUrl ? `<div style="position:relative;margin:10px 0;"><img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"><button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button></div>` : ''}
           </div>
 
-          <!-- Feeling Picker -->
           <div id="feelingPickerBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
             <b style="font-size:13px;">How are you feeling?</b>
             <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
@@ -1109,14 +1251,12 @@ function renderActiveModal() {
             </div>
           </div>
 
-          <!-- Location Search -->
           <div id="locationSearchBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
             <b style="font-size:13px;">Search World Location:</b>
             <input class="input" type="text" id="worldLocationSearchInput" placeholder="e.g. Dhaka, London, Tokyo..." style="margin-top:6px;">
-            <div id="locationSearchResults" style="max-height:130px;overflow-y:auto;margin-top:6px;"></div>
+            <div id="locationSearchResults" class="search-drop-results"></div>
           </div>
 
-          <!-- Attachment bar -->
           <div class="card-ui row between" style="padding:10px 14px;margin-top:14px;background:#f9fbff;">
             <span style="font-size:13px;font-weight:700;">Add to post:</span>
             <div class="row" style="gap:6px;">
@@ -1156,29 +1296,15 @@ function renderActiveModal() {
     });
 
     document.getElementById('toggleLocationBtn').onclick = () => document.getElementById('locationSearchBox').classList.toggle('hide');
-    const locInput = document.getElementById('worldLocationSearchInput');
-    if (locInput) {
-      locInput.oninput = async () => {
-        const q = locInput.value.trim();
-        if (q.length < 2) return;
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=4`);
-          const results = await res.json();
-          document.getElementById('locationSearchResults').innerHTML = results.map(r => `
-            <div class="list-row selectLocationRow" data-name="${escapeHtml(r.display_name.split(',').slice(0,2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
-              📍 ${escapeHtml(r.display_name.split(',').slice(0,3).join(','))}
-            </div>
-          `).join('');
-          document.querySelectorAll('.selectLocationRow').forEach(row => {
-            row.onclick = () => { state.postDraft.location = row.dataset.name; renderActiveModal(); };
-          });
-        } catch (e) {}
-      };
-    }
+    setupLocationSearchInput('worldLocationSearchInput', 'locationSearchResults', (val) => {
+      state.postDraft.location = val;
+      renderActiveModal();
+    });
+
     document.getElementById('publishPostBtn').onclick = handlePostPublish;
   } else if (state.modal === 'drawer') {
     const p = state.profile || {};
-    const userAvatar = p.avatar_url || DEFAULT_AVATARS.male;
+    const userAvatar = getUserAvatar(p);
 
     container.innerHTML = `
       <div class="full-modal-back" style="justify-content:flex-start;">
@@ -1234,7 +1360,7 @@ function renderActiveModal() {
       if (data && data.length) {
         resEl.innerHTML = data.map(u => `
           <div class="list-row">
-            <div class="avatar"><img src="${u.avatar_url || DEFAULT_AVATARS.male}"></div>
+            <div class="avatar"><img src="${getUserAvatar(u)}"></div>
             <div class="grow">
               <b>${escapeHtml(u.full_name)}</b>
               <div class="muted" style="font-size:12px;">@${escapeHtml(u.username)}</div>
@@ -1265,7 +1391,7 @@ function renderActiveModal() {
             ${state.notifications.length === 0 ? `<p class="muted center" style="padding:30px 0;">No notifications yet.</p>` : ''}
             ${state.notifications.map(n => `
               <div class="list-row">
-                <div class="avatar" style="width:36px;height:36px;"><img src="${n.actor?.avatar_url || DEFAULT_AVATARS.male}"></div>
+                <div class="avatar" style="width:36px;height:36px;"><img src="${getUserAvatar(n.actor)}"></div>
                 <div class="grow" style="font-size:13px;">
                   <b>${escapeHtml(n.actor?.full_name || 'Someone')}</b> ${escapeHtml(n.message)}
                 </div>
@@ -1276,41 +1402,6 @@ function renderActiveModal() {
       </div>
     `;
     document.getElementById('closeNotifModal').onclick = () => { state.modal = null; renderActiveModal(); };
-  } else if (state.modal === 'edit-profile') {
-    const p = state.profile || {};
-    container.innerHTML = `
-      <div class="full-modal-back">
-        <div class="full-modal" style="height:auto;max-height:90vh;">
-          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
-            <b>Edit Profile</b>
-            <button class="btn ghost" id="closeEditModal">✕</button>
-          </div>
-          <div class="field">
-            <label>Full Name</label>
-            <input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}">
-          </div>
-          <div class="field">
-            <label>Bio</label>
-            <textarea class="input" id="editBio" rows="2">${escapeHtml(p.bio || '')}</textarea>
-          </div>
-          <div class="field">
-            <label>Location</label>
-            <input class="input" type="text" id="editLocation" value="${escapeHtml(p.location || '')}">
-          </div>
-          <button class="btn primary full" id="saveProfileEditBtn" style="margin-top:14px;">Save Changes</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('closeEditModal').onclick = () => { state.modal = null; renderActiveModal(); };
-    document.getElementById('saveProfileEditBtn').onclick = async () => {
-      const full_name = document.getElementById('editFullName').value.trim();
-      const bio = document.getElementById('editBio').value.trim();
-      const location = document.getElementById('editLocation').value.trim();
-      await supabase.from('profiles').update({ full_name, bio, location }).eq('id', state.user.id);
-      await loadUserProfile();
-      state.modal = null;
-      renderApp();
-    };
   } else if (state.modal === 'settings-sub') {
     let subTitle = 'Security';
     let subBody = '';
@@ -1347,7 +1438,7 @@ function renderActiveModal() {
         <div style="position:relative;max-width:440px;width:100%;height:85vh;display:flex;flex-direction:column;justify-content:center;">
           <div class="row between" style="position:absolute;top:10px;left:10px;right:10px;z-index:10;color:#fff;">
             <div class="row" style="gap:8px;">
-              <div class="avatar" style="width:36px;height:36px;"><img src="${s.profiles?.avatar_url || DEFAULT_AVATARS.male}"></div>
+              <div class="avatar" style="width:36px;height:36px;"><img src="${getUserAvatar(s.profiles)}"></div>
               <b>${escapeHtml(s.profiles?.full_name || 'User')}</b>
             </div>
             <button class="btn ghost" id="closeStoryViewBtn" style="color:#fff;font-size:20px;">✕</button>
@@ -1360,6 +1451,34 @@ function renderActiveModal() {
   } else {
     container.innerHTML = '';
   }
+}
+
+// Reusable Location Search Helper
+function setupLocationSearchInput(inputId, resultsDivId, onSelectCallback) {
+  const input = document.getElementById(inputId);
+  const resultsDiv = document.getElementById(resultsDivId);
+  if (!input || !resultsDiv) return;
+
+  input.oninput = async () => {
+    const q = input.value.trim();
+    if (q.length < 2) { resultsDiv.innerHTML = ''; return; }
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=4`);
+      const results = await res.json();
+      resultsDiv.innerHTML = results.map(r => `
+        <div class="list-row selectLocItem" data-val="${escapeHtml(r.display_name.split(',').slice(0,2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
+          📍 ${escapeHtml(r.display_name.split(',').slice(0,3).join(','))}
+        </div>
+      `).join('');
+      resultsDiv.querySelectorAll('.selectLocItem').forEach(item => {
+        item.onclick = () => {
+          input.value = item.dataset.val;
+          resultsDiv.innerHTML = '';
+          if (onSelectCallback) onSelectCallback(item.dataset.val);
+        };
+      });
+    } catch (e) {}
+  };
 }
 
 async function handlePostPublish() {
@@ -1387,7 +1506,7 @@ async function handlePostPublish() {
 }
 
 // ----------------------------------------------------
-// EVENT BINDINGS
+// 12. GLOBAL EVENT BINDINGS
 // ----------------------------------------------------
 function attachGlobalEvents() {
   const bindNav = (id, view) => {
@@ -1407,6 +1526,9 @@ function attachGlobalEvents() {
   bindNav('topbarAvatar', 'profile');
   bindNav('sideSettingsBtn', 'settings');
 
+  const topMenu = document.getElementById('topbarMenuBtn');
+  if (topMenu) topMenu.onclick = () => { state.modal = 'drawer'; renderActiveModal(); };
+
   const openSearch = document.getElementById('openSearchBtn');
   if (openSearch) openSearch.onclick = () => { state.modal = 'search'; renderActiveModal(); };
 
@@ -1416,14 +1538,11 @@ function attachGlobalEvents() {
   const botCreate = document.getElementById('botCreate');
   if (botCreate) botCreate.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  // Profile Edit & Drawer from Profile
+  // Profile Edit
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  const profDrawer = document.getElementById('profileSideMenuTrigger');
-  if (profDrawer) profDrawer.onclick = () => { state.modal = 'drawer'; renderActiveModal(); };
-
-  // Story Upload Trigger
+  // Story Upload
   const addStoryBtn = document.getElementById('addStoryBtn');
   const storyInput = document.getElementById('storyUploadInput');
   if (addStoryBtn && storyInput) {
@@ -1441,7 +1560,7 @@ function attachGlobalEvents() {
     };
   }
 
-  // Story View Trigger
+  // Story View
   document.querySelectorAll('.viewStoryBtn').forEach(b => {
     b.onclick = () => {
       const sId = b.dataset.storyId;
@@ -1477,7 +1596,7 @@ function attachGlobalEvents() {
   const settingsLogout = document.getElementById('settingsLogoutBtn');
   if (settingsLogout) settingsLogout.onclick = () => supabase.auth.signOut();
 
-  // Post Likes
+  // Likes
   document.querySelectorAll('.likePostBtn').forEach(btn => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
@@ -1495,16 +1614,12 @@ function attachGlobalEvents() {
 
   // Comments Trigger
   document.querySelectorAll('.commentPostBtn').forEach(btn => {
-    btn.onclick = () => {
-      openCommentsModal(btn.dataset.id);
-    };
+    btn.onclick = () => { openCommentsModal(btn.dataset.id); };
   });
 
   // Share Trigger
   document.querySelectorAll('.sharePostBtn').forEach(btn => {
-    btn.onclick = () => {
-      handleSharePost(btn.dataset.id, btn.dataset.text);
-    };
+    btn.onclick = () => { handleSharePost(btn.dataset.id, btn.dataset.text); };
   });
 
   // Friend Requests
@@ -1553,22 +1668,7 @@ function attachGlobalEvents() {
     };
   }
 
-  // Profile Avatar & Cover
-  const avatarChangeBtn = document.getElementById('changeAvatarProfileBtn');
-  const avatarChangeInput = document.getElementById('changeAvatarInput');
-  if (avatarChangeBtn && avatarChangeInput) {
-    avatarChangeBtn.onclick = () => avatarChangeInput.click();
-    avatarChangeInput.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const ext = file.name.split('.').pop();
-      const url = await uploadFile('avatars', `user_${state.user.id}_${Date.now()}.${ext}`, file);
-      await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
-      await loadUserProfile();
-      renderApp();
-    };
-  }
-
+  // Cover Change
   const coverChangeBtn = document.getElementById('changeCoverBtn');
   const coverChangeInput = document.getElementById('changeCoverInput');
   if (coverChangeBtn && coverChangeInput) {
