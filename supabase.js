@@ -1,10 +1,10 @@
-// supabase.js — Supabase Client Setup & Config
+// supabase.js — Configured with your Supabase Credentials
 export const SUPABASE_URL = "https://zupcozqzlrbnkrayczhu.supabase.co";
 export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1cGNvenF6bHJibmtyYXljemh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMTk1NjEsImV4cCI6MjEwMjg5NTU2MX0.DEXBozpPby1avPDJshsILP9_-PM6HS_-HpVj5KsyfRg";
 
 export const isConfigured = () =>
-  SUPABASE_URL !== "https://zupcozqzlrbnkrayczhu.supabase.co" &&
-  SUPABASE_ANON_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1cGNvenF6bHJibmtyYXljemh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMTk1NjEsImV4cCI6MjEwMjg5NTU2MX0.DEXBozpPby1avPDJshsILP9_-PM6HS_-HpVj5KsyfRg" &&
+  SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
+  SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY" &&
   Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 export const supabase = isConfigured()
