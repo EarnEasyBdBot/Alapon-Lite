@@ -1,13 +1,11 @@
-// app.js — Alapon Lite (Custom Assets, Advanced Edit Profile, Fixed Auth & Chat Wallpaper)
+// app.js — Alapon Lite (3D Splash Screen, Suggested Users, Working Search & Fixed Auth)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
-// User Custom Assets
+// Crisp Vector Avatars (Male, Female & 3D Badges)
 const ASSETS = {
-  loadingBg: "https://ibb.co.com/Kjdr20zt",
-  logoPng: "https://ibb.co.com/xq3d0n2P",
-  maleAvatar: "https://ibb.co.com/kg4JxF7f",
-  femaleAvatar: "https://ibb.co.com/PZ7gqk4z",
-  chatBg: "https://ibb.co.com/JjFM1m6T"
+  maleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23315cff"/><stop offset="100%" stop-color="%237544ff"/></linearGradient></defs><rect width="100" height="100" fill="url(%23mg)"/><circle cx="50" cy="38" r="22" fill="%23ffffff"/><path d="M15 88 C15 65, 30 58, 50 58 C70 58, 85 65, 85 88 Z" fill="%23ffffff"/></svg>`,
+  femaleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ec4899"/><stop offset="100%" stop-color="%238b5cf6"/></linearGradient></defs><rect width="100" height="100" fill="url(%23fg)"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`,
+  logoSvg: `<svg width="44" height="44" viewBox="0 0 100 100" fill="none"><path d="M85 45C85 64.33 69.33 80 50 80C43.5 80 37.4 78.2 32.1 75.1L15 85L19.9 67.9C16.8 62.6 15 56.5 15 50C15 30.67 30.67 15 50 15C69.33 15 85 30.67 85 45Z" fill="url(#logoGrad)"/><circle cx="38" cy="46" r="7" fill="white"/><circle cx="62" cy="46" r="7" fill="white"/><circle cx="50" cy="42" r="9" fill="white"/><path d="M30 62C30 54 36 52 40 52C44 52 46 54 46 62" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M54 62C54 54 56 52 60 52C64 52 70 54 70 62" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M40 64C40 56 46 54 50 54C54 54 60 56 60 64" stroke="white" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="logoGrad" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="0.5" stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs></svg>`
 };
 
 // SVG Icons
@@ -33,7 +31,8 @@ const ICONS = {
   logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
-  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`
+  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
+  verified: `<svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
 };
 
 // Global App State
@@ -47,6 +46,7 @@ const state = {
   stories: [],
   friends: [],
   friendRequests: [],
+  suggestedUsers: [],
   notifications: [],
   activeCommentsPostId: null,
   commentsList: [],
@@ -62,14 +62,13 @@ const state = {
 
 const app = document.getElementById('app');
 
-// Helper: Get user's avatar or default
 function getUserAvatar(prof) {
-  if (prof?.avatar_url && prof.avatar_url.length > 5) return prof.avatar_url;
+  if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
   return prof?.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
 }
 
 // ----------------------------------------------------
-// 1. RICH TEXT PARSER (#tags, @mentions, URLs)
+// RICH TEXT PARSER (#tags, @mentions, URLs)
 // ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
@@ -111,19 +110,19 @@ function showToast(msg) {
 }
 
 // ----------------------------------------------------
-// 2. 5.5s ANIMATED SPLASH SCREEN & INITIALIZATION
+// 3D ANIMATED SPLASH SCREEN (Screenshot 3 Matching)
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
-    app.innerHTML = `<div class="boot"><div class="logo"><img src="${ASSETS.logoPng}" style="width:100%;"></div><h2>Alapon Lite</h2><p class="muted">Check credentials in supabase.js</p></div>`;
+    app.innerHTML = `<div class="boot"><div class="logo">${ASSETS.logoSvg}</div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
     return;
   }
 
-  // Premium Animated Splash Screen
-  renderPremiumSplash();
+  // 3D Animated Splash Screen (Screenshot 3)
+  render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise(resolve => setTimeout(resolve, 5200));
+  const delayPromise = new Promise(resolve => setTimeout(resolve, 4500));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -151,24 +150,49 @@ async function init() {
   });
 }
 
-function renderPremiumSplash() {
+function render3DSplashScreen() {
   app.innerHTML = `
-    <div class="splash-screen" style="background-image: linear-gradient(rgba(10,14,45,0.7), rgba(6,8,24,0.85)), url('${ASSETS.loadingBg}');">
-      <div class="splash-bg-glow"></div>
-      <div class="splash-content">
-        <div class="splash-logo-wrap">
-          <div class="splash-logo-pulse"></div>
-          <div class="splash-logo">
-            <img src="${ASSETS.logoPng}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">
-          </div>
+    <div class="splash-3d-screen">
+      <!-- Floating Frosted Reaction Badges -->
+      <div class="floating-badge badge-top-left">👥</div>
+      <div class="floating-badge badge-top-right">💬</div>
+      <div class="floating-badge badge-mid-left">❤️</div>
+      <div class="floating-badge badge-mid-right">👍</div>
+
+      <!-- Center Brand Content -->
+      <div class="splash-3d-center">
+        <div class="splash-3d-logo-box">
+          <div class="splash-3d-logo-glow"></div>
+          ${ASSETS.logoSvg}
         </div>
-        <h1 class="splash-title">Alapon Lite</h1>
-        <p class="splash-tagline">Connect • Share • Grow</p>
         
-        <div class="splash-loader-bar">
-          <div class="splash-loader-progress"></div>
+        <h1 class="splash-3d-title">Alapon <span class="splash-verified-icon">✔</span></h1>
+        <p class="splash-3d-tagline">Connect • Share • Grow</p>
+        
+        <!-- Glowing Progress Bar -->
+        <div class="splash-3d-progress-container">
+          <div class="splash-3d-progress-bar"></div>
         </div>
-        <span class="splash-status">Starting secure social environment...</span>
+        <span class="splash-3d-loading-text">Loading...</span>
+      </div>
+
+      <!-- 3D Glowing Globe at Bottom -->
+      <div class="splash-3d-globe-wrap">
+        <div class="splash-3d-globe-glow"></div>
+        <svg class="splash-3d-globe" viewBox="0 0 400 200" fill="none">
+          <ellipse cx="200" cy="200" rx="190" ry="120" fill="url(#globeGrad)" opacity="0.85"/>
+          <path d="M30 180 Q200 80 370 180" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <path d="M80 190 Q200 110 320 190" stroke="#818cf8" stroke-width="1.5"/>
+          <circle cx="90" cy="155" r="4" fill="#38bdf8" class="pulse-node"/>
+          <circle cx="200" cy="115" r="5" fill="#f43f5e" class="pulse-node"/>
+          <circle cx="310" cy="155" r="4" fill="#a855f7" class="pulse-node"/>
+          <defs>
+            <linearGradient id="globeGrad" x1="200" y1="80" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#312e81"/>
+              <stop offset="1" stop-color="#090527"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
     </div>
   `;
@@ -185,6 +209,7 @@ async function loadInitialData() {
     loadFeed(),
     loadStories(),
     loadFriendsData(),
+    loadSuggestedUsers(),
     loadNotifications(),
     loadUnreadCounts()
   ]);
@@ -224,6 +249,13 @@ async function loadFriendsData() {
   state.friends = (fList || []).map(f => f.requester_id === state.user.id ? f.receiver : f.requester);
 }
 
+async function loadSuggestedUsers() {
+  if (!state.user) return;
+  const friendIds = new Set([state.user.id, ...state.friends.map(f => f.id), ...state.friendRequests.map(r => r.requester_id)]);
+  const { data: allUsers } = await supabase.from('profiles').select('*').limit(20);
+  state.suggestedUsers = (allUsers || []).filter(u => !friendIds.has(u.id));
+}
+
 async function loadNotifications() {
   if (!state.user) return;
   const { data } = await supabase
@@ -232,7 +264,7 @@ async function loadNotifications() {
     .eq('user_id', state.user.id)
     .order('created_at', { ascending: false })
     .limit(20);
-  if (data) state.notifications = data;
+  state.notifications = data || [];
 }
 
 async function loadUnreadCounts() {
@@ -260,7 +292,7 @@ function setupRealtime() {
 }
 
 // ----------------------------------------------------
-// 3. AUTH (Instant Login & 5-Step Wizard)
+// AUTH (Login & 5-Step Wizard)
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -269,7 +301,7 @@ function renderAuth(mode = 'login') {
         <div class="auth-hero">
           <div class="hero-inner">
             <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
-              <img src="${ASSETS.logoPng}" style="width:100%;height:100%;object-fit:contain;">
+              ${ASSETS.logoSvg}
             </div>
             <h1>Alapon Lite</h1>
             <p>Connect • Share • Grow</p>
@@ -394,7 +426,7 @@ function renderSignupStep() {
       <div class="auth-hero">
         <div class="hero-inner">
           <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
-            <img src="${ASSETS.logoPng}" style="width:100%;height:100%;object-fit:contain;">
+            ${ASSETS.logoSvg}
           </div>
           <h1>Alapon Lite</h1>
           <p>Connect • Share • Grow</p>
@@ -493,8 +525,12 @@ async function handleFinalSignup() {
   if (error) {
     alert(error.message);
   } else {
-    // Instant Auto-Login
-    await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
+    // Instant login without getting stuck
+    const { error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
+    if (loginErr) {
+      alert('Account created! Please login.');
+      renderAuth('login');
+    }
   }
 }
 
@@ -513,7 +549,7 @@ async function handleLoginSubmit(e) {
 }
 
 // ----------------------------------------------------
-// 4. MAIN APPLICATION SHELL
+// MAIN APPLICATION SHELL
 // ----------------------------------------------------
 function renderApp() {
   const p = state.profile || { full_name: 'User', username: 'user' };
@@ -524,7 +560,7 @@ function renderApp() {
       <!-- TOP BAR -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
-          <div class="brand-logo"><img src="${ASSETS.logoPng}"></div>
+          <div class="brand-logo">${ASSETS.logoSvg}</div>
           <span style="font-size:18px;font-weight:900;color:#171a2f;margin-left:4px;">Alapon Lite</span>
         </div>
 
@@ -626,7 +662,7 @@ function renderCurrentViewContent() {
 }
 
 // ----------------------------------------------------
-// 5. HOME FEED VIEW (Clickable Hashtags & Mentions)
+// HOME FEED VIEW
 // ----------------------------------------------------
 function renderFeedView() {
   const p = state.profile || {};
@@ -718,7 +754,7 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// 6. PROFILE VIEW (No Default Data, Full Working Tabs)
+// PROFILE VIEW (No Fake Info, Real Tabs)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -764,19 +800,19 @@ function renderProfileView() {
           </div>
           <div class="list-row">
             <div class="muted" style="width:120px;">Current City</div>
-            <b>${escapeHtml(p.current_city || p.location || 'Not specified')}</b>
+            <b>${escapeHtml(p.current_city || p.location || 'Not set')}</b>
           </div>
           <div class="list-row">
             <div class="muted" style="width:120px;">Hometown</div>
-            <b>${escapeHtml(p.hometown || 'Not specified')}</b>
+            <b>${escapeHtml(p.hometown || 'Not set')}</b>
           </div>
           <div class="list-row">
             <div class="muted" style="width:120px;">Workplace</div>
-            <b>${escapeHtml(p.workplace || 'Not specified')}</b>
+            <b>${escapeHtml(p.workplace || 'Not set')}</b>
           </div>
           <div class="list-row">
             <div class="muted" style="width:120px;">Education</div>
-            <b>${escapeHtml(p.education || 'Not specified')}</b>
+            <b>${escapeHtml(p.education || 'Not set')}</b>
           </div>
           <div class="list-row">
             <div class="muted" style="width:120px;">Gender</div>
@@ -844,19 +880,17 @@ function renderProfileView() {
 }
 
 // ----------------------------------------------------
-// 7. FRIENDS VIEW
+// FRIENDS VIEW (Requests, Friends & Suggested Users)
 // ----------------------------------------------------
 function renderFriendsView() {
   return `
     <div class="card-ui">
-      <h2>Friends</h2>
-      <div style="position:relative;margin:12px 0 18px;">
-        <input class="input" type="text" id="friendSearchInput" placeholder="Search friends by name..." style="padding-left:14px;">
-      </div>
+      <h2>Friends & Community</h2>
 
-      <b style="font-size:16px;">Friend Requests (${state.friendRequests.length})</b>
-      <div style="margin:12px 0 24px;">
-        ${state.friendRequests.length === 0 ? `<p class="muted" style="padding:10px 0;font-size:13.5px;">No pending friend requests</p>` : ''}
+      <!-- FRIEND REQUESTS -->
+      <b style="font-size:16px;display:block;margin-top:10px;">Friend Requests (${state.friendRequests.length})</b>
+      <div style="margin:10px 0 20px;">
+        ${state.friendRequests.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No pending friend requests</p>` : ''}
         ${state.friendRequests.map(r => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(r.requester)}"></div>
@@ -872,9 +906,10 @@ function renderFriendsView() {
         `).join('')}
       </div>
 
-      <b style="font-size:16px;">Your Friends (${state.friends.length})</b>
-      <div style="margin-top:12px;">
-        ${state.friends.length === 0 ? `<p class="muted" style="padding:10px 0;font-size:13.5px;">No friends added yet.</p>` : ''}
+      <!-- YOUR FRIENDS -->
+      <b style="font-size:16px;display:block;margin-top:10px;">Your Friends (${state.friends.length})</b>
+      <div style="margin:10px 0 24px;">
+        ${state.friends.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No friends added yet.</p>` : ''}
         ${state.friends.map(fr => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
@@ -886,12 +921,28 @@ function renderFriendsView() {
           </div>
         `).join('')}
       </div>
+
+      <!-- SUGGESTED USERS -->
+      <b style="font-size:16px;display:block;margin-top:10px;">Discover People on Alapon</b>
+      <div style="margin-top:10px;">
+        ${state.suggestedUsers.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No new suggestions right now.</p>` : ''}
+        ${state.suggestedUsers.map(u => `
+          <div class="list-row">
+            <div class="avatar"><img src="${getUserAvatar(u)}"></div>
+            <div class="grow">
+              <b>${escapeHtml(u.full_name || 'User')}</b>
+              <div class="muted" style="font-size:12px;">@${escapeHtml(u.username || '')}</div>
+            </div>
+            <button class="btn secondary sendSuggestedFriendReqBtn" data-id="${u.id}" style="padding:6px 12px;font-size:12px;">Add Friend</button>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
 
 // ----------------------------------------------------
-// 8. MESSENGER VIEW (Custom Chat Wallpaper)
+// MESSENGER VIEW
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -906,7 +957,7 @@ function renderMessagesView() {
             <small style="color:#12b76a;font-size:11px;">Active Now</small>
           </div>
         </div>
-        <div class="chat-list" id="chatMessageList" style="background-image: linear-gradient(rgba(244,246,251,0.85), rgba(244,246,251,0.92)), url('${ASSETS.chatBg}');">
+        <div class="chat-list" id="chatMessageList">
           <p class="muted center" style="margin-top:20px;">Loading chat...</p>
         </div>
         <form class="chat-input" id="chatSendForm">
@@ -939,7 +990,7 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// 9. SETTINGS VIEW
+// SETTINGS VIEW
 // ----------------------------------------------------
 function renderSettingsView() {
   const p = state.profile || {};
@@ -981,7 +1032,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// 10. COMMENTS & REAL SHARE
+// COMMENTS & SHARE LOGIC
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   state.activeCommentsPostId = postId;
@@ -1049,7 +1100,7 @@ async function recordShare(postId) {
 }
 
 // ----------------------------------------------------
-// 11. ADVANCED EDIT PROFILE & ALL MODALS
+// ALL MODALS CONTROLLER
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -1068,7 +1119,6 @@ function renderActiveModal() {
           </div>
 
           <div style="overflow-y:auto;flex:1;padding-right:4px;">
-            <!-- Profile Photo & Cover Options -->
             <div class="row" style="gap:14px;margin-bottom:16px;align-items:center;">
               <div class="avatar" style="width:68px;height:68px;">
                 <img src="${curAvatar}">
@@ -1130,7 +1180,6 @@ function renderActiveModal() {
 
     document.getElementById('closeEditModal').onclick = () => { state.modal = null; renderActiveModal(); };
 
-    // Avatar upload / reset
     document.getElementById('modalChangeAvatarBtn').onclick = () => document.getElementById('modalChangeAvatarFile').click();
     document.getElementById('modalChangeAvatarFile').onchange = async (e) => {
       const file = e.target.files[0];
@@ -1147,7 +1196,6 @@ function renderActiveModal() {
       renderActiveModal();
     };
 
-    // Live Geocoding for City & Hometown
     setupLocationSearchInput('editCurrentCity', 'citySearchResults');
     setupLocationSearchInput('editHometown', 'hometownSearchResults');
 
@@ -1339,12 +1387,12 @@ function renderActiveModal() {
   } else if (state.modal === 'search') {
     container.innerHTML = `
       <div class="full-modal-back">
-        <div class="full-modal" style="height:min(500px, 90vh);">
+        <div class="full-modal" style="height:min(520px, 90vh);">
           <div class="row between" style="margin-bottom:14px;">
-            <b>Search Alapon</b>
+            <b>Search Alapon Users</b>
             <button class="btn ghost" id="closeSearchModal">✕</button>
           </div>
-          <input class="input" type="text" id="liveSearchInput" placeholder="Search people by name or username..." autofocus>
+          <input class="input" type="text" id="liveSearchInput" placeholder="Type name or username..." autofocus>
           <div id="liveSearchResults" style="margin-top:14px;overflow-y:auto;flex:1;">
             <p class="muted center" style="padding:20px 0;">Type to find friends...</p>
           </div>
@@ -1355,7 +1403,7 @@ function renderActiveModal() {
     document.getElementById('liveSearchInput').oninput = async (e) => {
       const q = e.target.value.trim();
       if (!q) return;
-      const { data } = await supabase.from('profiles').select('*').ilike('full_name', `%${q}%`).limit(8);
+      const { data } = await supabase.from('profiles').select('*').or(`full_name.ilike.%${q}%,username.ilike.%${q}%`).limit(10);
       const resEl = document.getElementById('liveSearchResults');
       if (data && data.length) {
         resEl.innerHTML = data.map(u => `
@@ -1453,7 +1501,6 @@ function renderActiveModal() {
   }
 }
 
-// Reusable Location Search Helper
 function setupLocationSearchInput(inputId, resultsDivId, onSelectCallback) {
   const input = document.getElementById(inputId);
   const resultsDiv = document.getElementById(resultsDivId);
@@ -1506,7 +1553,7 @@ async function handlePostPublish() {
 }
 
 // ----------------------------------------------------
-// 12. GLOBAL EVENT BINDINGS
+// EVENT BINDINGS
 // ----------------------------------------------------
 function attachGlobalEvents() {
   const bindNav = (id, view) => {
@@ -1538,11 +1585,9 @@ function attachGlobalEvents() {
   const botCreate = document.getElementById('botCreate');
   if (botCreate) botCreate.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  // Profile Edit
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  // Story Upload
   const addStoryBtn = document.getElementById('addStoryBtn');
   const storyInput = document.getElementById('storyUploadInput');
   if (addStoryBtn && storyInput) {
@@ -1560,7 +1605,6 @@ function attachGlobalEvents() {
     };
   }
 
-  // Story View
   document.querySelectorAll('.viewStoryBtn').forEach(b => {
     b.onclick = () => {
       const sId = b.dataset.storyId;
@@ -1574,7 +1618,6 @@ function attachGlobalEvents() {
     };
   });
 
-  // Profile Tabs
   const tPosts = document.getElementById('tabPostsBtn');
   if (tPosts) tPosts.onclick = () => { state.profileTab = 'posts'; renderApp(); };
   const tPhotos = document.getElementById('tabPhotosBtn');
@@ -1582,7 +1625,6 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
-  // Settings Sub-options
   document.querySelectorAll('.settingsOptRow').forEach(r => {
     r.onclick = () => {
       state.settingsSubType = r.dataset.type;
@@ -1596,7 +1638,6 @@ function attachGlobalEvents() {
   const settingsLogout = document.getElementById('settingsLogoutBtn');
   if (settingsLogout) settingsLogout.onclick = () => supabase.auth.signOut();
 
-  // Likes
   document.querySelectorAll('.likePostBtn').forEach(btn => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
@@ -1612,21 +1653,19 @@ function attachGlobalEvents() {
     };
   });
 
-  // Comments Trigger
   document.querySelectorAll('.commentPostBtn').forEach(btn => {
     btn.onclick = () => { openCommentsModal(btn.dataset.id); };
   });
 
-  // Share Trigger
   document.querySelectorAll('.sharePostBtn').forEach(btn => {
     btn.onclick = () => { handleSharePost(btn.dataset.id, btn.dataset.text); };
   });
 
-  // Friend Requests
   document.querySelectorAll('.acceptReqBtn').forEach(btn => {
     btn.onclick = async () => {
       await supabase.from('friendships').update({ status: 'accepted' }).eq('id', btn.dataset.id);
       await loadFriendsData();
+      await loadSuggestedUsers();
       renderApp();
     };
   });
@@ -1635,11 +1674,20 @@ function attachGlobalEvents() {
     btn.onclick = async () => {
       await supabase.from('friendships').delete().eq('id', btn.dataset.id);
       await loadFriendsData();
+      await loadSuggestedUsers();
       renderApp();
     };
   });
 
-  // Chat
+  document.querySelectorAll('.sendSuggestedFriendReqBtn').forEach(btn => {
+    btn.onclick = async () => {
+      await supabase.from('friendships').insert({ requester_id: state.user.id, receiver_id: btn.dataset.id, status: 'pending' });
+      btn.innerText = 'Sent ✓';
+      btn.disabled = true;
+      showToast('Friend request sent! 👥');
+    };
+  });
+
   document.querySelectorAll('.startChatBtn').forEach(btn => {
     btn.onclick = () => {
       const friend = state.friends.find(f => f.id === btn.dataset.userId);
@@ -1668,7 +1716,6 @@ function attachGlobalEvents() {
     };
   }
 
-  // Cover Change
   const coverChangeBtn = document.getElementById('changeCoverBtn');
   const coverChangeInput = document.getElementById('changeCoverInput');
   if (coverChangeBtn && coverChangeInput) {
