@@ -1,0 +1,10 @@
+{
+  "name": "Alapon",
+  "short_name": "Alapon",
+  "description": "Connect • Share • Grow",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#245bff",
+  "icons": []
+}
