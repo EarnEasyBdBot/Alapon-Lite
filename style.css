@@ -20,6 +20,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 button, input, textarea, select {
   font: inherit;
 }
@@ -32,7 +37,7 @@ button {
 }
 
 /* ============================================================
-   3D SPLASH SCREEN (Clean Logo & No Side Glow Box)
+   3D SPLASH SCREEN (Fixed Logo Size & No Glow Box)
    ============================================================ */
 .splash-3d-screen {
   min-height: 100vh;
@@ -49,15 +54,15 @@ button {
 
 .floating-badge {
   position: absolute;
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(12px);
   display: grid;
   place-items: center;
-  font-size: 26px;
+  font-size: 24px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   animation: floatBadges 4s ease-in-out infinite alternate;
 }
@@ -83,26 +88,31 @@ button {
   align-items: center;
 }
 
-/* Clean Main Logo in Splash (Glow removed) */
+/* Splash Logo Perfect Size */
 .splash-clean-logo-box {
-  width: 105px;
-  height: 105px;
-  border-radius: 28px;
+  width: 120px !important;
+  height: 120px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin: 0 auto 16px auto;
+  overflow: hidden;
 }
 
 .splash-main-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
+  object-fit: contain !important;
+  display: block;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
 }
 
 .splash-3d-title {
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 900;
   letter-spacing: -1px;
   display: flex;
@@ -112,20 +122,20 @@ button {
 }
 
 .splash-verified-icon {
-  font-size: 22px;
+  font-size: 20px;
   color: #38bdf8;
   display: inline-flex;
 }
 
 .splash-3d-tagline {
-  font-size: 16px;
+  font-size: 15px;
   color: #c7d2fe;
   letter-spacing: 0.5px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .splash-3d-progress-container {
-  width: 220px;
+  width: 200px;
   height: 6px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 99px;
@@ -183,31 +193,39 @@ button {
 }
 
 /* ============================================================
-   BRAND & TOPBAR
+   BRAND & TOPBAR (Fixed Logo Size)
    ============================================================ */
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
+  max-height: 42px;
 }
 
 .brand-logo-img {
-  width: 36px;
-  height: 36px;
+  width: 38px !important;
+  height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .brand-logo-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  object-fit: contain !important;
+  display: block;
 }
 
 .brand-title {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 900;
   color: #171a2f;
   letter-spacing: -0.4px;
@@ -421,7 +439,6 @@ button {
   overflow: hidden;
 }
 
-/* Dark readable layer on top of wallpaper */
 .chat-dark-overlay {
   position: absolute;
   inset: 0;
@@ -438,7 +455,6 @@ button {
   z-index: 2;
 }
 
-/* Message Swipe & Compact Bubble Structure */
 .msg-swipe-wrapper {
   position: relative;
   display: flex;
@@ -535,7 +551,6 @@ button {
   border: 1px solid #e2e8f0;
 }
 
-/* Chat Input Dock */
 .chat-input-dock {
   padding: 8px 12px;
   background: #ffffff;
