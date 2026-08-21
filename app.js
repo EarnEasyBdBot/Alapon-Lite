@@ -1,7 +1,7 @@
-// app.js — Alapon Social App (Full Updated Version)
+// app.js — Alapon Lite (Complete Updated Social SPA)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
-// SVG Icons Collection
+// Clean SVG Icons
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
@@ -10,9 +10,8 @@ const ICONS = {
   profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
   settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
-  heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
   share: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
@@ -22,56 +21,43 @@ const ICONS = {
   send: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
   back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>`,
   camera: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
-  logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`
+  logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
+  more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`
 };
 
-// Default Avatar SVGs (By Gender)
 const DEFAULT_AVATARS = {
   male: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23315cff"/><circle cx="50" cy="38" r="22" fill="%23ffffff"/><path d="M15 88 C15 65, 30 58, 50 58 C70 58, 85 65, 85 88 Z" fill="%23ffffff"/></svg>`,
   female: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23ec4899"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`
 };
 
-// Application State
+// Global App State
 const state = {
   user: null,
   profile: null,
-  currentView: 'feed',
+  currentView: 'feed', // 'feed' | 'profile' | 'friends' | 'messages' | 'settings'
+  profileTab: 'posts', // 'posts' | 'photos' | 'about'
   activeChatUser: null,
   posts: [],
   stories: [],
   friends: [],
   friendRequests: [],
-  allUsers: [],
+  notifications: [],
   unreadMessagesCount: 0,
   unreadNotificationsCount: 0,
-  modal: null,
+  modal: null, // 'create-post' | 'drawer' | 'search' | 'notifications' | 'edit-profile' | 'settings-sub' | 'view-story'
+  settingsSubType: null,
+  activeStory: null,
   signupStep: 1,
-  signupDraft: {
-    fullName: '',
-    email: '',
-    username: '',
-    password: '',
-    birthDate: '',
-    gender: 'male',
-    avatarUrl: ''
-  },
-  postDraft: {
-    content: '',
-    mediaUrl: '',
-    privacy: 'public',
-    location: '',
-    feeling: '',
-    allowComments: true,
-    allowShares: true
-  }
+  signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
+  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
 };
 
 const app = document.getElementById('app');
 
-// Initialize
 async function init() {
   if (!isConfigured()) {
-    renderConfigWarning();
+    app.innerHTML = `<div class="boot"><div class="logo">💬</div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
     return;
   }
 
@@ -101,16 +87,6 @@ async function init() {
   });
 }
 
-function renderConfigWarning() {
-  app.innerHTML = `
-    <div class="boot">
-      <div class="logo">💬</div>
-      <h2>Alapon Configuration Needed</h2>
-      <p class="muted center">Please verify credentials in supabase.js</p>
-    </div>
-  `;
-}
-
 async function loadUserProfile() {
   const { data } = await supabase.from('profiles').select('*').eq('id', state.user.id).single();
   if (data) state.profile = data;
@@ -119,7 +95,9 @@ async function loadUserProfile() {
 async function loadInitialData() {
   await Promise.all([
     loadFeed(),
+    loadStories(),
     loadFriendsData(),
+    loadNotifications(),
     loadUnreadCounts()
   ]);
 }
@@ -129,8 +107,16 @@ async function loadFeed() {
     .from('posts')
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
     .order('created_at', { ascending: false });
-
   if (data) state.posts = data;
+}
+
+async function loadStories() {
+  const { data } = await supabase
+    .from('stories')
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url)`)
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false });
+  if (data) state.stories = data;
 }
 
 async function loadFriendsData() {
@@ -147,8 +133,18 @@ async function loadFriendsData() {
     .select(`*, requester:requester_id(id, full_name, username, avatar_url), receiver:receiver_id(id, full_name, username, avatar_url)`)
     .or(`requester_id.eq.${state.user.id},receiver_id.eq.${state.user.id}`)
     .eq('status', 'accepted');
-
   state.friends = (fList || []).map(f => f.requester_id === state.user.id ? f.receiver : f.requester);
+}
+
+async function loadNotifications() {
+  if (!state.user) return;
+  const { data } = await supabase
+    .from('notifications')
+    .select(`*, actor:actor_id (id, full_name, avatar_url)`)
+    .eq('user_id', state.user.id)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (data) state.notifications = data;
 }
 
 async function loadUnreadCounts() {
@@ -161,15 +157,16 @@ async function loadUnreadCounts() {
 
 function setupRealtime() {
   supabase
-    .channel('public:realtime_feed')
+    .channel('public:alapon_updates')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { loadFeed().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(renderApp); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => { loadUnreadCounts().then(renderApp); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => { loadFriendsData().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => { loadNotifications().then(renderApp); })
     .subscribe();
 }
 
 // ----------------------------------------------------
-// AUTH: LOGIN & 5-STEP SIGNUP WIZARD
+// AUTH (Login & 5-Step Wizard)
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -178,7 +175,7 @@ function renderAuth(mode = 'login') {
         <div class="auth-hero">
           <div class="hero-inner">
             <div class="brand-logo" style="width:68px;height:68px;font-size:32px;">💬</div>
-            <h1>Alapon</h1>
+            <h1>Alapon Lite</h1>
             <p>Connect • Share • Grow</p>
           </div>
         </div>
@@ -210,7 +207,6 @@ function renderAuth(mode = 'login') {
         </div>
       </div>
     `;
-
     document.getElementById('toSignup').onclick = (e) => { e.preventDefault(); state.signupStep = 1; renderAuth('signup'); };
     document.getElementById('loginForm').onsubmit = handleLoginSubmit;
   } else {
@@ -225,36 +221,34 @@ function renderSignupStep() {
   if (step === 1) {
     stepHtml = `
       <h2>Full Name</h2>
-      <p class="muted" style="margin-bottom:20px;">What is your name?</p>
+      <p class="muted" style="margin-bottom:20px;">What is your full name?</p>
       <div class="field">
         <label>Full Name</label>
-        <input class="input" type="text" id="stepFullName" placeholder="e.g. Tanvir Hasan" value="${escapeHtml(state.signupDraft.fullName)}" autofocus required>
+        <input class="input" type="text" id="stepFullName" placeholder="e.g. Hasan Ahmed" value="${escapeHtml(state.signupDraft.fullName)}" autofocus required>
       </div>
       <button class="btn primary full" id="nextStepBtn" style="margin-top:16px;">Next →</button>
     `;
   } else if (step === 2) {
     stepHtml = `
       <h2>Email & Username</h2>
-      <p class="muted" style="margin-bottom:20px;">How would you like people to find you?</p>
+      <p class="muted" style="margin-bottom:20px;">Choose your login details.</p>
       <div class="field">
         <label>Email Address</label>
-        <input class="input" type="email" id="stepEmail" placeholder="tanvir@example.com" value="${escapeHtml(state.signupDraft.email)}" required>
+        <input class="input" type="email" id="stepEmail" placeholder="hasan@example.com" value="${escapeHtml(state.signupDraft.email)}" required>
       </div>
       <div class="field">
         <label>Username</label>
-        <input class="input" type="text" id="stepUsername" placeholder="tanvirhasan" value="${escapeHtml(state.signupDraft.username)}" required>
+        <input class="input" type="text" id="stepUsername" placeholder="hasan8273" value="${escapeHtml(state.signupDraft.username)}" required>
       </div>
       <button class="btn primary full" id="nextStepBtn" style="margin-top:16px;">Next →</button>
     `;
   } else if (step === 3) {
     stepHtml = `
       <h2>Create Password</h2>
-      <p class="muted" style="margin-bottom:20px;">Choose a secure password (min 6 characters).</p>
+      <p class="muted" style="margin-bottom:20px;">Choose a secure password (min 6 chars).</p>
       <div class="field">
         <label>Password</label>
-        <div style="position:relative;">
-          <input class="input" type="password" id="stepPassword" placeholder="••••••••" value="${escapeHtml(state.signupDraft.password)}" minlength="6" required>
-        </div>
+        <input class="input" type="password" id="stepPassword" placeholder="••••••••" value="${escapeHtml(state.signupDraft.password)}" minlength="6" required>
       </div>
       <button class="btn primary full" id="nextStepBtn" style="margin-top:16px;">Next →</button>
     `;
@@ -285,7 +279,7 @@ function renderSignupStep() {
     const defaultImg = state.signupDraft.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male;
     stepHtml = `
       <h2>Profile Picture</h2>
-      <p class="muted" style="margin-bottom:20px;">Add a photo or use default avatar.</p>
+      <p class="muted" style="margin-bottom:20px;">Upload your picture or keep the default.</p>
       <div class="center" style="margin:25px 0;">
         <div class="avatar" id="signupAvatarPreview" style="width:110px;height:110px;margin:auto;box-shadow:0 8px 25px rgba(49,92,255,0.2);">
           <img src="${state.signupDraft.avatarUrl || defaultImg}">
@@ -296,7 +290,6 @@ function renderSignupStep() {
         </button>
       </div>
       <button class="btn primary full" id="finishSignupBtn">Sign Up →</button>
-      <p class="muted center" style="font-size:12px;margin-top:16px;">By signing up, you agree to our Terms & Privacy Policy</p>
     `;
   }
 
@@ -305,7 +298,7 @@ function renderSignupStep() {
       <div class="auth-hero">
         <div class="hero-inner">
           <div class="brand-logo" style="width:68px;height:68px;font-size:32px;">💬</div>
-          <h1>Alapon</h1>
+          <h1>Alapon Lite</h1>
           <p>Connect • Share • Grow</p>
         </div>
       </div>
@@ -324,15 +317,10 @@ function renderSignupStep() {
     </div>
   `;
 
-  // Wizard Listeners
   document.getElementById('toLoginFromWizard').onclick = (e) => { e.preventDefault(); renderAuth('login'); };
   document.getElementById('stepBackBtn').onclick = () => {
-    if (state.signupStep > 1) {
-      state.signupStep--;
-      renderSignupStep();
-    } else {
-      renderAuth('login');
-    }
+    if (state.signupStep > 1) { state.signupStep--; renderSignupStep(); }
+    else { renderAuth('login'); }
   };
 
   if (step === 1) {
@@ -382,13 +370,11 @@ function renderSignupStep() {
       if (!file) return;
       try {
         const ext = file.name.split('.').pop();
-        const path = `${Date.now()}_avatar.${ext}`;
+        const path = `avatars/${Date.now()}_reg.${ext}`;
         const url = await uploadFile('avatars', path, file);
         state.signupDraft.avatarUrl = url;
         document.getElementById('signupAvatarPreview').innerHTML = `<img src="${url}">`;
-      } catch (err) {
-        alert('Image upload failed: ' + err.message);
-      }
+      } catch (err) { alert('Upload failed: ' + err.message); }
     };
     document.getElementById('finishSignupBtn').onclick = handleFinalSignup;
   }
@@ -397,46 +383,33 @@ function renderSignupStep() {
 async function handleFinalSignup() {
   const d = state.signupDraft;
   const avatarToUse = d.avatarUrl || (d.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
-
   const { error } = await supabase.auth.signUp({
     email: d.email,
     password: d.password,
     options: {
-      data: {
-        full_name: d.fullName,
-        username: d.username,
-        birth_date: d.birthDate,
-        gender: d.gender,
-        avatar_url: avatarToUse
-      }
+      data: { full_name: d.fullName, username: d.username, birth_date: d.birthDate, gender: d.gender, avatar_url: avatarToUse }
     }
   });
-
-  if (error) {
-    alert(error.message);
-  } else {
-    alert('Account created successfully! Logging you in...');
-  }
+  if (error) alert(error.message);
+  else alert('Account created successfully! Logging you in...');
 }
 
 async function handleLoginSubmit(e) {
   e.preventDefault();
   const ident = document.getElementById('loginIdentifier').value.trim();
   const password = document.getElementById('loginPassword').value;
-
   let email = ident;
   if (!ident.includes('@')) {
     const { data } = await supabase.rpc('get_email_by_username', { p_username: ident });
     if (!data) return alert('Username not found. Please use email.');
     email = data;
   }
-
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) alert(error.message);
 }
 
 // ----------------------------------------------------
-// MAIN APPLICATION SHELL & ROUTER
+// MAIN APPLICATION SHELL
 // ----------------------------------------------------
 function renderApp() {
   const p = state.profile || { full_name: 'User', username: 'user' };
@@ -444,22 +417,20 @@ function renderApp() {
 
   app.innerHTML = `
     <div class="app-shell">
-      <!-- TOP BAR -->
+      <!-- TOP BAR (Brand left, Action Icons right) -->
       <header class="topbar">
-        <button class="icon-btn" id="menuToggleBtn">${ICONS.menu}</button>
         <div class="brand" id="brandHomeBtn">
           <div class="brand-logo">💬</div>
-          <span>Alapon</span>
+          <span style="font-size:18px;font-weight:900;color:#171a2f;margin-left:4px;">Alapon Lite</span>
         </div>
-        <div class="search">
-          <input class="input" type="text" placeholder="Search on Alapon..." style="padding-left:14px;">
-        </div>
+
         <div class="top-actions">
-          <button class="icon-btn" id="navNotifBtn">
+          <button class="icon-btn" id="openSearchBtn" title="Search">${ICONS.search}</button>
+          <button class="icon-btn" id="openNotifBtn" title="Notifications">
             ${ICONS.bell}
             ${state.unreadNotificationsCount > 0 ? `<span class="badge">${state.unreadNotificationsCount}</span>` : ''}
           </button>
-          <div class="avatar" id="topbarAvatar" style="cursor:pointer;width:40px;height:40px;">
+          <div class="avatar" id="topbarAvatar" style="cursor:pointer;width:38px;height:38px;border:2px solid #eef2ff;">
             <img src="${currentAvatar}">
           </div>
         </div>
@@ -467,7 +438,7 @@ function renderApp() {
 
       <!-- MAIN LAYOUT -->
       <div class="layout">
-        <!-- LEFT NAVIGATION (Desktop) -->
+        <!-- DESKTOP SIDEBAR -->
         <aside class="side">
           <div class="card-ui" style="padding:10px;">
             <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="sideHomeBtn">${ICONS.home} Home</button>
@@ -508,7 +479,7 @@ function renderApp() {
         <button class="navitem ${state.currentView === 'profile' ? 'active' : ''}" id="botProfile">${ICONS.profile}<span>Profile</span></button>
       </nav>
 
-      <!-- MODALS (Full Screen Create Post / Messenger / Drawer) -->
+      <!-- MODALS -->
       <div id="modalContainer"></div>
     </div>
   `;
@@ -547,45 +518,41 @@ function renderCurrentViewContent() {
 }
 
 // ----------------------------------------------------
-// 1. HOME FEED VIEW
+// 1. HOME FEED VIEW (Clean Stories, Edge-to-Edge Cards)
 // ----------------------------------------------------
 function renderFeedView() {
   const p = state.profile || {};
   const userAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
+  const myStories = state.stories.filter(s => s.user_id === state.user?.id);
+  const otherStories = state.stories.filter(s => s.user_id !== state.user?.id);
 
   return `
     <!-- STORIES ROW -->
-    <div class="card-ui stories" style="padding:12px 14px;margin-bottom:14px;">
+    <div class="card-ui stories" style="padding:12px 14px;margin-bottom:12px;">
+      <input type="file" id="storyUploadInput" accept="image/*" style="display:none;">
       <div class="story" id="addStoryBtn">
         <div class="avatar" style="border:2px dashed #5264f0;background:#f0f3ff;color:#315cff;">${ICONS.plus}</div>
         <span>Add Story</span>
       </div>
-      <div class="story">
+
+      <div class="story viewStoryBtn" data-story-user="${state.user?.id}" style="${myStories.length ? '' : 'opacity:0.6;'}">
         <div class="avatar" style="border:3px solid #7142ff;"><img src="${userAvatar}"></div>
         <span>Your Story</span>
       </div>
-      ${state.posts.slice(0, 4).map(post => `
-        <div class="story">
+
+      ${otherStories.map(s => `
+        <div class="story viewStoryBtn" data-story-id="${s.id}">
           <div class="avatar" style="border:3px solid #315cff;">
-            <img src="${post.profiles?.avatar_url || DEFAULT_AVATARS.male}">
+            <img src="${s.profiles?.avatar_url || DEFAULT_AVATARS.male}">
           </div>
-          <span>${escapeHtml(post.profiles?.full_name?.split(' ')[0] || 'Friend')}</span>
+          <span>${escapeHtml(s.profiles?.full_name?.split(' ')[0] || 'Friend')}</span>
         </div>
       `).join('')}
     </div>
 
-    <!-- CREATE POST TRIGGER -->
-    <div class="card-ui composer" id="openComposerBar" style="cursor:pointer;">
-      <div class="avatar"><img src="${userAvatar}"></div>
-      <input class="input" type="text" placeholder="What's on your mind?" readonly style="cursor:pointer;">
-      <button class="icon-btn" style="background:transparent;">${ICONS.image}</button>
-      <button class="icon-btn" style="background:transparent;">${ICONS.smile}</button>
-      <button class="icon-btn" style="background:transparent;">${ICONS.location}</button>
-    </div>
-
     <!-- POSTS LIST -->
     <div class="posts-list">
-      ${state.posts.length === 0 ? `<div class="card-ui empty"><p class="muted">No posts yet. Be the first to share!</p></div>` : ''}
+      ${state.posts.length === 0 ? `<div class="card-ui empty"><p class="muted">No posts yet. Tap ➕ below to create a post!</p></div>` : ''}
       ${state.posts.map(post => renderPostCard(post)).join('')}
     </div>
   `;
@@ -599,7 +566,7 @@ function renderPostCard(post) {
   const postAuthorAvatar = post.profiles?.avatar_url || DEFAULT_AVATARS.male;
 
   return `
-    <div class="card-ui" data-post-id="${post.id}">
+    <div class="card-ui post-card" data-post-id="${post.id}">
       <div class="post-head">
         <div class="avatar"><img src="${postAuthorAvatar}"></div>
         <div>
@@ -612,23 +579,22 @@ function renderPostCard(post) {
             ${formatTimeAgo(post.created_at)} ${post.location ? `• 📍 ${escapeHtml(post.location)}` : ''} • 🌐 ${post.privacy}
           </small>
         </div>
+        <button class="btn ghost more" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
       </div>
 
-      <div style="margin:14px 0 8px;font-size:15px;line-height:1.55;white-space:pre-wrap;">
-        ${escapeHtml(post.content)}
-      </div>
+      ${post.content ? `<div class="post-caption">${escapeHtml(post.content)}</div>` : ''}
 
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
 
       <!-- COUNTERS -->
-      <div class="row between muted" style="font-size:13px;margin:14px 0 6px;padding:0 4px;">
+      <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b>${likesCount}</b></div>
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
       <!-- ACTIONS -->
       <div class="post-actions">
-        <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}" style="${isLiked ? 'color:#e63946;' : ''}">
+        <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}">
           ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; Like
         </button>
         <button class="commentPostBtn" data-id="${post.id}">${ICONS.comment} &nbsp; Comment</button>
@@ -639,18 +605,68 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// 2. PROFILE VIEW (Cleaned up, No fake counts)
+// 2. PROFILE VIEW (Working Tabs: Posts, Photos, About)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
   const userAvatar = p.avatar_url || (p.gender === 'female' ? DEFAULT_AVATARS.female : DEFAULT_AVATARS.male);
   const myPosts = state.posts.filter(item => item.user_id === state.user?.id);
+  const myPhotos = myPosts.filter(item => item.media_url);
+
+  let tabContentHtml = '';
+  if (state.profileTab === 'posts') {
+    tabContentHtml = myPosts.length === 0
+      ? `<div class="card-ui empty"><p class="muted">You haven't posted yet.</p></div>`
+      : myPosts.map(post => renderPostCard(post)).join('');
+  } else if (state.profileTab === 'photos') {
+    tabContentHtml = `
+      <div class="card-ui">
+        <b>Photos (${myPhotos.length})</b>
+        <div class="photos-grid" style="margin-top:12px;">
+          ${myPhotos.length === 0 ? `<p class="muted" style="padding:10px 0;">No photos uploaded yet.</p>` : ''}
+          ${myPhotos.map(p => `<img src="${p.media_url}" loading="lazy">`).join('')}
+        </div>
+      </div>
+    `;
+  } else if (state.profileTab === 'about') {
+    tabContentHtml = `
+      <div class="card-ui">
+        <b>About Hasan</b>
+        <div style="margin-top:12px;">
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Full Name</div>
+            <b>${escapeHtml(p.full_name || '')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Username</div>
+            <b>@${escapeHtml(p.username || '')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Email</div>
+            <b>${escapeHtml(p.email || state.user?.email || '')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Location</div>
+            <b>${escapeHtml(p.location || 'Dhaka, Bangladesh')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Gender</div>
+            <b style="text-transform:capitalize;">${escapeHtml(p.gender || 'Male')}</b>
+          </div>
+          <div class="list-row">
+            <div class="muted" style="width:110px;">Birthday</div>
+            <b>${escapeHtml(p.birth_date || 'Not specified')}</b>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   return `
-    <div class="card-ui" style="padding:0;overflow:hidden;">
+    <div class="card-ui" style="padding:0;overflow:hidden;margin-bottom:12px;">
       <div class="profile-cover" style="${p.cover_url ? `background:url(${p.cover_url}) center/cover;` : ''}">
         <input type="file" id="changeCoverInput" accept="image/*" style="display:none;">
-        <button class="btn secondary" id="changeCoverBtn" style="position:absolute;right:14px;top:14px;padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.85);">
+        <button class="btn secondary" id="changeCoverBtn" style="position:absolute;right:12px;top:12px;padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.9);">
           ${ICONS.camera} Change Cover
         </button>
       </div>
@@ -662,6 +678,10 @@ function renderProfileView() {
             <span style="position:absolute;bottom:0;right:0;background:#315cff;color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;border:2px solid #fff;">${ICONS.camera}</span>
           </div>
           <input type="file" id="changeAvatarInput" accept="image/*" style="display:none;">
+          <div class="row" style="gap:8px;">
+            <button class="btn secondary" id="openEditProfileModal" style="padding:8px 14px;font-size:13px;">${ICONS.edit} &nbsp; Edit Profile</button>
+            <button class="icon-btn" id="profileSideMenuTrigger" style="width:38px;height:38px;">${ICONS.more}</button>
+          </div>
         </div>
 
         <div style="margin-top:14px;">
@@ -674,29 +694,30 @@ function renderProfileView() {
           <small class="muted">📍 ${escapeHtml(p.location || 'Dhaka, Bangladesh')}</small>
         </div>
 
-        <!-- REAL COUNTS ONLY -->
+        <!-- STATS -->
         <div class="stats">
           <div class="stat"><b>${myPosts.length}</b><span class="muted">Posts</span></div>
           <div class="stat"><b>${state.friends.length}</b><span class="muted">Friends</span></div>
+          <div class="stat"><b>0</b><span class="muted">Followers</span></div>
+          <div class="stat"><b>0</b><span class="muted">Following</span></div>
         </div>
 
+        <!-- TABS -->
         <div class="tabs">
-          <button class="active">Posts</button>
-          <button>Photos</button>
-          <button>About</button>
+          <button class="${state.profileTab === 'posts' ? 'active' : ''}" id="tabPostsBtn">Posts</button>
+          <button class="${state.profileTab === 'photos' ? 'active' : ''}" id="tabPhotosBtn">Photos</button>
+          <button class="${state.profileTab === 'about' ? 'active' : ''}" id="tabAboutBtn">About</button>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:14px;">
-      ${myPosts.length === 0 ? `<div class="card-ui empty"><p class="muted">You haven't posted yet.</p></div>` : ''}
-      ${myPosts.map(post => renderPostCard(post)).join('')}
-    </div>
+    <!-- TAB RENDER -->
+    <div>${tabContentHtml}</div>
   `;
 }
 
 // ----------------------------------------------------
-// 3. FRIENDS VIEW (Table & Request Cards)
+// 3. FRIENDS VIEW
 // ----------------------------------------------------
 function renderFriendsView() {
   return `
@@ -743,7 +764,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// 4. MESSENGER VIEW (Fixed Header, Clean Chat)
+// 4. MESSENGER VIEW
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -791,7 +812,7 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// 5. SETTINGS VIEW
+// 5. SETTINGS VIEW (Interactive Options)
 // ----------------------------------------------------
 function renderSettingsView() {
   const p = state.profile || {};
@@ -808,10 +829,22 @@ function renderSettingsView() {
         </div>
       </div>
 
-      <div class="list-row"><b>🛡️ Account & Security</b><span class="muted">❯</span></div>
-      <div class="list-row"><b>🔒 Privacy & Policy</b><span class="muted">❯</span></div>
-      <div class="list-row"><b>🔔 Notification Preferences</b><span class="muted">❯</span></div>
-      <div class="list-row"><b>🌐 Language (English)</b><span class="muted">❯</span></div>
+      <div class="list-row settingsOptRow" data-type="security" style="cursor:pointer;">
+        <div class="grow"><b>🛡️ Account & Security</b></div>
+        <span class="muted">❯</span>
+      </div>
+      <div class="list-row settingsOptRow" data-type="privacy" style="cursor:pointer;">
+        <div class="grow"><b>🔒 Privacy & Policy</b></div>
+        <span class="muted">❯</span>
+      </div>
+      <div class="list-row settingsOptRow" data-type="notifications" style="cursor:pointer;">
+        <div class="grow"><b>🔔 Notification Preferences</b></div>
+        <span class="muted">❯</span>
+      </div>
+      <div class="list-row settingsOptRow" data-type="language" style="cursor:pointer;">
+        <div class="grow"><b>🌐 Language (English)</b></div>
+        <span class="muted">❯</span>
+      </div>
 
       <button class="btn secondary full" id="settingsLogoutBtn" style="margin-top:25px;color:#d92d20;background:#fee4e2;">
         ${ICONS.logout} &nbsp; Log Out
@@ -821,7 +854,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FULL SCREEN CREATE POST & MODALS
+// MODALS (Create Post, Story, Search, Notifications, Edit Profile)
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -854,18 +887,16 @@ function renderActiveModal() {
 
           <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind?">${escapeHtml(state.postDraft.content)}</textarea>
 
-          <!-- Feeling Tag & Location Pill -->
           <div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0;">
             ${state.postDraft.feeling ? `<span class="tag">Feeling: ${escapeHtml(state.postDraft.feeling)} <b id="removeFeeling" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
             ${state.postDraft.location ? `<span class="tag">📍 ${escapeHtml(state.postDraft.location)} <b id="removeLocation" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
           </div>
 
-          <!-- Image Preview -->
           <div id="createPostMediaPreview">
             ${state.postDraft.mediaUrl ? `<div style="position:relative;margin:10px 0;"><img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"><button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button></div>` : ''}
           </div>
 
-          <!-- Feeling Picker Box (Interactive) -->
+          <!-- Feeling Picker -->
           <div id="feelingPickerBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
             <b style="font-size:13px;">How are you feeling?</b>
             <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
@@ -875,16 +906,16 @@ function renderActiveModal() {
             </div>
           </div>
 
-          <!-- Location Search Box (Live Worldwide API) -->
+          <!-- Location Search -->
           <div id="locationSearchBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
             <b style="font-size:13px;">Search World Location:</b>
             <input class="input" type="text" id="worldLocationSearchInput" placeholder="e.g. Dhaka, London, Tokyo..." style="margin-top:6px;">
             <div id="locationSearchResults" style="max-height:130px;overflow-y:auto;margin-top:6px;"></div>
           </div>
 
-          <!-- Action Attachment Bar -->
+          <!-- Attachment bar -->
           <div class="card-ui row between" style="padding:10px 14px;margin-top:14px;background:#f9fbff;">
-            <span style="font-size:13px;font-weight:700;">Add to your post:</span>
+            <span style="font-size:13px;font-weight:700;">Add to post:</span>
             <div class="row" style="gap:6px;">
               <input type="file" id="postPhotoUploadInput" accept="image/*" style="display:none;">
               <button class="icon-btn" id="attachPhotoBtn" title="Photo">${ICONS.image}</button>
@@ -896,7 +927,6 @@ function renderActiveModal() {
       </div>
     `;
 
-    // Create post events
     document.getElementById('closeCreatePostModal').onclick = () => { state.modal = null; renderActiveModal(); };
     document.getElementById('attachPhotoBtn').onclick = () => document.getElementById('postPhotoUploadInput').click();
     document.getElementById('postPhotoUploadInput').onchange = async (e) => {
@@ -904,63 +934,44 @@ function renderActiveModal() {
       if (!file) return;
       try {
         const ext = file.name.split('.').pop();
-        const path = `posts/${Date.now()}_img.${ext}`;
-        state.postDraft.mediaUrl = await uploadFile('post-media', path, file);
+        const url = await uploadFile('post-media', `posts/${Date.now()}_img.${ext}`, file);
+        state.postDraft.mediaUrl = url;
         renderActiveModal();
-      } catch (err) {
-        alert('Upload failed: ' + err.message);
-      }
+      } catch (err) { alert('Upload failed: ' + err.message); }
     };
 
-    const removeImgBtn = document.getElementById('removePostMedia');
-    if (removeImgBtn) removeImgBtn.onclick = () => { state.postDraft.mediaUrl = ''; renderActiveModal(); };
+    const rmImg = document.getElementById('removePostMedia');
+    if (rmImg) rmImg.onclick = () => { state.postDraft.mediaUrl = ''; renderActiveModal(); };
+    const rmFeel = document.getElementById('removeFeeling');
+    if (rmFeel) rmFeel.onclick = () => { state.postDraft.feeling = ''; renderActiveModal(); };
+    const rmLoc = document.getElementById('removeLocation');
+    if (rmLoc) rmLoc.onclick = () => { state.postDraft.location = ''; renderActiveModal(); };
 
-    const removeFeelBtn = document.getElementById('removeFeeling');
-    if (removeFeelBtn) removeFeelBtn.onclick = () => { state.postDraft.feeling = ''; renderActiveModal(); };
-
-    const removeLocBtn = document.getElementById('removeLocation');
-    if (removeLocBtn) removeLocBtn.onclick = () => { state.postDraft.location = ''; renderActiveModal(); };
-
-    document.getElementById('toggleFeelingBtn').onclick = () => {
-      document.getElementById('feelingPickerBox').classList.toggle('hide');
-    };
-
+    document.getElementById('toggleFeelingBtn').onclick = () => document.getElementById('feelingPickerBox').classList.toggle('hide');
     document.querySelectorAll('.feelingSelectBtn').forEach(b => {
-      b.onclick = () => {
-        state.postDraft.feeling = b.dataset.val;
-        renderActiveModal();
-      };
+      b.onclick = () => { state.postDraft.feeling = b.dataset.val; renderActiveModal(); };
     });
 
-    document.getElementById('toggleLocationBtn').onclick = () => {
-      document.getElementById('locationSearchBox').classList.toggle('hide');
-    };
-
-    // Live Worldwide Geocoding Search
+    document.getElementById('toggleLocationBtn').onclick = () => document.getElementById('locationSearchBox').classList.toggle('hide');
     const locInput = document.getElementById('worldLocationSearchInput');
     if (locInput) {
       locInput.oninput = async () => {
-        const query = locInput.value.trim();
-        if (query.length < 2) return;
+        const q = locInput.value.trim();
+        if (q.length < 2) return;
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=4`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=4`);
           const results = await res.json();
-          const resultsDiv = document.getElementById('locationSearchResults');
-          resultsDiv.innerHTML = results.map(r => `
+          document.getElementById('locationSearchResults').innerHTML = results.map(r => `
             <div class="list-row selectLocationRow" data-name="${escapeHtml(r.display_name.split(',').slice(0,2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
               📍 ${escapeHtml(r.display_name.split(',').slice(0,3).join(','))}
             </div>
           `).join('');
           document.querySelectorAll('.selectLocationRow').forEach(row => {
-            row.onclick = () => {
-              state.postDraft.location = row.dataset.name;
-              renderActiveModal();
-            };
+            row.onclick = () => { state.postDraft.location = row.dataset.name; renderActiveModal(); };
           });
         } catch (e) {}
       };
     }
-
     document.getElementById('publishPostBtn').onclick = handlePostPublish;
   } else if (state.modal === 'drawer') {
     const p = state.profile || {};
@@ -969,12 +980,17 @@ function renderActiveModal() {
     container.innerHTML = `
       <div class="full-modal-back" style="justify-content:flex-start;">
         <div class="drawer-modal">
-          <div class="row between" style="margin-bottom:16px;">
-            <div class="avatar"><img src="${userAvatar}"></div>
-            <button class="btn ghost" id="closeDrawerBtn">✕</button>
+          <div class="row between" style="margin-bottom:18px;border-bottom:1px solid #f0f2f8;padding-bottom:14px;">
+            <div class="row" style="gap:12px;">
+              <div class="avatar"><img src="${userAvatar}"></div>
+              <div>
+                <b>${escapeHtml(p.full_name || '')}</b>
+                <div class="muted" style="font-size:12px;">@${escapeHtml(p.username || '')}</div>
+              </div>
+            </div>
+            <button class="btn ghost" id="closeDrawerBtn" style="font-size:18px;">✕</button>
           </div>
-          <b>${escapeHtml(p.full_name || '')}</b>
-          <div class="muted" style="font-size:13px;margin-bottom:16px;">@${escapeHtml(p.username || '')}</div>
+
           <button class="navitem drawerNav" data-view="feed">${ICONS.home} Home</button>
           <button class="navitem drawerNav" data-view="friends">${ICONS.friends} Friends</button>
           <button class="navitem drawerNav" data-view="messages">${ICONS.messages} Messages</button>
@@ -988,13 +1004,156 @@ function renderActiveModal() {
 
     document.getElementById('closeDrawerBtn').onclick = () => { state.modal = null; renderActiveModal(); };
     document.querySelectorAll('.drawerNav').forEach(btn => {
-      btn.onclick = () => {
-        state.currentView = btn.dataset.view;
-        state.modal = null;
-        renderApp();
-      };
+      btn.onclick = () => { state.currentView = btn.dataset.view; state.modal = null; renderApp(); };
     });
     document.getElementById('drawerLogoutBtn').onclick = () => supabase.auth.signOut();
+  } else if (state.modal === 'search') {
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal" style="height:min(500px, 90vh);">
+          <div class="row between" style="margin-bottom:14px;">
+            <b>Search Alapon</b>
+            <button class="btn ghost" id="closeSearchModal">✕</button>
+          </div>
+          <input class="input" type="text" id="liveSearchInput" placeholder="Search people by name or username..." autofocus>
+          <div id="liveSearchResults" style="margin-top:14px;overflow-y:auto;flex:1;">
+            <p class="muted center" style="padding:20px 0;">Type to find friends...</p>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('closeSearchModal').onclick = () => { state.modal = null; renderActiveModal(); };
+    document.getElementById('liveSearchInput').oninput = async (e) => {
+      const q = e.target.value.trim();
+      if (!q) return;
+      const { data } = await supabase.from('profiles').select('*').ilike('full_name', `%${q}%`).limit(8);
+      const resEl = document.getElementById('liveSearchResults');
+      if (data && data.length) {
+        resEl.innerHTML = data.map(u => `
+          <div class="list-row">
+            <div class="avatar"><img src="${u.avatar_url || DEFAULT_AVATARS.male}"></div>
+            <div class="grow">
+              <b>${escapeHtml(u.full_name)}</b>
+              <div class="muted" style="font-size:12px;">@${escapeHtml(u.username)}</div>
+            </div>
+            <button class="btn primary sendFriendReqBtn" data-id="${u.id}" style="padding:6px 12px;font-size:12px;">Add Friend</button>
+          </div>
+        `).join('');
+        document.querySelectorAll('.sendFriendReqBtn').forEach(b => {
+          b.onclick = async () => {
+            await supabase.from('friendships').insert({ requester_id: state.user.id, receiver_id: b.dataset.id, status: 'pending' });
+            b.innerText = 'Sent ✓';
+            b.disabled = true;
+          };
+        });
+      } else {
+        resEl.innerHTML = `<p class="muted center">No user found.</p>`;
+      }
+    };
+  } else if (state.modal === 'notifications') {
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal" style="height:min(520px, 90vh);">
+          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+            <b>Notifications</b>
+            <button class="btn ghost" id="closeNotifModal">✕</button>
+          </div>
+          <div style="overflow-y:auto;flex:1;">
+            ${state.notifications.length === 0 ? `<p class="muted center" style="padding:30px 0;">No notifications yet.</p>` : ''}
+            ${state.notifications.map(n => `
+              <div class="list-row">
+                <div class="avatar" style="width:36px;height:36px;"><img src="${n.actor?.avatar_url || DEFAULT_AVATARS.male}"></div>
+                <div class="grow" style="font-size:13px;">
+                  <b>${escapeHtml(n.actor?.full_name || 'Someone')}</b> ${escapeHtml(n.message)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('closeNotifModal').onclick = () => { state.modal = null; renderActiveModal(); };
+  } else if (state.modal === 'edit-profile') {
+    const p = state.profile || {};
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal" style="height:auto;max-height:90vh;">
+          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+            <b>Edit Profile</b>
+            <button class="btn ghost" id="closeEditModal">✕</button>
+          </div>
+          <div class="field">
+            <label>Full Name</label>
+            <input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}">
+          </div>
+          <div class="field">
+            <label>Bio</label>
+            <textarea class="input" id="editBio" rows="2">${escapeHtml(p.bio || '')}</textarea>
+          </div>
+          <div class="field">
+            <label>Location</label>
+            <input class="input" type="text" id="editLocation" value="${escapeHtml(p.location || '')}">
+          </div>
+          <button class="btn primary full" id="saveProfileEditBtn" style="margin-top:14px;">Save Changes</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('closeEditModal').onclick = () => { state.modal = null; renderActiveModal(); };
+    document.getElementById('saveProfileEditBtn').onclick = async () => {
+      const full_name = document.getElementById('editFullName').value.trim();
+      const bio = document.getElementById('editBio').value.trim();
+      const location = document.getElementById('editLocation').value.trim();
+      await supabase.from('profiles').update({ full_name, bio, location }).eq('id', state.user.id);
+      await loadUserProfile();
+      state.modal = null;
+      renderApp();
+    };
+  } else if (state.modal === 'settings-sub') {
+    let subTitle = 'Security';
+    let subBody = '';
+    if (state.settingsSubType === 'security') {
+      subTitle = 'Account & Security';
+      subBody = `<p class="muted" style="margin-bottom:12px;">Manage your login email and security settings.</p><div class="list-row"><div class="grow">Email: <b>${escapeHtml(state.user?.email || '')}</b></div></div><div class="list-row"><div class="grow">Two-Factor Authentication</div><input type="checkbox" checked></div>`;
+    } else if (state.settingsSubType === 'privacy') {
+      subTitle = 'Privacy & Policy';
+      subBody = `<div class="list-row"><div class="grow">Private Account</div><input type="checkbox"></div><div class="list-row"><div class="grow">Allow search indexing</div><input type="checkbox" checked></div>`;
+    } else if (state.settingsSubType === 'notifications') {
+      subTitle = 'Notification Preferences';
+      subBody = `<div class="list-row"><div class="grow">Push Notifications</div><input type="checkbox" checked></div><div class="list-row"><div class="grow">Friend Request Alerts</div><input type="checkbox" checked></div><div class="list-row"><div class="grow">Direct Message Alerts</div><input type="checkbox" checked></div>`;
+    } else if (state.settingsSubType === 'language') {
+      subTitle = 'Language';
+      subBody = `<div class="list-row"><div class="grow">English</div><b>✓</b></div><div class="list-row"><div class="grow">বাংলা (Bangla)</div></div>`;
+    }
+
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal" style="height:auto;max-height:90vh;">
+          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+            <b>${subTitle}</b>
+            <button class="btn ghost" id="closeSettingsSubModal">✕</button>
+          </div>
+          <div>${subBody}</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('closeSettingsSubModal').onclick = () => { state.modal = null; renderActiveModal(); };
+  } else if (state.modal === 'view-story' && state.activeStory) {
+    const s = state.activeStory;
+    container.innerHTML = `
+      <div class="full-modal-back" style="background:rgba(0,0,0,0.9);">
+        <div style="position:relative;max-width:440px;width:100%;height:85vh;display:flex;flex-direction:column;justify-content:center;">
+          <div class="row between" style="position:absolute;top:10px;left:10px;right:10px;z-index:10;color:#fff;">
+            <div class="row" style="gap:8px;">
+              <div class="avatar" style="width:36px;height:36px;"><img src="${s.profiles?.avatar_url || DEFAULT_AVATARS.male}"></div>
+              <b>${escapeHtml(s.profiles?.full_name || 'User')}</b>
+            </div>
+            <button class="btn ghost" id="closeStoryViewBtn" style="color:#fff;font-size:20px;">✕</button>
+          </div>
+          <img src="${s.media_url}" style="max-height:80vh;width:100%;object-fit:contain;border-radius:12px;">
+        </div>
+      </div>
+    `;
+    document.getElementById('closeStoryViewBtn').onclick = () => { state.modal = null; state.activeStory = null; renderActiveModal(); };
   } else {
     container.innerHTML = '';
   }
@@ -1003,10 +1162,7 @@ function renderActiveModal() {
 async function handlePostPublish() {
   const content = document.getElementById('createPostText').value.trim();
   const privacy = document.getElementById('postPrivacySelect').value;
-
-  if (!content && !state.postDraft.mediaUrl) {
-    return alert('Please enter post text or attach an image.');
-  }
+  if (!content && !state.postDraft.mediaUrl) return alert('Please enter text or attach an image.');
 
   const { error } = await supabase.from('posts').insert({
     user_id: state.user.id,
@@ -1021,14 +1177,14 @@ async function handlePostPublish() {
     alert('Error publishing post: ' + error.message);
   } else {
     state.modal = null;
-    state.postDraft = { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '', allowComments: true, allowShares: true };
+    state.postDraft = { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' };
     await loadFeed();
     renderApp();
   }
 }
 
 // ----------------------------------------------------
-// EVENT LISTENERS & CHAT HANDLING
+// EVENT BINDINGS
 // ----------------------------------------------------
 function attachGlobalEvents() {
   const bindNav = (id, view) => {
@@ -1048,22 +1204,77 @@ function attachGlobalEvents() {
   bindNav('topbarAvatar', 'profile');
   bindNav('sideSettingsBtn', 'settings');
 
-  const menuToggle = document.getElementById('menuToggleBtn');
-  if (menuToggle) menuToggle.onclick = () => { state.modal = 'drawer'; renderActiveModal(); };
+  const openSearch = document.getElementById('openSearchBtn');
+  if (openSearch) openSearch.onclick = () => { state.modal = 'search'; renderActiveModal(); };
 
-  const composerBar = document.getElementById('openComposerBar');
-  if (composerBar) composerBar.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
+  const openNotif = document.getElementById('openNotifBtn');
+  if (openNotif) openNotif.onclick = () => { state.modal = 'notifications'; renderActiveModal(); };
 
   const botCreate = document.getElementById('botCreate');
   if (botCreate) botCreate.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
+  // Profile Edit & Drawer from Profile
+  const editProf = document.getElementById('openEditProfileModal');
+  if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
+
+  const profDrawer = document.getElementById('profileSideMenuTrigger');
+  if (profDrawer) profDrawer.onclick = () => { state.modal = 'drawer'; renderActiveModal(); };
+
+  // Story Upload Trigger
+  const addStoryBtn = document.getElementById('addStoryBtn');
+  const storyInput = document.getElementById('storyUploadInput');
+  if (addStoryBtn && storyInput) {
+    addStoryBtn.onclick = () => storyInput.click();
+    storyInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('post-media', `stories/${Date.now()}_story.${ext}`, file);
+        await supabase.from('stories').insert({ user_id: state.user.id, media_url: url });
+        await loadStories();
+        renderApp();
+      } catch (err) { alert('Story upload failed: ' + err.message); }
+    };
+  }
+
+  // Story View Trigger
+  document.querySelectorAll('.viewStoryBtn').forEach(b => {
+    b.onclick = () => {
+      const sId = b.dataset.storyId;
+      const uId = b.dataset.storyUser;
+      const story = sId ? state.stories.find(s => s.id === sId) : state.stories.find(s => s.user_id === uId);
+      if (story) {
+        state.activeStory = story;
+        state.modal = 'view-story';
+        renderActiveModal();
+      }
+    };
+  });
+
+  // Profile Tabs
+  const tPosts = document.getElementById('tabPostsBtn');
+  if (tPosts) tPosts.onclick = () => { state.profileTab = 'posts'; renderApp(); };
+  const tPhotos = document.getElementById('tabPhotosBtn');
+  if (tPhotos) tPhotos.onclick = () => { state.profileTab = 'photos'; renderApp(); };
+  const tAbout = document.getElementById('tabAboutBtn');
+  if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
+
+  // Settings Sub-options
+  document.querySelectorAll('.settingsOptRow').forEach(r => {
+    r.onclick = () => {
+      state.settingsSubType = r.dataset.type;
+      state.modal = 'settings-sub';
+      renderActiveModal();
+    };
+  });
+
   const sideLogout = document.getElementById('sideLogoutBtn');
   if (sideLogout) sideLogout.onclick = () => supabase.auth.signOut();
-
   const settingsLogout = document.getElementById('settingsLogoutBtn');
   if (settingsLogout) settingsLogout.onclick = () => supabase.auth.signOut();
 
-  // Likes
+  // Post Likes
   document.querySelectorAll('.likePostBtn').forEach(btn => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
@@ -1079,7 +1290,7 @@ function attachGlobalEvents() {
     };
   });
 
-  // Friend Request Accept/Reject
+  // Friend Requests
   document.querySelectorAll('.acceptReqBtn').forEach(btn => {
     btn.onclick = async () => {
       await supabase.from('friendships').update({ status: 'accepted' }).eq('id', btn.dataset.id);
@@ -1096,7 +1307,7 @@ function attachGlobalEvents() {
     };
   });
 
-  // Open Chat
+  // Chat
   document.querySelectorAll('.startChatBtn').forEach(btn => {
     btn.onclick = () => {
       const friend = state.friends.find(f => f.id === btn.dataset.userId);
@@ -1120,16 +1331,12 @@ function attachGlobalEvents() {
       const text = input.value.trim();
       if (!text || !state.activeChatUser) return;
       input.value = '';
-      await supabase.from('messages').insert({
-        sender_id: state.user.id,
-        receiver_id: state.activeChatUser.id,
-        content: text
-      });
+      await supabase.from('messages').insert({ sender_id: state.user.id, receiver_id: state.activeChatUser.id, content: text });
       loadChatMessages(state.activeChatUser.id);
     };
   }
 
-  // Profile Avatar & Cover Update
+  // Change Profile Avatar & Cover
   const avatarChangeBtn = document.getElementById('changeAvatarProfileBtn');
   const avatarChangeInput = document.getElementById('changeAvatarInput');
   if (avatarChangeBtn && avatarChangeInput) {
@@ -1164,7 +1371,6 @@ function attachGlobalEvents() {
 async function loadChatMessages(otherUserId) {
   const listEl = document.getElementById('chatMessageList');
   if (!listEl) return;
-
   const { data: messages } = await supabase
     .from('messages')
     .select('*')
