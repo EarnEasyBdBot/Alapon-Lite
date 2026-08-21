@@ -1,4 +1,4 @@
-// app.js — Alapon Lite (Complete Updated Social SPA)
+// app.js — Alapon Lite (Premium Animations, Clickable Mentions/Tags, Real Comments & Shares)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Clean SVG Icons
@@ -35,17 +35,19 @@ const DEFAULT_AVATARS = {
 const state = {
   user: null,
   profile: null,
-  currentView: 'feed', // 'feed' | 'profile' | 'friends' | 'messages' | 'settings'
-  profileTab: 'posts', // 'posts' | 'photos' | 'about'
+  currentView: 'feed',
+  profileTab: 'posts',
   activeChatUser: null,
   posts: [],
   stories: [],
   friends: [],
   friendRequests: [],
   notifications: [],
+  activeCommentsPostId: null,
+  commentsList: [],
   unreadMessagesCount: 0,
   unreadNotificationsCount: 0,
-  modal: null, // 'create-post' | 'drawer' | 'search' | 'notifications' | 'edit-profile' | 'settings-sub' | 'view-story'
+  modal: null,
   settingsSubType: null,
   activeStory: null,
   signupStep: 1,
@@ -55,13 +57,77 @@ const state = {
 
 const app = document.getElementById('app');
 
+// ----------------------------------------------------
+// 1. RICH TEXT PARSER (#Hashtag, @Username, URLs)
+// ----------------------------------------------------
+function formatRichText(rawText) {
+  if (!rawText) return '';
+  let text = escapeHtml(rawText);
+
+  // 1. URLs
+  text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="rich-link" onclick="event.stopPropagation();">$1</a>');
+
+  // 2. Mentions (@username)
+  text = text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="rich-mention" onclick="window.handleMentionClick(event, \'$1\')">@$1</span>');
+
+  // 3. Hashtags (#tag)
+  text = text.replace(/#([a-zA-Z0-9_\u0980-\u09FF]+)/g, '<span class="rich-hashtag" onclick="window.handleHashtagClick(event, \'$1\')">#$1</span>');
+
+  return text;
+}
+
+// Global Click Handlers for Rich Text
+window.handleMentionClick = async (event, username) => {
+  event.stopPropagation();
+  const { data } = await supabase.from('profiles').select('*').ilike('username', username).single();
+  if (data) {
+    if (data.id === state.user.id) {
+      state.currentView = 'profile';
+    } else {
+      state.activeChatUser = data;
+      state.currentView = 'messages';
+    }
+    renderApp();
+  } else {
+    showToast(`User @${username} not found.`);
+  }
+};
+
+window.handleHashtagClick = (event, tag) => {
+  event.stopPropagation();
+  state.currentView = 'feed';
+  showToast(`Filtering posts by #${tag}`);
+  renderApp();
+};
+
+function showToast(msg) {
+  const existing = document.getElementById('appToast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'appToast';
+  toast.className = 'toast-popup';
+  toast.innerText = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ----------------------------------------------------
+// 2. INITIALIZATION & 5.5s ANIMATED SPLASH SCREEN
+// ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
     app.innerHTML = `<div class="boot"><div class="logo">💬</div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
     return;
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  // Premium Animated Splash Screen (Runs for 5.5s)
+  renderPremiumSplash();
+
+  const sessionPromise = supabase.auth.getSession();
+  const delayPromise = new Promise(resolve => setTimeout(resolve, 5200));
+
+  const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
+
   if (session?.user) {
     state.user = session.user;
     await loadUserProfile();
@@ -87,6 +153,28 @@ async function init() {
   });
 }
 
+function renderPremiumSplash() {
+  app.innerHTML = `
+    <div class="splash-screen">
+      <div class="splash-bg-glow"></div>
+      <div class="splash-content">
+        <div class="splash-logo-wrap">
+          <div class="splash-logo-pulse"></div>
+          <div class="splash-logo">💬</div>
+        </div>
+        <h1 class="splash-title">Alapon Lite</h1>
+        <p class="splash-tagline">Connect • Share • Grow</p>
+        
+        <div class="splash-loader-bar">
+          <div class="splash-loader-progress"></div>
+        </div>
+        <span class="splash-status">Starting secure connection...</span>
+      </div>
+    </div>
+  `;
+}
+
+// Load Data
 async function loadUserProfile() {
   const { data } = await supabase.from('profiles').select('*').eq('id', state.user.id).single();
   if (data) state.profile = data;
@@ -157,8 +245,14 @@ async function loadUnreadCounts() {
 
 function setupRealtime() {
   supabase
-    .channel('public:alapon_updates')
+    .channel('public:alapon_feed_sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { loadFeed().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
+      loadFeed().then(renderApp);
+      if (state.activeCommentsPostId === payload.new?.post_id) {
+        loadPostComments(state.activeCommentsPostId);
+      }
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(renderApp); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => { loadUnreadCounts().then(renderApp); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => { loadNotifications().then(renderApp); })
@@ -417,7 +511,7 @@ function renderApp() {
 
   app.innerHTML = `
     <div class="app-shell">
-      <!-- TOP BAR (Brand left, Action Icons right) -->
+      <!-- TOP BAR -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
           <div class="brand-logo">💬</div>
@@ -479,7 +573,7 @@ function renderApp() {
         <button class="navitem ${state.currentView === 'profile' ? 'active' : ''}" id="botProfile">${ICONS.profile}<span>Profile</span></button>
       </nav>
 
-      <!-- MODALS -->
+      <!-- MODALS CONTAINER -->
       <div id="modalContainer"></div>
     </div>
   `;
@@ -518,7 +612,7 @@ function renderCurrentViewContent() {
 }
 
 // ----------------------------------------------------
-// 1. HOME FEED VIEW (Clean Stories, Edge-to-Edge Cards)
+// 1. HOME FEED VIEW (Clickable Hashtags & Mentions)
 // ----------------------------------------------------
 function renderFeedView() {
   const p = state.profile || {};
@@ -582,7 +676,8 @@ function renderPostCard(post) {
         <button class="btn ghost more" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
       </div>
 
-      ${post.content ? `<div class="post-caption">${escapeHtml(post.content)}</div>` : ''}
+      <!-- RICH TEXT PARSED CAPTION -->
+      ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
 
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
 
@@ -592,13 +687,17 @@ function renderPostCard(post) {
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
-      <!-- ACTIONS -->
+      <!-- WORKING ACTIONS: Like, Comment, Share -->
       <div class="post-actions">
         <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}">
           ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; Like
         </button>
-        <button class="commentPostBtn" data-id="${post.id}">${ICONS.comment} &nbsp; Comment</button>
-        <button class="sharePostBtn" data-id="${post.id}">${ICONS.share} &nbsp; Share</button>
+        <button class="commentPostBtn" data-id="${post.id}">
+          ${ICONS.comment} &nbsp; Comment
+        </button>
+        <button class="sharePostBtn" data-id="${post.id}" data-text="${escapeHtml(post.content || '')}">
+          ${ICONS.share} &nbsp; Share
+        </button>
       </div>
     </div>
   `;
@@ -711,7 +810,6 @@ function renderProfileView() {
       </div>
     </div>
 
-    <!-- TAB RENDER -->
     <div>${tabContentHtml}</div>
   `;
 }
@@ -764,7 +862,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// 4. MESSENGER VIEW
+// 4. MESSENGER VIEW (Parsed Links & Mentions in Chat)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -812,7 +910,7 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// 5. SETTINGS VIEW (Interactive Options)
+// 5. SETTINGS VIEW
 // ----------------------------------------------------
 function renderSettingsView() {
   const p = state.profile || {};
@@ -854,13 +952,118 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// MODALS (Create Post, Story, Search, Notifications, Edit Profile)
+// 6. COMMENTS MODAL & REAL SHARE
+// ----------------------------------------------------
+async function openCommentsModal(postId) {
+  state.activeCommentsPostId = postId;
+  state.modal = 'comments';
+  renderActiveModal();
+  await loadPostComments(postId);
+}
+
+async function loadPostComments(postId) {
+  const { data } = await supabase
+    .from('comments')
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url)`)
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true });
+
+  state.commentsList = data || [];
+  const container = document.getElementById('commentsContainerList');
+  if (container) {
+    if (state.commentsList.length === 0) {
+      container.innerHTML = `<p class="muted center" style="padding:20px 0;">No comments yet. Be the first to comment!</p>`;
+    } else {
+      container.innerHTML = state.commentsList.map(c => `
+        <div class="list-row" style="align-items:flex-start;padding:10px 0;">
+          <div class="avatar" style="width:34px;height:34px;margin-top:2px;">
+            <img src="${c.profiles?.avatar_url || DEFAULT_AVATARS.male}">
+          </div>
+          <div class="comment-bubble-box">
+            <b>${escapeHtml(c.profiles?.full_name || 'User')}</b>
+            <div style="font-size:13.5px;margin-top:3px;word-break:break-word;">
+              ${formatRichText(c.content)}
+            </div>
+            <small class="muted" style="font-size:11px;margin-top:4px;display:block;">${formatTimeAgo(c.created_at)}</small>
+          </div>
+        </div>
+      `).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+}
+
+async function handleSharePost(postId, postText) {
+  const shareUrl = window.location.href;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Alapon Lite Post',
+        text: postText ? postText.substring(0, 100) : 'Check this post on Alapon Lite!',
+        url: shareUrl
+      });
+      await recordShare(postId);
+      showToast('Shared successfully! 🚀');
+    } catch (e) {}
+  } else {
+    // Copy link fallback
+    navigator.clipboard.writeText(shareUrl).then(async () => {
+      await recordShare(postId);
+      showToast('Post link copied to clipboard! 📋');
+    });
+  }
+}
+
+async function recordShare(postId) {
+  await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
+  await loadFeed();
+  renderApp();
+}
+
+// ----------------------------------------------------
+// MODALS CONTROLLER
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'create-post') {
+  if (state.modal === 'comments') {
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal comments-modal">
+          <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+            <b>Comments</b>
+            <button class="btn ghost" id="closeCommentsModal">✕</button>
+          </div>
+          <div id="commentsContainerList" class="comments-scroll-area">
+            <p class="muted center" style="padding:20px 0;">Loading comments...</p>
+          </div>
+          <form class="comment-input-bar" id="submitCommentForm">
+            <input class="input" type="text" id="newCommentInput" placeholder="Write a comment..." required>
+            <button class="btn primary" type="submit" style="padding:10px 14px;">${ICONS.send}</button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeCommentsModal').onclick = () => { state.modal = null; state.activeCommentsPostId = null; renderActiveModal(); };
+    document.getElementById('submitCommentForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('newCommentInput');
+      const text = input.value.trim();
+      if (!text || !state.activeCommentsPostId) return;
+      input.value = '';
+
+      await supabase.from('comments').insert({
+        post_id: state.activeCommentsPostId,
+        user_id: state.user.id,
+        content: text
+      });
+      loadPostComments(state.activeCommentsPostId);
+      loadFeed();
+    };
+  } else if (state.modal === 'create-post') {
     const p = state.profile || {};
     const userAvatar = p.avatar_url || DEFAULT_AVATARS.male;
 
@@ -885,7 +1088,7 @@ function renderActiveModal() {
             </div>
           </div>
 
-          <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind?">${escapeHtml(state.postDraft.content)}</textarea>
+          <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind? (Use #tags or @mentions)">${escapeHtml(state.postDraft.content)}</textarea>
 
           <div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0;">
             ${state.postDraft.feeling ? `<span class="tag">Feeling: ${escapeHtml(state.postDraft.feeling)} <b id="removeFeeling" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
@@ -1140,7 +1343,7 @@ function renderActiveModal() {
   } else if (state.modal === 'view-story' && state.activeStory) {
     const s = state.activeStory;
     container.innerHTML = `
-      <div class="full-modal-back" style="background:rgba(0,0,0,0.9);">
+      <div class="full-modal-back" style="background:rgba(0,0,0,0.92);">
         <div style="position:relative;max-width:440px;width:100%;height:85vh;display:flex;flex-direction:column;justify-content:center;">
           <div class="row between" style="position:absolute;top:10px;left:10px;right:10px;z-index:10;color:#fff;">
             <div class="row" style="gap:8px;">
@@ -1290,6 +1493,20 @@ function attachGlobalEvents() {
     };
   });
 
+  // Comments Trigger
+  document.querySelectorAll('.commentPostBtn').forEach(btn => {
+    btn.onclick = () => {
+      openCommentsModal(btn.dataset.id);
+    };
+  });
+
+  // Share Trigger
+  document.querySelectorAll('.sharePostBtn').forEach(btn => {
+    btn.onclick = () => {
+      handleSharePost(btn.dataset.id, btn.dataset.text);
+    };
+  });
+
   // Friend Requests
   document.querySelectorAll('.acceptReqBtn').forEach(btn => {
     btn.onclick = async () => {
@@ -1336,7 +1553,7 @@ function attachGlobalEvents() {
     };
   }
 
-  // Change Profile Avatar & Cover
+  // Profile Avatar & Cover
   const avatarChangeBtn = document.getElementById('changeAvatarProfileBtn');
   const avatarChangeInput = document.getElementById('changeAvatarInput');
   if (avatarChangeBtn && avatarChangeInput) {
@@ -1380,7 +1597,7 @@ async function loadChatMessages(otherUserId) {
   if (messages && messages.length > 0) {
     listEl.innerHTML = messages.map(m => `
       <div class="bubble ${m.sender_id === state.user.id ? 'mine' : 'theirs'}">
-        ${escapeHtml(m.content)}
+        ${formatRichText(m.content)}
       </div>
     `).join('');
     listEl.scrollTop = listEl.scrollHeight;
