@@ -1,12 +1,12 @@
-// app.js — Alapon Lite (Complete WebRTC Voice & Video Calling System + Full App Engine)
+// app.js — Alapon Lite (Fixed Images, WebRTC 2-Way Voice/Video, Smooth Reacts, Real Phone Ringtone, Voice & Chat Media)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
 const ASSETS = {
   appLogo: `https://i.postimg.cc/W39S6FFL/file-0000000025e8820b9949851f1e324c5f.png`,
   chatBg: `https://i.postimg.cc/QC2zcdNB/file-00000000f8bc820b9191ddc7162e54a0.png`,
-  maleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23315cff"/><stop offset="100%" stop-color="%237544ff"/></linearGradient></defs><rect width="100" height="100" fill="url(%23mg)"/><circle cx="50" cy="38" r="22" fill="%23ffffff"/><path d="M15 88 C15 65, 30 58, 50 58 C70 58, 85 65, 85 88 Z" fill="%23ffffff"/></svg>`,
-  femaleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ec4899"/><stop offset="100%" stop-color="%238b5cf6"/></linearGradient></defs><rect width="100" height="100" fill="url(%23fg)"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`
+  maleAvatar: `https://i.postimg.cc/MK2yBQ0m/images-(8).jpg`,
+  femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
 // SVG Icons
@@ -45,7 +45,7 @@ const ICONS = {
   reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`
 };
 
-// Global State
+// Global App State
 const state = {
   user: null,
   profile: null,
@@ -71,11 +71,11 @@ const state = {
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' },
 
-  // FULL CALL STATE MACHINE
+  // CALL STATE ENGINE
   call: {
-    state: 'idle', // idle, calling, ringing, connecting, connected, ended
+    state: 'idle',
     callId: null,
-    callType: 'voice', // 'voice' or 'video'
+    callType: 'voice',
     isIncoming: false,
     otherUser: null,
     startedAt: null,
@@ -85,11 +85,12 @@ const state = {
     timeoutTimer: null,
     isMuted: false,
     isVideoOff: false,
-    facingMode: 'user', // 'user' or 'environment'
+    facingMode: 'user',
     pc: null,
     localStream: null,
     remoteStream: null,
-    channel: null
+    channel: null,
+    iceCandidatesQueue: []
   }
 };
 
@@ -189,32 +190,53 @@ function handleNotificationClick(n) {
 }
 
 // ----------------------------------------------------
-// WEBRTC & REALTIME CALL ENGINE
+// REALISTIC PHONE RINGTONE (Dual-Tone Melody Engine)
 // ----------------------------------------------------
-let ringtoneOscillator = null;
 let ringtoneAudioContext = null;
+let ringtoneInterval = null;
 
 function playRingtone() {
   stopRingtone();
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(480, ctx.currentTime);
-    gain.gain.setValueAtTime(0.04, ctx.currentTime);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    ringtoneOscillator = osc;
     ringtoneAudioContext = ctx;
+
+    const playDualTone = () => {
+      if (!ringtoneAudioContext || ringtoneAudioContext.state === 'closed') return;
+      
+      const now = ringtoneAudioContext.currentTime;
+      const osc1 = ringtoneAudioContext.createOscillator();
+      const osc2 = ringtoneAudioContext.createOscillator();
+      const gain = ringtoneAudioContext.createGain();
+
+      osc1.frequency.setValueAtTime(440, now); // Standard Telephone Tone 1
+      osc2.frequency.setValueAtTime(480, now); // Standard Telephone Tone 2
+
+      // Smooth Envelope (2s Ring, 3s Silence)
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.1);
+      gain.gain.setValueAtTime(0.08, now + 1.8);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ringtoneAudioContext.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 2.0);
+      osc2.stop(now + 2.0);
+    };
+
+    playDualTone();
+    ringtoneInterval = setInterval(playDualTone, 4000);
   } catch (e) {}
 }
 
 function stopRingtone() {
-  if (ringtoneOscillator) {
-    try { ringtoneOscillator.stop(); } catch (e) {}
-    ringtoneOscillator = null;
+  if (ringtoneInterval) {
+    clearInterval(ringtoneInterval);
+    ringtoneInterval = null;
   }
   if (ringtoneAudioContext) {
     try { ringtoneAudioContext.close(); } catch (e) {}
@@ -222,13 +244,15 @@ function stopRingtone() {
   }
 }
 
+// ----------------------------------------------------
+// WEBRTC SIGNALING & TWO-WAY AUDIO/VIDEO ENGINE
+// ----------------------------------------------------
 function setupUserCallSignaling() {
   if (!state.user) return;
   const userChannel = supabase.channel(`user_calls_${state.user.id}`);
   userChannel
     .on('broadcast', { event: 'incoming_call_request' }, async ({ payload }) => {
       if (state.call.state !== 'idle') {
-        // Send busy response
         const replyChannel = supabase.channel(`call_signaling_${payload.callId}`);
         replyChannel.subscribe((status) => {
           if (status === 'SUBSCRIBED') {
@@ -248,7 +272,7 @@ async function startOutgoingCall(targetUser, type = 'voice') {
     return;
   }
 
-  const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
   state.call = {
     ...state.call,
     state: 'calling',
@@ -260,16 +284,16 @@ async function startOutgoingCall(targetUser, type = 'voice') {
     connectedAt: null,
     durationSeconds: 0,
     isMuted: false,
-    isVideoOff: false
+    isVideoOff: false,
+    iceCandidatesQueue: []
   };
 
   renderApp();
   playRingtone();
 
-  // Setup Signaling Channel
   setupCallChannel(callId);
 
-  // Send Call Request to Receiver's Channel
+  // Send broadcast to Receiver
   const receiverChannel = supabase.channel(`user_calls_${targetUser.id}`);
   receiverChannel.subscribe((status) => {
     if (status === 'SUBSCRIBED') {
@@ -285,7 +309,6 @@ async function startOutgoingCall(targetUser, type = 'voice') {
     }
   });
 
-  // Ringing timeout (35 seconds)
   state.call.timeoutTimer = setTimeout(() => {
     if (state.call.state === 'calling') {
       showToast('No answer.');
@@ -306,7 +329,8 @@ function handleIncomingCall(payload) {
     connectedAt: null,
     durationSeconds: 0,
     isMuted: false,
-    isVideoOff: false
+    isVideoOff: false,
+    iceCandidatesQueue: []
   };
 
   renderApp();
@@ -325,7 +349,6 @@ function setupCallChannel(callId) {
   ch.on('broadcast', { event: 'call_accepted' }, async () => {
     stopRingtone();
     if (!state.call.isIncoming) {
-      // Caller initiates WebRTC Offer
       await initializeWebRTC(true);
     }
   })
@@ -343,6 +366,13 @@ function setupCallChannel(callId) {
     if (state.call.isIncoming) {
       await initializeWebRTC(false);
       await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      
+      // Process queued ICE candidates
+      while (state.call.iceCandidatesQueue.length > 0) {
+        const cand = state.call.iceCandidatesQueue.shift();
+        try { await state.call.pc.addIceCandidate(cand); } catch(e){}
+      }
+
       const answer = await state.call.pc.createAnswer();
       await state.call.pc.setLocalDescription(answer);
       ch.send({ type: 'broadcast', event: 'webrtc_answer', payload: { sdp: answer } });
@@ -351,13 +381,21 @@ function setupCallChannel(callId) {
   .on('broadcast', { event: 'webrtc_answer' }, async ({ payload }) => {
     if (!state.call.isIncoming && state.call.pc) {
       await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      
+      while (state.call.iceCandidatesQueue.length > 0) {
+        const cand = state.call.iceCandidatesQueue.shift();
+        try { await state.call.pc.addIceCandidate(cand); } catch(e){}
+      }
     }
   })
   .on('broadcast', { event: 'ice_candidate' }, async ({ payload }) => {
-    if (state.call.pc && payload.candidate) {
-      try {
-        await state.call.pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
-      } catch (e) {}
+    if (payload.candidate) {
+      const candidate = new RTCIceCandidate(payload.candidate);
+      if (state.call.pc && state.call.pc.remoteDescription && state.call.pc.remoteDescription.type) {
+        try { await state.call.pc.addIceCandidate(candidate); } catch (e) {}
+      } else {
+        state.call.iceCandidatesQueue.push(candidate);
+      }
     }
   })
   .on('broadcast', { event: 'call_ended' }, () => {
@@ -374,7 +412,11 @@ async function initializeWebRTC(isCaller) {
   try {
     const isVideo = state.call.callType === 'video';
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      },
       video: isVideo ? { facingMode: state.call.facingMode } : false
     });
 
@@ -414,12 +456,15 @@ async function initializeWebRTC(isCaller) {
     };
 
     if (isCaller) {
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: isVideo
+      });
       await pc.setLocalDescription(offer);
       state.call.channel.send({ type: 'broadcast', event: 'webrtc_offer', payload: { sdp: offer } });
     }
   } catch (err) {
-    showToast(`${state.call.callType === 'video' ? 'Camera/Microphone' : 'Microphone'} access required.`);
+    showToast(`${state.call.callType === 'video' ? 'Camera/Microphone' : 'Microphone'} permission required.`);
     endActiveCall('permission_denied');
   }
 }
@@ -442,6 +487,7 @@ function attachRemoteMediaStream(stream) {
     }
     if (remoteAudioEl) {
       remoteAudioEl.srcObject = stream;
+      remoteAudioEl.play().catch(() => {});
     }
   }, 100);
 }
@@ -493,20 +539,7 @@ function endActiveCall(reason = 'ended') {
   }
 
   if (state.call.pc) {
-    state.call.pc.close();
-  }
-
-  // Record Call Session into History
-  if (state.call.otherUser && state.user) {
-    supabase.from('call_sessions').insert({
-      caller_id: state.call.isIncoming ? state.call.otherUser.id : state.user.id,
-      receiver_id: state.call.isIncoming ? state.user.id : state.call.otherUser.id,
-      call_type: state.call.callType,
-      status: reason,
-      duration_seconds: state.call.durationSeconds,
-      started_at: state.call.startedAt,
-      ended_at: new Date().toISOString()
-    }).then(() => {});
+    try { state.call.pc.close(); } catch(e){}
   }
 
   const finalDuration = state.call.durationSeconds;
@@ -530,7 +563,8 @@ function endActiveCall(reason = 'ended') {
     pc: null,
     localStream: null,
     remoteStream: null,
-    channel: null
+    channel: null,
+    iceCandidatesQueue: []
   };
 
   renderApp();
@@ -600,7 +634,7 @@ async function init() {
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3600));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3400));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -745,6 +779,9 @@ async function loadUnreadCounts() {
   state.unreadNotificationsCount = notifCount || 0;
 }
 
+// ----------------------------------------------------
+// REALTIME SYNC (Seamless background update without resetting scroll)
+// ----------------------------------------------------
 function setupRealtime() {
   const presenceChannel = supabase.channel('online_presence', {
     config: { presence: { key: state.user?.id } }
@@ -764,9 +801,10 @@ function setupRealtime() {
 
   supabase
     .channel('public:alapon_general_sync')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { loadFeed().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, async () => {
+      await loadFeed();
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
-      loadFeed().then(renderApp);
       if (state.activeCommentsPostId === payload.new?.post_id) {
         loadPostComments(state.activeCommentsPostId);
       }
@@ -775,13 +813,21 @@ function setupRealtime() {
       if (state.activeChatUser && (payload.new?.sender_id === state.activeChatUser.id || payload.new?.receiver_id === state.activeChatUser.id)) {
         loadChatMessages(state.activeChatUser.id);
       }
-      loadUnreadCounts().then(renderApp);
+      loadUnreadCounts().then(renderTopbarCounters);
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
-      loadNotifications().then(() => { loadUnreadCounts().then(renderApp); });
+      loadNotifications().then(() => { loadUnreadCounts().then(renderTopbarCounters); });
     })
     .subscribe();
+}
+
+function renderTopbarCounters() {
+  const notifBadge = document.querySelector('#openNotifBtn .badge');
+  if (notifBadge) {
+    if (state.unreadNotificationsCount > 0) notifBadge.innerText = state.unreadNotificationsCount;
+    else notifBadge.remove();
+  }
 }
 
 function updateActiveUserStatus() {
@@ -793,7 +839,7 @@ function updateActiveUserStatus() {
 }
 
 // ----------------------------------------------------
-// AUTH (Login & 5-Step Signup)
+// AUTH FLOW
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -1058,7 +1104,7 @@ function renderApp() {
 
   app.innerHTML = `
     <div class="app-shell ${isChatActive ? 'in-chat-mode' : ''}">
-      <!-- TOP BAR (FIXED) -->
+      <!-- TOP BAR -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
           <div style="width:36px;height:36px;max-width:36px;max-height:36px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
@@ -1073,13 +1119,7 @@ function renderApp() {
             ${ICONS.bell}
             ${state.unreadNotificationsCount > 0 ? `<span class="badge">${state.unreadNotificationsCount}</span>` : ''}
           </button>
-          ${state.currentView !== 'profile' ? `
-            <div class="avatar" id="topbarAvatar" style="cursor:pointer;width:38px;height:38px;border:2px solid #eef2ff;">
-              <img src="${currentAvatar}">
-            </div>
-          ` : `
-            <button class="icon-btn" id="topbarMenuBtn" title="Menu">${ICONS.menu}</button>
-          `}
+          <button class="icon-btn" id="topbarMenuBtn" title="Menu">${ICONS.menu}</button>
         </div>
       </header>
 
@@ -1100,7 +1140,7 @@ function renderApp() {
           </div>
         </aside>
 
-        <!-- MAIN VIEW (SCROLLABLE ONLY) -->
+        <!-- MAIN VIEW (INDEPENDENT INNER SCROLL) -->
         <main class="feed">
           ${renderCurrentViewContent()}
         </main>
@@ -1117,7 +1157,7 @@ function renderApp() {
         </aside>
       </div>
 
-      <!-- MOBILE BOTTOM NAVIGATION (FIXED) -->
+      <!-- MOBILE BOTTOM NAVIGATION -->
       ${!isChatActive ? `
         <nav class="bottom-nav">
           <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
@@ -1128,10 +1168,10 @@ function renderApp() {
         </nav>
       ` : ''}
 
-      <!-- FULL CALL SYSTEM OVERLAY (SCREEN 2 - 7) -->
+      <!-- FULL CALL OVERLAY (SCREENS 2 - 7) -->
       ${renderCallSystemOverlay()}
 
-      <!-- MODALS CONTAINER -->
+      <!-- MODALS -->
       <div id="modalContainer"></div>
     </div>
   `;
@@ -1240,13 +1280,13 @@ function renderPostCard(post) {
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
 
       <div class="row between muted post-counters">
-        <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b>${likesCount}</b></div>
+        <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b class="post-like-count">${likesCount}</b></div>
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
       <div class="post-actions">
         <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}" data-author="${post.user_id}">
-          ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; Like
+          <span class="like-icon-holder">${isLiked ? ICONS.heart : ICONS.heartOutline}</span> &nbsp; Like
         </button>
         <button class="commentPostBtn" data-id="${post.id}">
           ${ICONS.comment} &nbsp; Comment
@@ -1260,7 +1300,7 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (With Voice Call & Video Call in Profile)
+// PROFILE VIEW
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -1424,7 +1464,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// PRO MESSENGER VIEW (Screen 1: Call/Video Actions in Header)
+// PRO MESSENGER VIEW
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -1433,7 +1473,7 @@ function renderMessagesView() {
 
     return `
       <div class="chat-fullscreen-wrapper">
-        <!-- FIXED STICKY CHAT HEADER WITH VOICE & VIDEO CALL BUTTONS -->
+        <!-- FIXED CHAT HEADER -->
         <div class="chat-header-bar">
           <button class="icon-btn-minimal" id="backToChatListBtn" title="Back">${ICONS.back}</button>
           <div class="avatar" style="width:40px;height:40px;margin-left:4px;"><img src="${friendAvatar}"></div>
@@ -1453,7 +1493,7 @@ function renderMessagesView() {
           </div>
         </div>
 
-        <!-- WALLPAPER CONTAINER WITH DARK OVERLAY -->
+        <!-- CHAT STREAM WITH WALLPAPER -->
         <div class="chat-wallpaper-container" style="background-image: url('${ASSETS.chatBg}');">
           <div class="chat-dark-overlay"></div>
           <div class="chat-scroll-stream" id="chatMessageList">
@@ -1461,7 +1501,7 @@ function renderMessagesView() {
           </div>
         </div>
 
-        <!-- REPLY BANNER -->
+        <!-- REPLY PREVIEW -->
         <div id="chatReplyPreviewBar" class="chat-reply-preview-bar ${state.replyingToMessage ? '' : 'hide'}">
           <div class="reply-bar-left">
             <span style="font-size:11px;color:#315cff;font-weight:800;">Replying to ${state.replyingToMessage?.sender_id === state.user.id ? 'yourself' : escapeHtml(state.activeChatUser.full_name)}</span>
@@ -1470,7 +1510,7 @@ function renderMessagesView() {
           <button class="btn ghost" id="cancelReplyBtn" style="padding:4px 8px;">✕</button>
         </div>
 
-        <!-- FIXED CHAT INPUT DOCK -->
+        <!-- INPUT DOCK -->
         <div class="chat-input-dock">
           <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
           <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
@@ -1511,7 +1551,7 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// FULL CALL SYSTEM OVERLAYS (MATCHING SCREENS 2 - 7)
+// FULL CALL SYSTEM OVERLAYS
 // ----------------------------------------------------
 function renderCallSystemOverlay() {
   const c = state.call;
@@ -1520,12 +1560,9 @@ function renderCallSystemOverlay() {
   const otherUser = c.otherUser || { full_name: 'User' };
   const otherAvatar = getUserAvatar(otherUser);
 
-  // Hidden Audio Element for Remote Voice
   const remoteAudioTag = `<audio id="callRemoteAudio" autoplay playsinline></audio>`;
 
-  // ----------------------------------------------------
-  // SCREEN 2: CALLING SCREEN (SENDER SIDE)
-  // ----------------------------------------------------
+  // SCREEN 2: CALLING SENDER
   if (c.state === 'calling' || c.state === 'connecting') {
     return `
       <div class="call-full-screen-overlay">
@@ -1555,9 +1592,7 @@ function renderCallSystemOverlay() {
     `;
   }
 
-  // ----------------------------------------------------
-  // SCREEN 3 & 4: INCOMING CALL SCREEN (RECEIVER SIDE)
-  // ----------------------------------------------------
+  // SCREEN 3 & 4: INCOMING
   if (c.state === 'ringing') {
     const isVideo = c.callType === 'video';
     return `
@@ -1596,9 +1631,7 @@ function renderCallSystemOverlay() {
     `;
   }
 
-  // ----------------------------------------------------
-  // SCREEN 5: CALL CONNECTED (VOICE CALL)
-  // ----------------------------------------------------
+  // SCREEN 5: VOICE CONNECTED
   if (c.state === 'connected' && c.callType === 'voice') {
     return `
       <div class="call-full-screen-overlay connected-voice-bg">
@@ -1650,17 +1683,13 @@ function renderCallSystemOverlay() {
     `;
   }
 
-  // ----------------------------------------------------
-  // SCREEN 6: CALL CONNECTED (VIDEO CALL)
-  // ----------------------------------------------------
+  // SCREEN 6: VIDEO CONNECTED
   if (c.state === 'connected' && c.callType === 'video') {
     return `
       <div class="call-full-screen-overlay video-call-bg">
         ${remoteAudioTag}
-        <!-- FULLSCREEN REMOTE VIDEO STREAM -->
         <video id="callRemoteVideo" class="call-remote-video-fullscreen" autoplay playsinline></video>
 
-        <!-- TOP BAR DURATION & STATUS -->
         <div class="call-video-top-status-bar">
           <div class="row" style="gap:8px;">
             <span style="color:#10b981;">🟢</span>
@@ -1668,13 +1697,11 @@ function renderCallSystemOverlay() {
           </div>
         </div>
 
-        <!-- FLOATING LOCAL VIDEO PIP (TOP-RIGHT) -->
         <div class="call-local-pip-box">
           <video id="callLocalVideo" class="call-local-pip-video" autoplay playsinline muted></video>
           ${c.isVideoOff ? `<div class="pip-video-off-cover">${ICONS.videoOff}</div>` : ''}
         </div>
 
-        <!-- BOTTOM GLASS CONTROL DOCK -->
         <div class="call-video-control-dock">
           <button class="call-video-control-btn ${c.isMuted ? 'active-mute' : ''}" id="toggleCallMuteBtn" title="Mute/Unmute">
             ${c.isMuted ? ICONS.micOff : ICONS.mic}
@@ -1705,9 +1732,7 @@ function renderCallSystemOverlay() {
     `;
   }
 
-  // ----------------------------------------------------
-  // SCREEN 7: CALL END (CALL SUMMARY)
-  // ----------------------------------------------------
+  // SCREEN 7: CALL ENDED
   if (c.state === 'ended') {
     return `
       <div class="call-full-screen-overlay summary-bg">
@@ -1853,7 +1878,6 @@ async function recordShare(postId, postAuthorId) {
   await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
   await triggerNotification(postAuthorId, 'post_share', `shared your post`, postId);
   await loadFeed();
-  renderApp();
 }
 
 // ----------------------------------------------------
@@ -1863,7 +1887,41 @@ function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'notifications') {
+  if (state.modal === 'drawer') {
+    const p = state.profile || {};
+    const userAvatar = getUserAvatar(p);
+
+    container.innerHTML = `
+      <div class="full-modal-back" style="justify-content:flex-start;">
+        <div class="drawer-modal">
+          <div class="row between" style="margin-bottom:18px;border-bottom:1px solid #f0f2f8;padding-bottom:14px;">
+            <div class="row" style="gap:12px;">
+              <div class="avatar"><img src="${userAvatar}"></div>
+              <div>
+                <b>${escapeHtml(p.full_name || '')}</b>
+                <div class="muted" style="font-size:12px;">@${escapeHtml(p.username || '')}</div>
+              </div>
+            </div>
+            <button class="btn ghost" id="closeDrawerBtn" style="font-size:18px;">✕</button>
+          </div>
+
+          <button class="navitem drawerNav" data-view="feed">${ICONS.home} Home</button>
+          <button class="navitem drawerNav" data-view="friends">${ICONS.friends} Friends</button>
+          <button class="navitem drawerNav" data-view="messages">${ICONS.messages} Messages</button>
+          <button class="navitem drawerNav" data-view="profile">${ICONS.profile} Profile</button>
+          <button class="navitem drawerNav" data-view="settings">${ICONS.settings} Settings</button>
+          <div class="divider" style="margin:12px 0;"></div>
+          <button class="btn secondary full" id="drawerLogoutBtn" style="color:#d92d20;">${ICONS.logout} Log Out</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeDrawerBtn').onclick = () => { state.modal = null; renderActiveModal(); };
+    document.querySelectorAll('.drawerNav').forEach((btn) => {
+      btn.onclick = () => { state.currentView = btn.dataset.view; state.modal = null; renderApp(); };
+    });
+    document.getElementById('drawerLogoutBtn').onclick = () => supabase.auth.signOut();
+  } else if (state.modal === 'notifications') {
     container.innerHTML = `
       <div class="full-modal-back notif-fullscreen-overlay">
         <div class="full-modal notif-modal-card">
@@ -1959,11 +2017,13 @@ function renderActiveModal() {
     document.getElementById('modalChangeAvatarFile').onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const ext = file.name.split('.').pop();
-      const url = await uploadFile('avatars', `user_${state.user.id}_${Date.now()}.${ext}`, file);
-      await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
-      await loadUserProfile();
-      renderActiveModal();
+      try {
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('avatars', `user_${state.user.id}_${Date.now()}.${ext}`, file);
+        await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
+        await loadUserProfile();
+        renderActiveModal();
+      } catch(err) { alert('Upload error: ' + err.message); }
     };
     document.getElementById('modalResetAvatarBtn').onclick = async () => {
       await supabase.from('profiles').update({ avatar_url: '' }).eq('id', state.user.id);
@@ -2400,20 +2460,36 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
+  // SMOOTH REACT BUTTON WITHOUT RESETTING SCROLL
   document.querySelectorAll('.likePostBtn').forEach((btn) => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
       const authorId = btn.dataset.author;
       const post = state.posts.find((p) => p.id === postId);
-      const existing = post?.post_likes?.find((l) => l.user_id === state.user.id);
-      if (existing) {
-        await supabase.from('post_likes').delete().eq('id', existing.id);
+      if (!post) return;
+
+      const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
+      const isCurrentlyLiked = existingIndex > -1;
+
+      // Optimistic UI Update in place
+      const iconHolder = btn.querySelector('.like-icon-holder');
+      const counterEl = btn.closest('.post-card')?.querySelector('.post-like-count');
+
+      if (isCurrentlyLiked) {
+        post.post_likes.splice(existingIndex, 1);
+        btn.classList.remove('liked');
+        if (iconHolder) iconHolder.innerHTML = ICONS.heartOutline;
+        if (counterEl) counterEl.innerText = Math.max(0, parseInt(counterEl.innerText || 1) - 1);
+        await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', state.user.id);
       } else {
+        if (!post.post_likes) post.post_likes = [];
+        post.post_likes.push({ post_id: postId, user_id: state.user.id });
+        btn.classList.add('liked');
+        if (iconHolder) iconHolder.innerHTML = ICONS.heart;
+        if (counterEl) counterEl.innerText = parseInt(counterEl.innerText || 0) + 1;
         await supabase.from('post_likes').insert({ post_id: postId, user_id: state.user.id });
         await triggerNotification(authorId, 'post_like', `reacted ❤️ to your post`, postId);
       }
-      await loadFeed();
-      renderApp();
     };
   });
 
@@ -2465,7 +2541,6 @@ function attachGlobalEvents() {
     };
   });
 
-  // Direct Call Triggers from Friends List
   document.querySelectorAll('.startDirectVoiceCallBtn').forEach((btn) => {
     btn.onclick = () => {
       const friend = state.friends.find((f) => f.id === btn.dataset.userId);
@@ -2553,10 +2628,18 @@ function attachGlobalEvents() {
       const file = e.target.files[0];
       if (!file || !state.activeChatUser) return;
       try {
+        showToast('Sending image... 📤');
         const ext = file.name.split('.').pop();
-        const url = await uploadFile('chat-media', `chat/${Date.now()}_img.${ext}`, file);
+        const url = await uploadFile('avatars', `chat_${Date.now()}.${ext}`, file);
         await sendChatMessage({ mediaUrl: url, mediaType: 'image' });
-      } catch (err) { alert('Upload failed: ' + err.message); }
+      } catch (err) { 
+        // Base64 inline fallback
+        const reader = new FileReader();
+        reader.onload = async (re) => {
+          await sendChatMessage({ mediaUrl: re.target.result, mediaType: 'image' });
+        };
+        reader.readAsDataURL(file);
+      }
     };
   }
 
@@ -2567,26 +2650,43 @@ function attachGlobalEvents() {
       if (!isRecordingAudio) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
+          const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+          mediaRecorder = new MediaRecorder(stream, { mimeType });
           audioChunks = [];
-          mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
-          mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const ext = 'webm';
-            const file = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: 'audio/webm' });
-            const url = await uploadFile('chat-media', `voices/${Date.now()}_voice.${ext}`, file);
-            await sendChatMessage({ mediaUrl: url, mediaType: 'audio' });
+          
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) audioChunks.push(event.data);
           };
+          
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: mimeType });
+            const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+            const file = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: mimeType });
+            
+            showToast('Sending voice note... 🎙️');
+            try {
+              const url = await uploadFile('avatars', `voice_${Date.now()}.${ext}`, file);
+              await sendChatMessage({ mediaUrl: url, mediaType: 'audio' });
+            } catch (e) {
+              const reader = new FileReader();
+              reader.onload = async (re) => {
+                await sendChatMessage({ mediaUrl: re.target.result, mediaType: 'audio' });
+              };
+              reader.readAsDataURL(audioBlob);
+            }
+          };
+
           mediaRecorder.start();
           isRecordingAudio = true;
           voiceBtn.classList.add('recording-pulse');
-          showToast('Recording voice note... 🎙️');
+          showToast('Recording voice note... 🎙️ (Tap again to send)');
         } catch (e) {
           alert('Microphone access required to record voice.');
         }
       } else {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
           mediaRecorder.stop();
+          mediaRecorder.stream.getTracks().forEach((t) => t.stop());
         }
         isRecordingAudio = false;
         voiceBtn.classList.remove('recording-pulse');
@@ -2619,6 +2719,23 @@ function attachGlobalEvents() {
     cancelReply.onclick = () => {
       state.replyingToMessage = null;
       document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
+    };
+  }
+
+  const coverChangeBtn = document.getElementById('changeCoverBtn');
+  const coverChangeInput = document.getElementById('changeCoverInput');
+  if (coverChangeBtn && coverChangeInput) {
+    coverChangeBtn.onclick = () => coverChangeInput.click();
+    coverChangeInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('avatars', `cover_${state.user.id}_${Date.now()}.${ext}`, file);
+        await supabase.from('profiles').update({ cover_url: url }).eq('id', state.user.id);
+        await loadUserProfile();
+        renderApp();
+      } catch (err) { alert('Upload error: ' + err.message); }
     };
   }
 }
@@ -2681,7 +2798,7 @@ async function loadChatMessages(otherUserId) {
             ` : ''}
 
             ${m.media_url && m.media_type === 'image' ? `
-              <img src="${m.media_url}" class="msg-media-img" loading="lazy">
+              <img src="${m.media_url}" class="msg-media-img" loading="lazy" onclick="window.open('${m.media_url}')">
             ` : ''}
 
             ${m.media_url && m.media_type === 'audio' ? `
