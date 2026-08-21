@@ -1,44 +1,41 @@
-// sw.js — Service Worker for Alapon PWA
-const CACHE_NAME = 'alapon-v1';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './style.css',
-  './app.js',
-  './supabase.js',
-  './manifest.webmanifest'
-];
+// sw.js — Network First (Always fetch fresh updates on refresh)
+const CACHE_NAME = 'alapon-live-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+  // নতুন আপডেট আসা মাত্র আগের সার্ভিস ওয়ার্কার বন্ধ করে নতুনটা চালু করবে
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
+  // পুরনো সব ক্যাশ ডিলিট করে নতুন ভার্সন একটিভ করবে
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests and bypass Supabase API/CDN calls
+  // Supabase API বা POST রিকোয়েস্ট ক্যাশ হবে না
   if (event.request.method !== 'GET' || event.request.url.includes('supabase.co')) {
     return;
   }
 
+  // Network First Strategy: আগে সার্ভার থেকে নতুন ফাইল আনবে, ইন্টারনেট না থাকলে ক্যাশ থেকে নিবে
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
