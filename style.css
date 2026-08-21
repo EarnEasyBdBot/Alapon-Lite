@@ -1,5 +1,5 @@
 /* ============================================================
-   Alapon Lite — Premium Modern Stylesheet & Animated Splash
+   Alapon Lite — Pixel Perfect Stylesheet, Custom Images & Wallpaper
    ============================================================ */
 
 * {
@@ -32,7 +32,7 @@ button {
 }
 
 /* ============================================================
-   PREMIUM 5.5s ANIMATED SPLASH SCREEN
+   PREMIUM 5.5s ANIMATED SPLASH SCREEN (Custom Background & Logo)
    ============================================================ */
 .splash-screen {
   min-height: 100vh;
@@ -40,17 +40,19 @@ button {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: radial-gradient(circle at center, #1b2660 0%, #0d1235 60%, #060818 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: #fff;
   overflow: hidden;
 }
 
 .splash-bg-glow {
   position: absolute;
-  width: 320px;
-  height: 320px;
+  width: 340px;
+  height: 340px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(49, 92, 255, 0.4), rgba(117, 68, 255, 0.4));
+  background: linear-gradient(135deg, rgba(49, 92, 255, 0.45), rgba(117, 68, 255, 0.45));
   filter: blur(80px);
   animation: pulseGlow 4s ease-in-out infinite alternate;
 }
@@ -91,15 +93,14 @@ button {
 
 .splash-logo {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 76px;
+  height: 76px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #315cff, #7544ff);
-  color: #fff;
+  background: #ffffff;
   display: grid;
   place-items: center;
-  font-size: 36px;
-  box-shadow: 0 12px 35px rgba(49, 92, 255, 0.4);
+  padding: 8px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
   animation: floatLogo 3s ease-in-out infinite;
 }
 
@@ -120,7 +121,7 @@ button {
 
 .splash-tagline {
   font-size: 14px;
-  color: #94a3b8;
+  color: #cbd5e1;
   letter-spacing: 0.5px;
   margin-bottom: 34px;
 }
@@ -128,7 +129,7 @@ button {
 .splash-loader-bar {
   width: 180px;
   height: 5px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.25);
   border-radius: 99px;
   overflow: hidden;
   position: relative;
@@ -151,19 +152,17 @@ button {
 
 .splash-status {
   font-size: 12px;
-  color: #64748b;
+  color: #94a3b8;
   margin-top: 12px;
   animation: fadeInOut 2s infinite alternate;
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0.4; }
-  100% { opacity: 0.9; }
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
-/* ============================================================
-   CLICKABLE RICH TEXT STYLING (#tags, @mentions, links)
-   ============================================================ */
+/* Rich Text Mentions / Tags */
 .rich-link {
   color: #315cff !important;
   text-decoration: none;
@@ -209,17 +208,9 @@ button {
   font-weight: 600;
   z-index: 200;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  animation: slideToast 0.3s ease-out;
 }
 
-@keyframes slideToast {
-  from { transform: translate(-50%, 20px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
-}
-
-/* ============================================================
-   COMMENTS BOTTOM SHEET & BUBBLE
-   ============================================================ */
+/* Comments Bottom Sheet */
 .comments-modal {
   height: min(580px, 90vh);
   display: flex;
@@ -245,6 +236,13 @@ button {
   gap: 8px;
   padding-top: 12px;
   border-top: 1px solid #edf0f5;
+}
+
+/* Search Drop Results */
+.search-drop-results {
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 4px;
 }
 
 /* Auth Screens */
@@ -443,7 +441,16 @@ button {
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  font-size: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .top-actions {
@@ -520,7 +527,7 @@ button {
   color: #3445d2;
 }
 
-/* Feed Cards & Edge-to-Edge Optimization */
+/* Feed Cards */
 .feed {
   min-width: 0;
 }
@@ -713,7 +720,7 @@ button {
   border-radius: 10px;
 }
 
-/* List Rows & Messenger */
+/* List Rows & Chat View */
 .list-row {
   display: flex;
   align-items: center;
@@ -751,6 +758,8 @@ button {
   flex: 1;
   overflow-y: auto;
   padding: 14px 18px;
+  background-size: cover;
+  background-position: center;
 }
 
 .bubble {
@@ -761,6 +770,7 @@ button {
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 14.5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .mine {
@@ -771,7 +781,7 @@ button {
 }
 
 .theirs {
-  background: #eef0f7;
+  background: #ffffff;
   color: #171a2f;
   border-bottom-left-radius: 4px;
 }
@@ -804,7 +814,7 @@ button {
 .full-modal {
   background: #fff;
   width: min(580px, 100%);
-  height: min(650px, 100vh);
+  height: min(680px, 100vh);
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -851,7 +861,7 @@ button {
   display: none;
 }
 
-/* Responsive (Mobile Screens) */
+/* Responsive */
 @media (max-width: 960px) {
   .layout {
     grid-template-columns: 1fr;
