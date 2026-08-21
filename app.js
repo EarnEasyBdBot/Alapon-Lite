@@ -1,11 +1,12 @@
-// app.js — Alapon Lite (3D Splash Screen, Suggested Users, Working Search & Fixed Auth)
+// app.js — Alapon Lite (Custom Logo, Fixed Avatar Camera, Pro Messenger, Audio Call, Voice & Reactions)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
-// Crisp Vector Avatars (Male, Female & 3D Badges)
+// Assets
 const ASSETS = {
+  appLogo: `https://i.postimg.cc/W39S6FFL/file-0000000025e8820b9949851f1e324c5f.png`,
+  chatBg: `https://i.postimg.cc/QC2zcdNB/file-00000000f8bc820b9191ddc7162e54a0.png`,
   maleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23315cff"/><stop offset="100%" stop-color="%237544ff"/></linearGradient></defs><rect width="100" height="100" fill="url(%23mg)"/><circle cx="50" cy="38" r="22" fill="%23ffffff"/><path d="M15 88 C15 65, 30 58, 50 58 C70 58, 85 65, 85 88 Z" fill="%23ffffff"/></svg>`,
-  femaleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ec4899"/><stop offset="100%" stop-color="%238b5cf6"/></linearGradient></defs><rect width="100" height="100" fill="url(%23fg)"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`,
-  logoSvg: `<svg width="44" height="44" viewBox="0 0 100 100" fill="none"><path d="M85 45C85 64.33 69.33 80 50 80C43.5 80 37.4 78.2 32.1 75.1L15 85L19.9 67.9C16.8 62.6 15 56.5 15 50C15 30.67 30.67 15 50 15C69.33 15 85 30.67 85 45Z" fill="url(#logoGrad)"/><circle cx="38" cy="46" r="7" fill="white"/><circle cx="62" cy="46" r="7" fill="white"/><circle cx="50" cy="42" r="9" fill="white"/><path d="M30 62C30 54 36 52 40 52C44 52 46 54 46 62" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M54 62C54 54 56 52 60 52C64 52 70 54 70 62" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M40 64C40 56 46 54 50 54C54 54 60 56 60 64" stroke="white" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="logoGrad" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="0.5" stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs></svg>`
+  femaleAvatar: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ec4899"/><stop offset="100%" stop-color="%238b5cf6"/></linearGradient></defs><rect width="100" height="100" fill="url(%23fg)"/><circle cx="50" cy="38" r="20" fill="%23ffffff"/><path d="M25 45 Q50 60 75 45 Q70 20 50 20 Q30 20 25 45 Z" fill="%234a044e"/><path d="M18 88 C18 66, 32 60, 50 60 C68 60, 82 66, 82 88 Z" fill="%23ffffff"/></svg>`
 };
 
 // SVG Icons
@@ -26,13 +27,17 @@ const ICONS = {
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
   smile: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
   send: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
-  back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>`,
-  camera: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+  back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>`,
+  camera: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
   logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
-  verified: `<svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+  phone: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  mic: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+  stop: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
+  trash: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`
 };
 
 // Global App State
@@ -42,6 +47,9 @@ const state = {
   currentView: 'feed',
   profileTab: 'posts',
   activeChatUser: null,
+  replyingToMessage: null,
+  activeCallingState: null,
+  onlineUsers: new Set(),
   posts: [],
   stories: [],
   friends: [],
@@ -59,6 +67,10 @@ const state = {
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
 };
+
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecordingAudio = false;
 
 const app = document.getElementById('app');
 
@@ -106,23 +118,22 @@ function showToast(msg) {
   toast.className = 'toast-popup';
   toast.innerText = msg;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  setTimeout(() => toast.remove(), 2800);
 }
 
 // ----------------------------------------------------
-// 3D ANIMATED SPLASH SCREEN (Screenshot 3 Matching)
+// 3D ANIMATED SPLASH SCREEN (Clean Logo & No Side Glow)
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
-    app.innerHTML = `<div class="boot"><div class="logo">${ASSETS.logoSvg}</div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
+    app.innerHTML = `<div class="boot"><div class="brand-logo-img"><img src="${ASSETS.appLogo}" alt="Logo"></div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
     return;
   }
 
-  // 3D Animated Splash Screen (Screenshot 3)
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise(resolve => setTimeout(resolve, 4500));
+  const delayPromise = new Promise(resolve => setTimeout(resolve, 3800));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -130,6 +141,7 @@ async function init() {
     await loadUserProfile();
     await loadInitialData();
     setupRealtime();
+    setupCallSignaling();
     renderApp();
   } else {
     renderAuth('login');
@@ -141,6 +153,7 @@ async function init() {
       await loadUserProfile();
       await loadInitialData();
       setupRealtime();
+      setupCallSignaling();
       renderApp();
     } else if (event === 'SIGNED_OUT') {
       state.user = null;
@@ -153,32 +166,27 @@ async function init() {
 function render3DSplashScreen() {
   app.innerHTML = `
     <div class="splash-3d-screen">
-      <!-- Floating Frosted Reaction Badges -->
       <div class="floating-badge badge-top-left">👥</div>
       <div class="floating-badge badge-top-right">💬</div>
       <div class="floating-badge badge-mid-left">❤️</div>
       <div class="floating-badge badge-mid-right">👍</div>
 
-      <!-- Center Brand Content -->
       <div class="splash-3d-center">
-        <div class="splash-3d-logo-box">
-          <div class="splash-3d-logo-glow"></div>
-          ${ASSETS.logoSvg}
+        <!-- Clean Image Logo -->
+        <div class="splash-clean-logo-box">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" class="splash-main-logo-img">
         </div>
         
         <h1 class="splash-3d-title">Alapon <span class="splash-verified-icon">✔</span></h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
         
-        <!-- Glowing Progress Bar -->
         <div class="splash-3d-progress-container">
           <div class="splash-3d-progress-bar"></div>
         </div>
         <span class="splash-3d-loading-text">Loading...</span>
       </div>
 
-      <!-- 3D Glowing Globe at Bottom -->
       <div class="splash-3d-globe-wrap">
-        <div class="splash-3d-globe-glow"></div>
         <svg class="splash-3d-globe" viewBox="0 0 400 200" fill="none">
           <ellipse cx="200" cy="200" rx="190" ry="120" fill="url(#globeGrad)" opacity="0.85"/>
           <path d="M30 180 Q200 80 370 180" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
@@ -276,8 +284,24 @@ async function loadUnreadCounts() {
 }
 
 function setupRealtime() {
+  const presenceChannel = supabase.channel('online_presence', {
+    config: { presence: { key: state.user?.id } }
+  });
+
+  presenceChannel
+    .on('presence', { event: 'sync' }, () => {
+      const presenceState = presenceChannel.presenceState();
+      state.onlineUsers = new Set(Object.keys(presenceState));
+      updateActiveUserStatus();
+    })
+    .subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await presenceChannel.track({ online_at: new Date().toISOString(), user_id: state.user?.id });
+      }
+    });
+
   supabase
-    .channel('public:alapon_feed_sync')
+    .channel('public:alapon_general_sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { loadFeed().then(renderApp); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
       loadFeed().then(renderApp);
@@ -285,10 +309,117 @@ function setupRealtime() {
         loadPostComments(state.activeCommentsPostId);
       }
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
+      if (state.activeChatUser && (payload.new?.sender_id === state.activeChatUser.id || payload.new?.receiver_id === state.activeChatUser.id)) {
+        loadChatMessages(state.activeChatUser.id);
+      }
+      loadUnreadCounts().then(renderApp);
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(renderApp); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => { loadUnreadCounts().then(renderApp); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => { loadNotifications().then(renderApp); })
     .subscribe();
+}
+
+function updateActiveUserStatus() {
+  const statusEl = document.getElementById('chatUserActiveStatus');
+  if (statusEl && state.activeChatUser) {
+    const isOnline = state.onlineUsers.has(state.activeChatUser.id);
+    statusEl.innerHTML = isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`;
+  }
+}
+
+// ----------------------------------------------------
+// CALL SYSTEM (Signaling over Supabase Broadcast)
+// ----------------------------------------------------
+let callChannel = null;
+
+function setupCallSignaling() {
+  if (!state.user) return;
+  callChannel = supabase.channel(`call_channel_${state.user.id}`);
+  callChannel
+    .on('broadcast', { event: 'incoming_call' }, ({ payload }) => {
+      if (state.activeCallingState) return;
+      state.activeCallingState = {
+        isIncoming: true,
+        user: payload.caller,
+        channelId: payload.channelId
+      };
+      playRingtone();
+      renderApp();
+    })
+    .on('broadcast', { event: 'call_declined' }, () => {
+      stopRingtone();
+      endActiveCall();
+      showToast('Call declined.');
+    })
+    .on('broadcast', { event: 'call_accepted' }, async () => {
+      stopRingtone();
+      showToast('Call connected! 🎙️');
+      const banner = document.getElementById('callDurationText');
+      if (banner) banner.innerText = 'Connected (Audio Active)';
+    })
+    .subscribe();
+}
+
+function playRingtone() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, audioContext.currentTime);
+    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start();
+    state._ringOsc = osc;
+    state._ringCtx = audioContext;
+  } catch(e) {}
+}
+
+function stopRingtone() {
+  if (state._ringOsc) {
+    try { state._ringOsc.stop(); } catch(e){}
+    state._ringOsc = null;
+  }
+  if (state._ringCtx) {
+    try { state._ringCtx.close(); } catch(e){}
+    state._ringCtx = null;
+  }
+}
+
+function startAudioCall(targetUser) {
+  state.activeCallingState = {
+    isIncoming: false,
+    user: targetUser
+  };
+  renderApp();
+  playRingtone();
+
+  const targetChannel = supabase.channel(`call_channel_${targetUser.id}`);
+  targetChannel.subscribe((status) => {
+    if (status === 'SUBSCRIBED') {
+      targetChannel.send({
+        type: 'broadcast',
+        event: 'incoming_call',
+        payload: { caller: state.profile, channelId: state.user.id }
+      });
+    }
+  });
+}
+
+function endActiveCall() {
+  stopRingtone();
+  if (state.activeCallingState?.user) {
+    const targetChannel = supabase.channel(`call_channel_${state.activeCallingState.user.id}`);
+    targetChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        targetChannel.send({ type: 'broadcast', event: 'call_declined', payload: {} });
+      }
+    });
+  }
+  state.activeCallingState = null;
+  renderApp();
 }
 
 // ----------------------------------------------------
@@ -300,8 +431,8 @@ function renderAuth(mode = 'login') {
       <div class="auth">
         <div class="auth-hero">
           <div class="hero-inner">
-            <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
-              ${ASSETS.logoSvg}
+            <div class="brand-logo-img" style="width:78px;height:78px;margin-bottom:16px;">
+              <img src="${ASSETS.appLogo}" alt="Alapon Lite">
             </div>
             <h1>Alapon Lite</h1>
             <p>Connect • Share • Grow</p>
@@ -425,8 +556,8 @@ function renderSignupStep() {
     <div class="auth">
       <div class="auth-hero">
         <div class="hero-inner">
-          <div class="brand-logo" style="width:72px;height:72px;margin-bottom:16px;">
-            ${ASSETS.logoSvg}
+          <div class="brand-logo-img" style="width:78px;height:78px;margin-bottom:16px;">
+            <img src="${ASSETS.appLogo}" alt="Alapon Lite">
           </div>
           <h1>Alapon Lite</h1>
           <p>Connect • Share • Grow</p>
@@ -525,7 +656,6 @@ async function handleFinalSignup() {
   if (error) {
     alert(error.message);
   } else {
-    // Instant login without getting stuck
     const { error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
     if (loginErr) {
       alert('Account created! Please login.');
@@ -554,14 +684,17 @@ async function handleLoginSubmit(e) {
 function renderApp() {
   const p = state.profile || { full_name: 'User', username: 'user' };
   const currentAvatar = getUserAvatar(p);
+  const isChatActive = state.currentView === 'messages' && state.activeChatUser !== null;
 
   app.innerHTML = `
-    <div class="app-shell">
+    <div class="app-shell ${isChatActive ? 'in-chat-mode' : ''}">
       <!-- TOP BAR -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
-          <div class="brand-logo">${ASSETS.logoSvg}</div>
-          <span style="font-size:18px;font-weight:900;color:#171a2f;margin-left:4px;">Alapon Lite</span>
+          <div class="brand-logo-img">
+            <img src="${ASSETS.appLogo}" alt="Logo">
+          </div>
+          <span class="brand-title">Alapon Lite</span>
         </div>
 
         <div class="top-actions">
@@ -581,7 +714,7 @@ function renderApp() {
       </header>
 
       <!-- MAIN LAYOUT -->
-      <div class="layout">
+      <div class="layout ${isChatActive ? 'full-chat-layout' : ''}">
         <!-- DESKTOP SIDEBAR -->
         <aside class="side">
           <div class="card-ui" style="padding:10px;">
@@ -615,13 +748,18 @@ function renderApp() {
       </div>
 
       <!-- MOBILE BOTTOM NAVIGATION -->
-      <nav class="bottom-nav">
-        <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
-        <button class="navitem ${state.currentView === 'friends' ? 'active' : ''}" id="botFriends">${ICONS.friends}<span>Friends</span></button>
-        <button class="navitem bot-create-btn" id="botCreate">${ICONS.plus}</button>
-        <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="botMessages">${ICONS.messages}<span>Messages</span></button>
-        <button class="navitem ${state.currentView === 'profile' ? 'active' : ''}" id="botProfile">${ICONS.profile}<span>Profile</span></button>
-      </nav>
+      ${!isChatActive ? `
+        <nav class="bottom-nav">
+          <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
+          <button class="navitem ${state.currentView === 'friends' ? 'active' : ''}" id="botFriends">${ICONS.friends}<span>Friends</span></button>
+          <button class="navitem bot-create-btn" id="botCreate">${ICONS.plus}</button>
+          <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="botMessages">${ICONS.messages}<span>Messages</span></button>
+          <button class="navitem ${state.currentView === 'profile' ? 'active' : ''}" id="botProfile">${ICONS.profile}<span>Profile</span></button>
+        </nav>
+      ` : ''}
+
+      <!-- AUDIO CALL POPUP -->
+      ${renderAudioCallModal()}
 
       <!-- MODALS CONTAINER -->
       <div id="modalContainer"></div>
@@ -630,6 +768,10 @@ function renderApp() {
 
   attachGlobalEvents();
   renderActiveModal();
+
+  if (isChatActive) {
+    loadChatMessages(state.activeChatUser.id);
+  }
 }
 
 function renderFriendRequestsSidebar() {
@@ -754,7 +896,7 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (No Fake Info, Real Tabs)
+// PROFILE VIEW (Fixed Camera Badge)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -782,69 +924,44 @@ function renderProfileView() {
       <div class="card-ui">
         <b>About Details</b>
         <div style="margin-top:12px;">
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Full Name</div>
-            <b>${escapeHtml(p.full_name || 'Not set')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Username</div>
-            <b>@${escapeHtml(p.username || '')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Email</div>
-            <b>${escapeHtml(p.email || state.user?.email || '')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Phone</div>
-            <b>${escapeHtml(p.phone || 'Not added')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Current City</div>
-            <b>${escapeHtml(p.current_city || p.location || 'Not set')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Hometown</div>
-            <b>${escapeHtml(p.hometown || 'Not set')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Workplace</div>
-            <b>${escapeHtml(p.workplace || 'Not set')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Education</div>
-            <b>${escapeHtml(p.education || 'Not set')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Gender</div>
-            <b style="text-transform:capitalize;">${escapeHtml(p.gender || 'Male')}</b>
-          </div>
-          <div class="list-row">
-            <div class="muted" style="width:120px;">Birthday</div>
-            <b>${escapeHtml(p.birth_date || 'Not specified')}</b>
-          </div>
+          <div class="list-row"><div class="muted" style="width:120px;">Full Name</div><b>${escapeHtml(p.full_name || 'Not set')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Username</div><b>@${escapeHtml(p.username || '')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Email</div><b>${escapeHtml(p.email || state.user?.email || '')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Phone</div><b>${escapeHtml(p.phone || 'Not added')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Current City</div><b>${escapeHtml(p.current_city || p.location || 'Not set')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Hometown</div><b>${escapeHtml(p.hometown || 'Not set')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Workplace</div><b>${escapeHtml(p.workplace || 'Not set')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Education</div><b>${escapeHtml(p.education || 'Not set')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Gender</div><b style="text-transform:capitalize;">${escapeHtml(p.gender || 'Male')}</b></div>
+          <div class="list-row"><div class="muted" style="width:120px;">Birthday</div><b>${escapeHtml(p.birth_date || 'Not specified')}</b></div>
         </div>
       </div>
     `;
   }
 
   return `
-    <div class="card-ui" style="padding:0;overflow:hidden;margin-bottom:12px;">
+    <div class="card-ui" style="padding:0;overflow:visible;margin-bottom:14px;">
       <div class="profile-cover" style="${p.cover_url ? `background:url(${p.cover_url}) center/cover;` : ''}">
         <input type="file" id="changeCoverInput" accept="image/*" style="display:none;">
-        <button class="btn secondary" id="changeCoverBtn" style="position:absolute;right:12px;top:12px;padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.9);">
+        <button class="btn secondary" id="changeCoverBtn" style="position:absolute;right:12px;top:12px;padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);">
           ${ICONS.camera} Change Cover
         </button>
       </div>
 
       <div class="profile-main">
-        <div class="row between" style="align-items:flex-end;">
-          <div class="avatar profile-avatar" style="position:relative;cursor:pointer;" id="changeAvatarProfileBtn">
-            <img src="${userAvatar}">
-            <span style="position:absolute;bottom:0;right:0;background:#315cff;color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;border:2px solid #fff;">${ICONS.camera}</span>
+        <div class="row between" style="align-items:flex-end;position:relative;">
+          <div class="profile-avatar-wrapper">
+            <div class="avatar profile-avatar" id="changeAvatarProfileBtn">
+              <img src="${userAvatar}" alt="Profile">
+            </div>
+            <button class="profile-camera-badge" id="cameraBadgeUploadTrigger" title="Change Avatar">
+              ${ICONS.camera}
+            </button>
           </div>
+          
           <input type="file" id="changeAvatarInput" accept="image/*" style="display:none;">
-          <div class="row" style="gap:8px;">
-            <button class="btn secondary" id="openEditProfileModal" style="padding:8px 14px;font-size:13px;">${ICONS.edit} &nbsp; Edit Profile</button>
+          <div class="row" style="gap:8px;margin-bottom:6px;">
+            <button class="btn secondary" id="openEditProfileModal" style="padding:8px 14px;font-size:13px;border-radius:12px;">${ICONS.edit} &nbsp; Edit Profile</button>
           </div>
         </div>
 
@@ -880,14 +997,13 @@ function renderProfileView() {
 }
 
 // ----------------------------------------------------
-// FRIENDS VIEW (Requests, Friends & Suggested Users)
+// FRIENDS VIEW
 // ----------------------------------------------------
 function renderFriendsView() {
   return `
     <div class="card-ui">
       <h2>Friends & Community</h2>
 
-      <!-- FRIEND REQUESTS -->
       <b style="font-size:16px;display:block;margin-top:10px;">Friend Requests (${state.friendRequests.length})</b>
       <div style="margin:10px 0 20px;">
         ${state.friendRequests.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No pending friend requests</p>` : ''}
@@ -906,7 +1022,6 @@ function renderFriendsView() {
         `).join('')}
       </div>
 
-      <!-- YOUR FRIENDS -->
       <b style="font-size:16px;display:block;margin-top:10px;">Your Friends (${state.friends.length})</b>
       <div style="margin:10px 0 24px;">
         ${state.friends.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No friends added yet.</p>` : ''}
@@ -915,14 +1030,15 @@ function renderFriendsView() {
             <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
             <div class="grow">
               <b>${escapeHtml(fr.full_name || 'Friend')}</b>
-              <div style="font-size:12px;color:#12b76a;">🟢 Active Now</div>
+              <div style="font-size:12px;">
+                ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
+              </div>
             </div>
             <button class="icon-btn startChatBtn" data-user-id="${fr.id}">${ICONS.messages}</button>
           </div>
         `).join('')}
       </div>
 
-      <!-- SUGGESTED USERS -->
       <b style="font-size:16px;display:block;margin-top:10px;">Discover People on Alapon</b>
       <div style="margin-top:10px;">
         ${state.suggestedUsers.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No new suggestions right now.</p>` : ''}
@@ -947,23 +1063,55 @@ function renderFriendsView() {
 function renderMessagesView() {
   if (state.activeChatUser) {
     const friendAvatar = getUserAvatar(state.activeChatUser);
+    const isOnline = state.onlineUsers.has(state.activeChatUser.id);
+
     return `
-      <div class="card-ui chat-view">
-        <div class="chat-header">
-          <button class="btn ghost" id="backToChatListBtn" style="padding:4px 6px;">${ICONS.back}</button>
-          <div class="avatar" style="width:40px;height:40px;"><img src="${friendAvatar}"></div>
-          <div>
-            <b style="font-size:15px;display:block;">${escapeHtml(state.activeChatUser.full_name)}</b>
-            <small style="color:#12b76a;font-size:11px;">Active Now</small>
+      <div class="chat-fullscreen-wrapper">
+        <!-- FIXED CHAT HEADER -->
+        <div class="chat-header-bar">
+          <button class="icon-btn-minimal" id="backToChatListBtn" title="Back">${ICONS.back}</button>
+          <div class="avatar" style="width:40px;height:40px;margin-left:4px;"><img src="${friendAvatar}"></div>
+          <div class="grow" style="margin-left:8px;">
+            <b style="font-size:15px;display:block;line-height:1.2;">${escapeHtml(state.activeChatUser.full_name)}</b>
+            <small id="chatUserActiveStatus" style="font-size:11px;font-weight:600;">
+              ${isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
+            </small>
+          </div>
+          <button class="icon-btn-minimal" id="startVoiceCallBtn" title="Audio Call" style="color:#315cff;">
+            ${ICONS.phone}
+          </button>
+        </div>
+
+        <!-- WALLPAPER CONTAINER WITH DARK OVERLAY -->
+        <div class="chat-wallpaper-container" style="background-image: url('${ASSETS.chatBg}');">
+          <div class="chat-dark-overlay"></div>
+          <div class="chat-scroll-stream" id="chatMessageList">
+            <p class="muted center" style="margin-top:40px;color:#cbd5e1;">Loading conversation...</p>
           </div>
         </div>
-        <div class="chat-list" id="chatMessageList">
-          <p class="muted center" style="margin-top:20px;">Loading chat...</p>
+
+        <!-- REPLY BANNER -->
+        <div id="chatReplyPreviewBar" class="chat-reply-preview-bar ${state.replyingToMessage ? '' : 'hide'}">
+          <div class="reply-bar-left">
+            <span style="font-size:11px;color:#315cff;font-weight:800;">Replying to ${state.replyingToMessage?.sender_id === state.user.id ? 'yourself' : escapeHtml(state.activeChatUser.full_name)}</span>
+            <p style="margin:0;font-size:12.5px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(state.replyingToMessage?.content || 'Attachment')}</p>
+          </div>
+          <button class="btn ghost" id="cancelReplyBtn" style="padding:4px 8px;">✕</button>
         </div>
-        <form class="chat-input" id="chatSendForm">
-          <textarea class="input" id="chatInputText" placeholder="Type a message..." rows="1" required></textarea>
-          <button class="btn primary" type="submit" style="padding:10px 16px;">${ICONS.send}</button>
-        </form>
+
+        <!-- INPUT BAR -->
+        <div class="chat-input-dock">
+          <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
+          <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
+          
+          <button class="icon-btn-minimal ${isRecordingAudio ? 'recording-pulse' : ''}" id="toggleVoiceRecordBtn" title="Voice Message">
+            ${isRecordingAudio ? ICONS.stop : ICONS.mic}
+          </button>
+
+          <textarea class="chat-auto-input" id="chatInputText" placeholder="Type a message..." rows="1"></textarea>
+          
+          <button class="chat-send-btn" id="submitChatMessageBtn">${ICONS.send}</button>
+        </div>
       </div>
     `;
   }
@@ -971,7 +1119,7 @@ function renderMessagesView() {
   return `
     <div class="card-ui">
       <h2>Messages</h2>
-      <input class="input" type="text" placeholder="Search conversations..." style="margin:14px 0;">
+      <input class="input" type="text" id="filterChatConversations" placeholder="Search conversations..." style="margin:14px 0;">
       <div>
         ${state.friends.length === 0 ? `<p class="muted center" style="padding:20px 0;">Add friends to start messaging!</p>` : ''}
         ${state.friends.map(fr => `
@@ -981,9 +1129,43 @@ function renderMessagesView() {
               <b>${escapeHtml(fr.full_name)}</b>
               <div class="muted" style="font-size:13px;">Say hello! 👋</div>
             </div>
-            <small class="muted">Active</small>
+            <small style="font-size:11px;font-weight:700;">
+              ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Online</span>` : `<span style="color:#94a3b8;">Offline</span>`}
+            </small>
           </div>
         `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ----------------------------------------------------
+// AUDIO CALL MODAL
+// ----------------------------------------------------
+function renderAudioCallModal() {
+  if (!state.activeCallingState) return '';
+  const callUser = state.activeCallingState.user || {};
+  const isInc = state.activeCallingState.isIncoming;
+
+  return `
+    <div class="full-modal-back audio-call-overlay">
+      <div class="audio-call-card">
+        <div class="avatar call-pulse-avatar" style="width:96px;height:96px;margin:0 auto 16px;">
+          <img src="${getUserAvatar(callUser)}">
+        </div>
+        <h3 style="color:#fff;margin:0;font-size:22px;">${escapeHtml(callUser.full_name || 'Friend')}</h3>
+        <p style="color:#a5b4fc;margin:6px 0 24px;" id="callDurationText">${isInc ? 'Incoming Audio Call...' : 'Calling...'}</p>
+
+        <div class="row center" style="gap:20px;justify-content:center;">
+          ${isInc ? `
+            <button class="btn-call accept-call" id="acceptIncomingCallBtn" title="Accept">
+              ${ICONS.phone}
+            </button>
+          ` : ''}
+          <button class="btn-call end-call" id="declineOrEndCallBtn" title="Decline / End">
+            ✕
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -1496,6 +1678,75 @@ function renderActiveModal() {
       </div>
     `;
     document.getElementById('closeStoryViewBtn').onclick = () => { state.modal = null; state.activeStory = null; renderActiveModal(); };
+  } else if (state.modal === 'msg-options') {
+    const msg = state._selectedMsg;
+    const isMine = msg.sender_id === state.user.id;
+
+    container.innerHTML = `
+      <div class="full-modal-back msg-action-sheet-back" id="closeMsgOptionsBack">
+        <div class="msg-action-sheet">
+          <div class="reaction-palette">
+            ${['❤️', '👍', '😂', '😮', '😢', '🔥'].map(emoji => `
+              <button class="reaction-btn-pop" data-emoji="${emoji}">${emoji}</button>
+            `).join('')}
+          </div>
+
+          <div class="sheet-action-list">
+            <button class="sheet-action-btn" id="sheetReplyBtn">${ICONS.reply} &nbsp; Reply</button>
+            ${isMine ? `
+              <button class="sheet-action-btn" id="sheetDeleteForMeBtn">${ICONS.trash} &nbsp; Delete for Me</button>
+              <button class="sheet-action-btn danger" id="sheetDeleteEveryoneBtn">${ICONS.trash} &nbsp; Delete for Everyone</button>
+            ` : `
+              <button class="sheet-action-btn" id="sheetDeleteForMeBtn">${ICONS.trash} &nbsp; Delete for Me</button>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeMsgOptionsBack').onclick = (e) => {
+      if (e.target.id === 'closeMsgOptionsBack') { state.modal = null; renderActiveModal(); }
+    };
+
+    document.querySelectorAll('.reaction-btn-pop').forEach(b => {
+      b.onclick = async () => {
+        const emoji = b.dataset.emoji;
+        const currentReactions = msg.reactions || {};
+        currentReactions[state.user.id] = emoji;
+        await supabase.from('messages').update({ reactions: currentReactions }).eq('id', msg.id);
+        state.modal = null;
+        renderActiveModal();
+        loadChatMessages(state.activeChatUser.id);
+      };
+    });
+
+    document.getElementById('sheetReplyBtn').onclick = () => {
+      state.replyingToMessage = msg;
+      state.modal = null;
+      renderActiveModal();
+      const preview = document.getElementById('chatReplyPreviewBar');
+      if (preview) preview.classList.remove('hide');
+      const input = document.getElementById('chatInputText');
+      if (input) input.focus();
+    };
+
+    const delMe = document.getElementById('sheetDeleteForMeBtn');
+    if (delMe) delMe.onclick = async () => {
+      const deletedFor = msg.deleted_for || [];
+      if (!deletedFor.includes(state.user.id)) deletedFor.push(state.user.id);
+      await supabase.from('messages').update({ deleted_for: deletedFor }).eq('id', msg.id);
+      state.modal = null;
+      renderActiveModal();
+      loadChatMessages(state.activeChatUser.id);
+    };
+
+    const delAll = document.getElementById('sheetDeleteEveryoneBtn');
+    if (delAll) delAll.onclick = async () => {
+      await supabase.from('messages').update({ is_deleted: true, content: '🚫 This message was deleted' }).eq('id', msg.id);
+      state.modal = null;
+      renderActiveModal();
+      loadChatMessages(state.activeChatUser.id);
+    };
   } else {
     container.innerHTML = '';
   }
@@ -1558,7 +1809,11 @@ async function handlePostPublish() {
 function attachGlobalEvents() {
   const bindNav = (id, view) => {
     const el = document.getElementById(id);
-    if (el) el.onclick = () => { state.currentView = view; renderApp(); };
+    if (el) el.onclick = () => { 
+      state.currentView = view; 
+      if (view !== 'messages') state.activeChatUser = null;
+      renderApp(); 
+    };
   };
 
   bindNav('brandHomeBtn', 'feed');
@@ -1587,6 +1842,30 @@ function attachGlobalEvents() {
 
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
+
+  // Profile avatar upload
+  const avatarBadge = document.getElementById('cameraBadgeUploadTrigger');
+  const avatarFile = document.getElementById('changeAvatarInput');
+  if (avatarBadge && avatarFile) {
+    avatarBadge.onclick = (e) => { e.stopPropagation(); avatarFile.click(); };
+    avatarFile.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('avatars', `user_${state.user.id}_${Date.now()}.${ext}`, file);
+        await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
+        await loadUserProfile();
+        renderApp();
+        showToast('Profile photo updated! ✨');
+      } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+  }
+
+  const changeAvatarProf = document.getElementById('changeAvatarProfileBtn');
+  if (changeAvatarProf && avatarFile) {
+    changeAvatarProf.onclick = () => avatarFile.click();
+  }
 
   const addStoryBtn = document.getElementById('addStoryBtn');
   const storyInput = document.getElementById('storyUploadInput');
@@ -1695,24 +1974,118 @@ function attachGlobalEvents() {
         state.activeChatUser = friend;
         state.currentView = 'messages';
         renderApp();
-        loadChatMessages(friend.id);
       }
     };
   });
 
+  // Messenger actions
   const backChat = document.getElementById('backToChatListBtn');
-  if (backChat) backChat.onclick = () => { state.activeChatUser = null; renderApp(); };
+  if (backChat) backChat.onclick = () => { 
+    state.activeChatUser = null; 
+    state.replyingToMessage = null;
+    renderApp(); 
+  };
 
-  const chatForm = document.getElementById('chatSendForm');
-  if (chatForm) {
-    chatForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const input = document.getElementById('chatInputText');
-      const text = input.value.trim();
+  const startCall = document.getElementById('startVoiceCallBtn');
+  if (startCall && state.activeChatUser) {
+    startCall.onclick = () => startAudioCall(state.activeChatUser);
+  }
+
+  const acceptCall = document.getElementById('acceptIncomingCallBtn');
+  if (acceptCall) {
+    acceptCall.onclick = () => {
+      stopRingtone();
+      if (state.activeCallingState?.user) {
+        const targetChannel = supabase.channel(`call_channel_${state.activeCallingState.user.id}`);
+        targetChannel.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            targetChannel.send({ type: 'broadcast', event: 'call_accepted', payload: {} });
+          }
+        });
+      }
+      const dur = document.getElementById('callDurationText');
+      if (dur) dur.innerText = 'Connected (Audio Active)';
+    };
+  }
+
+  const endCall = document.getElementById('declineOrEndCallBtn');
+  if (endCall) endCall.onclick = endActiveCall;
+
+  // Chat Image Upload
+  const triggerImg = document.getElementById('triggerChatPhotoUpload');
+  const imgInput = document.getElementById('chatMediaFileInput');
+  if (triggerImg && imgInput) {
+    triggerImg.onclick = () => imgInput.click();
+    imgInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file || !state.activeChatUser) return;
+      try {
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('chat-media', `chat/${Date.now()}_img.${ext}`, file);
+        await sendChatMessage({ mediaUrl: url, mediaType: 'image' });
+      } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+  }
+
+  // Voice recording
+  const voiceBtn = document.getElementById('toggleVoiceRecordBtn');
+  if (voiceBtn) {
+    voiceBtn.onclick = async () => {
+      if (!isRecordingAudio) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const ext = 'webm';
+            const file = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: 'audio/webm' });
+            const url = await uploadFile('chat-media', `voices/${Date.now()}_voice.${ext}`, file);
+            await sendChatMessage({ mediaUrl: url, mediaType: 'audio' });
+          };
+          mediaRecorder.start();
+          isRecordingAudio = true;
+          voiceBtn.classList.add('recording-pulse');
+          showToast('Recording voice note... 🎙️');
+        } catch (e) {
+          alert('Microphone access required to record voice.');
+        }
+      } else {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+        isRecordingAudio = false;
+        voiceBtn.classList.remove('recording-pulse');
+      }
+    };
+  }
+
+  // Chat Send
+  const sendBtn = document.getElementById('submitChatMessageBtn');
+  const chatInput = document.getElementById('chatInputText');
+  if (sendBtn && chatInput) {
+    const handleSend = async () => {
+      const text = chatInput.value.trim();
       if (!text || !state.activeChatUser) return;
-      input.value = '';
-      await supabase.from('messages').insert({ sender_id: state.user.id, receiver_id: state.activeChatUser.id, content: text });
-      loadChatMessages(state.activeChatUser.id);
+      chatInput.value = '';
+      await sendChatMessage({ text });
+    };
+
+    sendBtn.onclick = handleSend;
+    chatInput.onkeydown = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    };
+  }
+
+  const cancelReply = document.getElementById('cancelReplyBtn');
+  if (cancelReply) {
+    cancelReply.onclick = () => {
+      state.replyingToMessage = null;
+      document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
     };
   }
 
@@ -1732,9 +2105,31 @@ function attachGlobalEvents() {
   }
 }
 
+async function sendChatMessage({ text = '', mediaUrl = '', mediaType = null }) {
+  const replyData = state.replyingToMessage ? {
+    id: state.replyingToMessage.id,
+    content: state.replyingToMessage.content,
+    sender_name: state.replyingToMessage.sender_id === state.user.id ? 'You' : state.activeChatUser.full_name
+  } : null;
+
+  await supabase.from('messages').insert({
+    sender_id: state.user.id,
+    receiver_id: state.activeChatUser.id,
+    content: text,
+    media_url: mediaUrl,
+    media_type: mediaType,
+    reply_to: replyData
+  });
+
+  state.replyingToMessage = null;
+  document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
+  loadChatMessages(state.activeChatUser.id);
+}
+
 async function loadChatMessages(otherUserId) {
   const listEl = document.getElementById('chatMessageList');
   if (!listEl) return;
+
   const { data: messages } = await supabase
     .from('messages')
     .select('*')
@@ -1742,20 +2137,135 @@ async function loadChatMessages(otherUserId) {
     .order('created_at', { ascending: true });
 
   if (messages && messages.length > 0) {
-    listEl.innerHTML = messages.map(m => `
-      <div class="bubble ${m.sender_id === state.user.id ? 'mine' : 'theirs'}">
-        ${formatRichText(m.content)}
-      </div>
-    `).join('');
+    const unreadIds = messages.filter(m => m.receiver_id === state.user.id && !m.is_read).map(m => m.id);
+    if (unreadIds.length > 0) {
+      await supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).in('id', unreadIds);
+    }
+
+    const visibleMessages = messages.filter(m => !(m.deleted_for || []).includes(state.user.id));
+
+    listEl.innerHTML = visibleMessages.map(m => {
+      const isMine = m.sender_id === state.user.id;
+      const reactions = m.reactions || {};
+      const reactionEmojis = Object.values(reactions);
+      const formattedTime = formatClockTime(m.created_at);
+
+      return `
+        <div class="msg-swipe-wrapper" data-msg-id="${m.id}">
+          <div class="msg-swipe-action-icon">${ICONS.reply}</div>
+          <div class="msg-container ${isMine ? 'mine' : 'theirs'}">
+            ${m.reply_to ? `
+              <div class="msg-reply-quote">
+                <b>${escapeHtml(m.reply_to.sender_name || 'User')}:</b> ${escapeHtml(m.reply_to.content || 'Attachment')}
+              </div>
+            ` : ''}
+
+            ${m.media_url && m.media_type === 'image' ? `
+              <img src="${m.media_url}" class="msg-media-img" loading="lazy">
+            ` : ''}
+
+            ${m.media_url && m.media_type === 'audio' ? `
+              <audio controls class="msg-audio-player" src="${m.media_url}"></audio>
+            ` : ''}
+
+            ${m.content ? `<div class="msg-text-content ${m.is_deleted ? 'msg-deleted-text' : ''}">${formatRichText(m.content)}</div>` : ''}
+
+            <div class="msg-meta-row">
+              <span class="msg-time-label">${formattedTime}</span>
+              ${isMine ? `
+                <span class="msg-seen-status">
+                  ${m.is_read ? `Seen ${formatClockTime(m.read_at || m.created_at)}` : '✓ Sent'}
+                </span>
+              ` : ''}
+            </div>
+
+            ${reactionEmojis.length > 0 ? `
+              <div class="msg-reactions-badge">${reactionEmojis.join(' ')}</div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
     listEl.scrollTop = listEl.scrollHeight;
+    attachMessageInteractions(visibleMessages);
   } else {
-    listEl.innerHTML = `<p class="muted center" style="margin-top:20px;">No messages yet. Say hello!</p>`;
+    listEl.innerHTML = `<p class="muted center" style="margin-top:40px;color:#cbd5e1;">No messages yet. Say hello to start chatting! 👋</p>`;
   }
+}
+
+function attachMessageInteractions(messagesList) {
+  document.querySelectorAll('.msg-swipe-wrapper').forEach(wrapper => {
+    const msgId = wrapper.dataset.msgId;
+    const msg = messagesList.find(m => m.id === msgId);
+    if (!msg) return;
+
+    // Long Press to open reaction & delete action sheet
+    let pressTimer = null;
+    const startPress = () => {
+      pressTimer = setTimeout(() => {
+        state._selectedMsg = msg;
+        state.modal = 'msg-options';
+        renderActiveModal();
+      }, 520);
+    };
+    const cancelPress = () => clearTimeout(pressTimer);
+
+    wrapper.addEventListener('touchstart', startPress, { passive: true });
+    wrapper.addEventListener('touchend', cancelPress);
+    wrapper.addEventListener('mousedown', startPress);
+    wrapper.addEventListener('mouseup', cancelPress);
+    wrapper.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      state._selectedMsg = msg;
+      state.modal = 'msg-options';
+      renderActiveModal();
+    });
+
+    // Swipe Left or Right to Reply
+    let startX = 0;
+    let currentX = 0;
+
+    wrapper.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', (e) => {
+      currentX = e.touches[0].clientX;
+      const diffX = currentX - startX;
+      if (Math.abs(diffX) > 20 && Math.abs(diffX) < 90) {
+        wrapper.style.transform = `translateX(${diffX * 0.5}px)`;
+      }
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', () => {
+      const diffX = currentX - startX;
+      if (Math.abs(diffX) > 55) {
+        state.replyingToMessage = msg;
+        const bar = document.getElementById('chatReplyPreviewBar');
+        if (bar) {
+          bar.classList.remove('hide');
+          bar.querySelector('p').innerText = msg.content || 'Attachment';
+        }
+        document.getElementById('chatInputText')?.focus();
+        if (navigator.vibrate) navigator.vibrate(40);
+      }
+      wrapper.style.transform = 'translateX(0px)';
+      startX = 0;
+      currentX = 0;
+    });
+  });
 }
 
 function escapeHtml(str) {
   if (!str) return '';
   return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+}
+
+function formatClockTime(isoString) {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
 function formatTimeAgo(isoString) {
