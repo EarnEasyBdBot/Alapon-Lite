@@ -1,4 +1,4 @@
-// app.js — Alapon Lite (Custom Logo, Fixed Avatar Camera, Pro Messenger, Audio Call, Voice & Reactions)
+// app.js — Alapon Lite (Complete WebRTC Voice & Video Calling System + Full App Engine)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -34,13 +34,18 @@ const ICONS = {
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
   phone: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  video: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+  videoOff: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="m16 16 7 5V7l-7 5"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   mic: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+  micOff: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M19 10v2a7 7 0 0 1-.12 1.28M5 10v2a7 7 0 0 0 10.88 5.88"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+  flipCamera: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/><path d="m16 9-3-3 3-3"/><path d="m8 15 3 3-3 3"/></svg>`,
+  speaker: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`,
   stop: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
   trash: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`
 };
 
-// Global App State
+// Global State
 const state = {
   user: null,
   profile: null,
@@ -48,7 +53,6 @@ const state = {
   profileTab: 'posts',
   activeChatUser: null,
   replyingToMessage: null,
-  activeCallingState: null,
   onlineUsers: new Set(),
   posts: [],
   stories: [],
@@ -65,7 +69,28 @@ const state = {
   activeStory: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
-  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
+  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' },
+
+  // FULL CALL STATE MACHINE
+  call: {
+    state: 'idle', // idle, calling, ringing, connecting, connected, ended
+    callId: null,
+    callType: 'voice', // 'voice' or 'video'
+    isIncoming: false,
+    otherUser: null,
+    startedAt: null,
+    connectedAt: null,
+    durationSeconds: 0,
+    timerInterval: null,
+    timeoutTimer: null,
+    isMuted: false,
+    isVideoOff: false,
+    facingMode: 'user', // 'user' or 'environment'
+    pc: null,
+    localStream: null,
+    remoteStream: null,
+    channel: null
+  }
 };
 
 let mediaRecorder = null;
@@ -74,14 +99,19 @@ let isRecordingAudio = false;
 
 const app = document.getElementById('app');
 
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' }
+  ]
+};
+
 function getUserAvatar(prof) {
   if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
   return prof?.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
 }
 
-// ----------------------------------------------------
-// RICH TEXT PARSER (#tags, @mentions, URLs)
-// ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
   let text = escapeHtml(rawText);
@@ -122,18 +152,455 @@ function showToast(msg) {
 }
 
 // ----------------------------------------------------
-// 3D ANIMATED SPLASH SCREEN (Clean Logo & No Side Glow)
+// NOTIFICATION DISPATCHER & HANDLER
+// ----------------------------------------------------
+async function triggerNotification(targetUserId, type, message, targetId = null) {
+  if (!targetUserId || targetUserId === state.user?.id) return;
+  await supabase.from('notifications').insert({
+    user_id: targetUserId,
+    actor_id: state.user.id,
+    type,
+    message,
+    target_id: targetId,
+    is_read: false
+  });
+}
+
+function handleNotificationClick(n) {
+  state.modal = null;
+  supabase.from('notifications').update({ is_read: true }).eq('id', n.id).then(loadNotifications);
+
+  if (n.type === 'post_like' || n.type === 'post_comment' || n.type === 'post_share') {
+    state.currentView = 'feed';
+    renderApp();
+    setTimeout(() => {
+      const el = document.querySelector(`[data-post-id="${n.target_id}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (n.type === 'post_comment') openCommentsModal(n.target_id);
+    }, 150);
+  } else if (n.type === 'friend_request') {
+    state.currentView = 'friends';
+    renderApp();
+  } else if (n.type === 'message' || n.actor) {
+    state.activeChatUser = n.actor;
+    state.currentView = 'messages';
+    renderApp();
+  }
+}
+
+// ----------------------------------------------------
+// WEBRTC & REALTIME CALL ENGINE
+// ----------------------------------------------------
+let ringtoneOscillator = null;
+let ringtoneAudioContext = null;
+
+function playRingtone() {
+  stopRingtone();
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(480, ctx.currentTime);
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    ringtoneOscillator = osc;
+    ringtoneAudioContext = ctx;
+  } catch (e) {}
+}
+
+function stopRingtone() {
+  if (ringtoneOscillator) {
+    try { ringtoneOscillator.stop(); } catch (e) {}
+    ringtoneOscillator = null;
+  }
+  if (ringtoneAudioContext) {
+    try { ringtoneAudioContext.close(); } catch (e) {}
+    ringtoneAudioContext = null;
+  }
+}
+
+function setupUserCallSignaling() {
+  if (!state.user) return;
+  const userChannel = supabase.channel(`user_calls_${state.user.id}`);
+  userChannel
+    .on('broadcast', { event: 'incoming_call_request' }, async ({ payload }) => {
+      if (state.call.state !== 'idle') {
+        // Send busy response
+        const replyChannel = supabase.channel(`call_signaling_${payload.callId}`);
+        replyChannel.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            replyChannel.send({ type: 'broadcast', event: 'call_busy', payload: { callId: payload.callId } });
+          }
+        });
+        return;
+      }
+      handleIncomingCall(payload);
+    })
+    .subscribe();
+}
+
+async function startOutgoingCall(targetUser, type = 'voice') {
+  if (state.call.state !== 'idle') {
+    showToast('Another call is already active.');
+    return;
+  }
+
+  const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  state.call = {
+    ...state.call,
+    state: 'calling',
+    callId,
+    callType: type,
+    isIncoming: false,
+    otherUser: targetUser,
+    startedAt: new Date().toISOString(),
+    connectedAt: null,
+    durationSeconds: 0,
+    isMuted: false,
+    isVideoOff: false
+  };
+
+  renderApp();
+  playRingtone();
+
+  // Setup Signaling Channel
+  setupCallChannel(callId);
+
+  // Send Call Request to Receiver's Channel
+  const receiverChannel = supabase.channel(`user_calls_${targetUser.id}`);
+  receiverChannel.subscribe((status) => {
+    if (status === 'SUBSCRIBED') {
+      receiverChannel.send({
+        type: 'broadcast',
+        event: 'incoming_call_request',
+        payload: {
+          callId,
+          callType: type,
+          caller: state.profile || { full_name: 'User', id: state.user.id }
+        }
+      });
+    }
+  });
+
+  // Ringing timeout (35 seconds)
+  state.call.timeoutTimer = setTimeout(() => {
+    if (state.call.state === 'calling') {
+      showToast('No answer.');
+      endActiveCall('missed');
+    }
+  }, 35000);
+}
+
+function handleIncomingCall(payload) {
+  state.call = {
+    ...state.call,
+    state: 'ringing',
+    callId: payload.callId,
+    callType: payload.callType || 'voice',
+    isIncoming: true,
+    otherUser: payload.caller,
+    startedAt: new Date().toISOString(),
+    connectedAt: null,
+    durationSeconds: 0,
+    isMuted: false,
+    isVideoOff: false
+  };
+
+  renderApp();
+  playRingtone();
+  setupCallChannel(payload.callId);
+}
+
+function setupCallChannel(callId) {
+  if (state.call.channel) {
+    supabase.removeChannel(state.call.channel);
+  }
+
+  const ch = supabase.channel(`call_signaling_${callId}`);
+  state.call.channel = ch;
+
+  ch.on('broadcast', { event: 'call_accepted' }, async () => {
+    stopRingtone();
+    if (!state.call.isIncoming) {
+      // Caller initiates WebRTC Offer
+      await initializeWebRTC(true);
+    }
+  })
+  .on('broadcast', { event: 'call_declined' }, () => {
+    stopRingtone();
+    showToast('Call declined.');
+    endActiveCall('declined');
+  })
+  .on('broadcast', { event: 'call_busy' }, () => {
+    stopRingtone();
+    showToast('User is busy on another call.');
+    endActiveCall('busy');
+  })
+  .on('broadcast', { event: 'webrtc_offer' }, async ({ payload }) => {
+    if (state.call.isIncoming) {
+      await initializeWebRTC(false);
+      await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      const answer = await state.call.pc.createAnswer();
+      await state.call.pc.setLocalDescription(answer);
+      ch.send({ type: 'broadcast', event: 'webrtc_answer', payload: { sdp: answer } });
+    }
+  })
+  .on('broadcast', { event: 'webrtc_answer' }, async ({ payload }) => {
+    if (!state.call.isIncoming && state.call.pc) {
+      await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+    }
+  })
+  .on('broadcast', { event: 'ice_candidate' }, async ({ payload }) => {
+    if (state.call.pc && payload.candidate) {
+      try {
+        await state.call.pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+      } catch (e) {}
+    }
+  })
+  .on('broadcast', { event: 'call_ended' }, () => {
+    endActiveCall('remote_ended');
+  })
+  .subscribe();
+}
+
+async function initializeWebRTC(isCaller) {
+  clearTimeout(state.call.timeoutTimer);
+  state.call.state = 'connecting';
+  renderApp();
+
+  try {
+    const isVideo = state.call.callType === 'video';
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: isVideo ? { facingMode: state.call.facingMode } : false
+    });
+
+    state.call.localStream = stream;
+    attachLocalMediaStream(stream);
+
+    const pc = new RTCPeerConnection(RTC_CONFIG);
+    state.call.pc = pc;
+
+    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate && state.call.channel) {
+        state.call.channel.send({
+          type: 'broadcast',
+          event: 'ice_candidate',
+          payload: { candidate: event.candidate }
+        });
+      }
+    };
+
+    pc.ontrack = (event) => {
+      state.call.remoteStream = event.streams[0];
+      attachRemoteMediaStream(event.streams[0]);
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'connected') {
+        state.call.state = 'connected';
+        state.call.connectedAt = new Date().toISOString();
+        startCallTimer();
+        renderApp();
+      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        showToast('Call connection lost.');
+        endActiveCall('failed');
+      }
+    };
+
+    if (isCaller) {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      state.call.channel.send({ type: 'broadcast', event: 'webrtc_offer', payload: { sdp: offer } });
+    }
+  } catch (err) {
+    showToast(`${state.call.callType === 'video' ? 'Camera/Microphone' : 'Microphone'} access required.`);
+    endActiveCall('permission_denied');
+  }
+}
+
+function attachLocalMediaStream(stream) {
+  setTimeout(() => {
+    const localVideoEl = document.getElementById('callLocalVideo');
+    if (localVideoEl) {
+      localVideoEl.srcObject = stream;
+    }
+  }, 100);
+}
+
+function attachRemoteMediaStream(stream) {
+  setTimeout(() => {
+    const remoteVideoEl = document.getElementById('callRemoteVideo');
+    const remoteAudioEl = document.getElementById('callRemoteAudio');
+    if (remoteVideoEl && state.call.callType === 'video') {
+      remoteVideoEl.srcObject = stream;
+    }
+    if (remoteAudioEl) {
+      remoteAudioEl.srcObject = stream;
+    }
+  }, 100);
+}
+
+function startCallTimer() {
+  clearInterval(state.call.timerInterval);
+  state.call.durationSeconds = 0;
+  state.call.timerInterval = setInterval(() => {
+    state.call.durationSeconds++;
+    const timerEls = document.querySelectorAll('.call-live-timer-text');
+    const formatted = formatCallDuration(state.call.durationSeconds);
+    timerEls.forEach((el) => { el.innerText = formatted; });
+  }, 1000);
+}
+
+async function acceptIncomingCall(withVideo = null) {
+  stopRingtone();
+  if (withVideo !== null) {
+    state.call.callType = withVideo ? 'video' : 'voice';
+  }
+  if (state.call.channel) {
+    state.call.channel.send({ type: 'broadcast', event: 'call_accepted', payload: {} });
+  }
+  await initializeWebRTC(false);
+}
+
+function declineIncomingCall() {
+  stopRingtone();
+  if (state.call.channel) {
+    state.call.channel.send({ type: 'broadcast', event: 'call_declined', payload: {} });
+  }
+  endActiveCall('declined');
+}
+
+function endActiveCall(reason = 'ended') {
+  stopRingtone();
+  clearTimeout(state.call.timeoutTimer);
+  clearInterval(state.call.timerInterval);
+
+  if (state.call.channel) {
+    if (reason !== 'remote_ended' && reason !== 'declined' && reason !== 'busy') {
+      state.call.channel.send({ type: 'broadcast', event: 'call_ended', payload: {} });
+    }
+    supabase.removeChannel(state.call.channel);
+  }
+
+  if (state.call.localStream) {
+    state.call.localStream.getTracks().forEach((track) => track.stop());
+  }
+
+  if (state.call.pc) {
+    state.call.pc.close();
+  }
+
+  // Record Call Session into History
+  if (state.call.otherUser && state.user) {
+    supabase.from('call_sessions').insert({
+      caller_id: state.call.isIncoming ? state.call.otherUser.id : state.user.id,
+      receiver_id: state.call.isIncoming ? state.user.id : state.call.otherUser.id,
+      call_type: state.call.callType,
+      status: reason,
+      duration_seconds: state.call.durationSeconds,
+      started_at: state.call.startedAt,
+      ended_at: new Date().toISOString()
+    }).then(() => {});
+  }
+
+  const finalDuration = state.call.durationSeconds;
+  const lastUser = state.call.otherUser;
+  const lastType = state.call.callType;
+
+  state.call = {
+    state: (reason === 'ended' || reason === 'remote_ended' || finalDuration > 0) ? 'ended' : 'idle',
+    callId: null,
+    callType: lastType,
+    isIncoming: false,
+    otherUser: lastUser,
+    startedAt: null,
+    connectedAt: null,
+    durationSeconds: finalDuration,
+    timerInterval: null,
+    timeoutTimer: null,
+    isMuted: false,
+    isVideoOff: false,
+    facingMode: 'user',
+    pc: null,
+    localStream: null,
+    remoteStream: null,
+    channel: null
+  };
+
+  renderApp();
+}
+
+function toggleMute() {
+  if (!state.call.localStream) return;
+  const audioTrack = state.call.localStream.getAudioTracks()[0];
+  if (audioTrack) {
+    audioTrack.enabled = !audioTrack.enabled;
+    state.call.isMuted = !audioTrack.enabled;
+    renderApp();
+  }
+}
+
+function toggleCamera() {
+  if (!state.call.localStream || state.call.callType !== 'video') return;
+  const videoTrack = state.call.localStream.getVideoTracks()[0];
+  if (videoTrack) {
+    videoTrack.enabled = !videoTrack.enabled;
+    state.call.isVideoOff = !videoTrack.enabled;
+    renderApp();
+  }
+}
+
+async function flipCamera() {
+  if (state.call.callType !== 'video' || !state.call.localStream) return;
+  state.call.facingMode = state.call.facingMode === 'user' ? 'environment' : 'user';
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: { facingMode: state.call.facingMode }
+    });
+    const videoTrack = newStream.getVideoTracks()[0];
+    const sender = state.call.pc?.getSenders().find((s) => s.track && s.track.kind === 'video');
+    if (sender) sender.replaceTrack(videoTrack);
+    state.call.localStream.getVideoTracks()[0].stop();
+    state.call.localStream = newStream;
+    attachLocalMediaStream(newStream);
+  } catch (e) {
+    showToast('Cannot switch camera.');
+  }
+}
+
+function formatCallDuration(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+// ----------------------------------------------------
+// 3D SPLASH SCREEN
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
-    app.innerHTML = `<div class="boot"><div class="brand-logo-img"><img src="${ASSETS.appLogo}" alt="Logo"></div><h2>Alapon Lite Configuration</h2><p class="muted">Check credentials in supabase.js</p></div>`;
+    app.innerHTML = `
+      <div class="boot">
+        <div style="width:50px;height:50px;margin:0 auto 12px;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Logo" style="width:50px;height:50px;object-fit:contain;">
+        </div>
+        <h2>Alapon Lite Configuration</h2>
+        <p class="muted">Check credentials in supabase.js</p>
+      </div>`;
     return;
   }
 
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise(resolve => setTimeout(resolve, 3800));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3600));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -141,7 +608,7 @@ async function init() {
     await loadUserProfile();
     await loadInitialData();
     setupRealtime();
-    setupCallSignaling();
+    setupUserCallSignaling();
     renderApp();
   } else {
     renderAuth('login');
@@ -153,7 +620,7 @@ async function init() {
       await loadUserProfile();
       await loadInitialData();
       setupRealtime();
-      setupCallSignaling();
+      setupUserCallSignaling();
       renderApp();
     } else if (event === 'SIGNED_OUT') {
       state.user = null;
@@ -172,17 +639,12 @@ function render3DSplashScreen() {
       <div class="floating-badge badge-mid-right">👍</div>
 
       <div class="splash-3d-center">
-        <!-- Clean Image Logo -->
-        <div class="splash-clean-logo-box">
-          <img src="${ASSETS.appLogo}" alt="Alapon Logo" class="splash-main-logo-img">
+        <div style="width:110px;height:110px;max-width:110px;max-height:110px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:110px;height:110px;object-fit:contain;display:block;">
         </div>
-        
         <h1 class="splash-3d-title">Alapon <span class="splash-verified-icon">✔</span></h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
-        
-        <div class="splash-3d-progress-container">
-          <div class="splash-3d-progress-bar"></div>
-        </div>
+        <div class="splash-3d-progress-container"><div class="splash-3d-progress-bar"></div></div>
         <span class="splash-3d-loading-text">Loading...</span>
       </div>
 
@@ -254,24 +716,24 @@ async function loadFriendsData() {
     .select(`*, requester:requester_id(id, full_name, username, avatar_url, gender), receiver:receiver_id(id, full_name, username, avatar_url, gender)`)
     .or(`requester_id.eq.${state.user.id},receiver_id.eq.${state.user.id}`)
     .eq('status', 'accepted');
-  state.friends = (fList || []).map(f => f.requester_id === state.user.id ? f.receiver : f.requester);
+  state.friends = (fList || []).map((f) => (f.requester_id === state.user.id ? f.receiver : f.requester));
 }
 
 async function loadSuggestedUsers() {
   if (!state.user) return;
-  const friendIds = new Set([state.user.id, ...state.friends.map(f => f.id), ...state.friendRequests.map(r => r.requester_id)]);
+  const friendIds = new Set([state.user.id, ...state.friends.map((f) => f.id), ...state.friendRequests.map((r) => r.requester_id)]);
   const { data: allUsers } = await supabase.from('profiles').select('*').limit(20);
-  state.suggestedUsers = (allUsers || []).filter(u => !friendIds.has(u.id));
+  state.suggestedUsers = (allUsers || []).filter((u) => !friendIds.has(u.id));
 }
 
 async function loadNotifications() {
   if (!state.user) return;
   const { data } = await supabase
     .from('notifications')
-    .select(`*, actor:actor_id (id, full_name, avatar_url, gender)`)
+    .select(`*, actor:actor_id (id, full_name, avatar_url, gender, username)`)
     .eq('user_id', state.user.id)
     .order('created_at', { ascending: false })
-    .limit(20);
+    .limit(30);
   state.notifications = data || [];
 }
 
@@ -316,7 +778,9 @@ function setupRealtime() {
       loadUnreadCounts().then(renderApp);
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(renderApp); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => { loadNotifications().then(renderApp); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
+      loadNotifications().then(() => { loadUnreadCounts().then(renderApp); });
+    })
     .subscribe();
 }
 
@@ -329,101 +793,7 @@ function updateActiveUserStatus() {
 }
 
 // ----------------------------------------------------
-// CALL SYSTEM (Signaling over Supabase Broadcast)
-// ----------------------------------------------------
-let callChannel = null;
-
-function setupCallSignaling() {
-  if (!state.user) return;
-  callChannel = supabase.channel(`call_channel_${state.user.id}`);
-  callChannel
-    .on('broadcast', { event: 'incoming_call' }, ({ payload }) => {
-      if (state.activeCallingState) return;
-      state.activeCallingState = {
-        isIncoming: true,
-        user: payload.caller,
-        channelId: payload.channelId
-      };
-      playRingtone();
-      renderApp();
-    })
-    .on('broadcast', { event: 'call_declined' }, () => {
-      stopRingtone();
-      endActiveCall();
-      showToast('Call declined.');
-    })
-    .on('broadcast', { event: 'call_accepted' }, async () => {
-      stopRingtone();
-      showToast('Call connected! 🎙️');
-      const banner = document.getElementById('callDurationText');
-      if (banner) banner.innerText = 'Connected (Audio Active)';
-    })
-    .subscribe();
-}
-
-function playRingtone() {
-  try {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, audioContext.currentTime);
-    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-    osc.start();
-    state._ringOsc = osc;
-    state._ringCtx = audioContext;
-  } catch(e) {}
-}
-
-function stopRingtone() {
-  if (state._ringOsc) {
-    try { state._ringOsc.stop(); } catch(e){}
-    state._ringOsc = null;
-  }
-  if (state._ringCtx) {
-    try { state._ringCtx.close(); } catch(e){}
-    state._ringCtx = null;
-  }
-}
-
-function startAudioCall(targetUser) {
-  state.activeCallingState = {
-    isIncoming: false,
-    user: targetUser
-  };
-  renderApp();
-  playRingtone();
-
-  const targetChannel = supabase.channel(`call_channel_${targetUser.id}`);
-  targetChannel.subscribe((status) => {
-    if (status === 'SUBSCRIBED') {
-      targetChannel.send({
-        type: 'broadcast',
-        event: 'incoming_call',
-        payload: { caller: state.profile, channelId: state.user.id }
-      });
-    }
-  });
-}
-
-function endActiveCall() {
-  stopRingtone();
-  if (state.activeCallingState?.user) {
-    const targetChannel = supabase.channel(`call_channel_${state.activeCallingState.user.id}`);
-    targetChannel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') {
-        targetChannel.send({ type: 'broadcast', event: 'call_declined', payload: {} });
-      }
-    });
-  }
-  state.activeCallingState = null;
-  renderApp();
-}
-
-// ----------------------------------------------------
-// AUTH (Login & 5-Step Wizard)
+// AUTH (Login & 5-Step Signup)
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -431,8 +801,8 @@ function renderAuth(mode = 'login') {
       <div class="auth">
         <div class="auth-hero">
           <div class="hero-inner">
-            <div class="brand-logo-img" style="width:78px;height:78px;margin-bottom:16px;">
-              <img src="${ASSETS.appLogo}" alt="Alapon Lite">
+            <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
+              <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
             </div>
             <h1>Alapon Lite</h1>
             <p>Connect • Share • Grow</p>
@@ -556,8 +926,8 @@ function renderSignupStep() {
     <div class="auth">
       <div class="auth-hero">
         <div class="hero-inner">
-          <div class="brand-logo-img" style="width:78px;height:78px;margin-bottom:16px;">
-            <img src="${ASSETS.appLogo}" alt="Alapon Lite">
+          <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
+            <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
           </div>
           <h1>Alapon Lite</h1>
           <p>Connect • Share • Grow</p>
@@ -611,7 +981,7 @@ function renderSignupStep() {
       renderSignupStep();
     };
   } else if (step === 4) {
-    document.querySelectorAll('.gender-pill').forEach(pill => {
+    document.querySelectorAll('.gender-pill').forEach((pill) => {
       pill.onclick = () => {
         const rad = pill.querySelector('input');
         state.signupDraft.gender = rad.value;
@@ -688,11 +1058,11 @@ function renderApp() {
 
   app.innerHTML = `
     <div class="app-shell ${isChatActive ? 'in-chat-mode' : ''}">
-      <!-- TOP BAR -->
+      <!-- TOP BAR (FIXED) -->
       <header class="topbar">
         <div class="brand" id="brandHomeBtn">
-          <div class="brand-logo-img">
-            <img src="${ASSETS.appLogo}" alt="Logo">
+          <div style="width:36px;height:36px;max-width:36px;max-height:36px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+            <img src="${ASSETS.appLogo}" alt="Logo" style="width:36px;height:36px;object-fit:contain;display:block;">
           </div>
           <span class="brand-title">Alapon Lite</span>
         </div>
@@ -730,7 +1100,7 @@ function renderApp() {
           </div>
         </aside>
 
-        <!-- MAIN VIEW -->
+        <!-- MAIN VIEW (SCROLLABLE ONLY) -->
         <main class="feed">
           ${renderCurrentViewContent()}
         </main>
@@ -747,7 +1117,7 @@ function renderApp() {
         </aside>
       </div>
 
-      <!-- MOBILE BOTTOM NAVIGATION -->
+      <!-- MOBILE BOTTOM NAVIGATION (FIXED) -->
       ${!isChatActive ? `
         <nav class="bottom-nav">
           <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
@@ -758,8 +1128,8 @@ function renderApp() {
         </nav>
       ` : ''}
 
-      <!-- AUDIO CALL POPUP -->
-      ${renderAudioCallModal()}
+      <!-- FULL CALL SYSTEM OVERLAY (SCREEN 2 - 7) -->
+      ${renderCallSystemOverlay()}
 
       <!-- MODALS CONTAINER -->
       <div id="modalContainer"></div>
@@ -776,7 +1146,7 @@ function renderApp() {
 
 function renderFriendRequestsSidebar() {
   if (!state.friendRequests.length) return `<p class="muted center" style="font-size:13px;padding:12px 0;">No pending requests</p>`;
-  return state.friendRequests.slice(0, 3).map(r => `
+  return state.friendRequests.slice(0, 3).map((r) => `
     <div class="list-row">
       <div class="avatar" style="width:38px;height:38px;">
         <img src="${getUserAvatar(r.requester)}">
@@ -784,7 +1154,7 @@ function renderFriendRequestsSidebar() {
       <div class="grow" style="font-size:13px;">
         <b>${escapeHtml(r.requester?.full_name || 'User')}</b>
         <div class="row" style="margin-top:6px;gap:6px;">
-          <button class="btn primary acceptReqBtn" data-id="${r.id}" style="padding:4px 10px;font-size:11px;">Confirm</button>
+          <button class="btn primary acceptReqBtn" data-id="${r.id}" data-requester="${r.requester_id}" style="padding:4px 10px;font-size:11px;">Confirm</button>
           <button class="btn secondary rejectReqBtn" data-id="${r.id}" style="padding:4px 10px;font-size:11px;">Delete</button>
         </div>
       </div>
@@ -804,16 +1174,15 @@ function renderCurrentViewContent() {
 }
 
 // ----------------------------------------------------
-// HOME FEED VIEW
+// FEED VIEW
 // ----------------------------------------------------
 function renderFeedView() {
   const p = state.profile || {};
   const userAvatar = getUserAvatar(p);
-  const myStories = state.stories.filter(s => s.user_id === state.user?.id);
-  const otherStories = state.stories.filter(s => s.user_id !== state.user?.id);
+  const myStories = state.stories.filter((s) => s.user_id === state.user?.id);
+  const otherStories = state.stories.filter((s) => s.user_id !== state.user?.id);
 
   return `
-    <!-- STORIES ROW -->
     <div class="card-ui stories" style="padding:12px 14px;margin-bottom:12px;">
       <input type="file" id="storyUploadInput" accept="image/*" style="display:none;">
       <div class="story" id="addStoryBtn">
@@ -826,7 +1195,7 @@ function renderFeedView() {
         <span>Your Story</span>
       </div>
 
-      ${otherStories.map(s => `
+      ${otherStories.map((s) => `
         <div class="story viewStoryBtn" data-story-id="${s.id}">
           <div class="avatar" style="border:3px solid #315cff;">
             <img src="${getUserAvatar(s.profiles)}">
@@ -836,16 +1205,15 @@ function renderFeedView() {
       `).join('')}
     </div>
 
-    <!-- POSTS LIST -->
     <div class="posts-list">
       ${state.posts.length === 0 ? `<div class="card-ui empty"><p class="muted">No posts yet. Tap ➕ below to create a post!</p></div>` : ''}
-      ${state.posts.map(post => renderPostCard(post)).join('')}
+      ${state.posts.map((post) => renderPostCard(post)).join('')}
     </div>
   `;
 }
 
 function renderPostCard(post) {
-  const isLiked = post.post_likes?.some(l => l.user_id === state.user?.id);
+  const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
   const likesCount = post.post_likes?.length || 0;
   const commentsCount = post.comments?.length || 0;
   const sharesCount = post.post_shares?.length || 0;
@@ -868,26 +1236,22 @@ function renderPostCard(post) {
         <button class="btn ghost more" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
       </div>
 
-      <!-- RICH TEXT CAPTION -->
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
-
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
 
-      <!-- COUNTERS -->
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b>${likesCount}</b></div>
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
-      <!-- ACTIONS -->
       <div class="post-actions">
-        <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}">
+        <button class="likePostBtn ${isLiked ? 'liked' : ''}" data-id="${post.id}" data-author="${post.user_id}">
           ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; Like
         </button>
         <button class="commentPostBtn" data-id="${post.id}">
           ${ICONS.comment} &nbsp; Comment
         </button>
-        <button class="sharePostBtn" data-id="${post.id}" data-text="${escapeHtml(post.content || '')}">
+        <button class="sharePostBtn" data-id="${post.id}" data-author="${post.user_id}" data-text="${escapeHtml(post.content || '')}">
           ${ICONS.share} &nbsp; Share
         </button>
       </div>
@@ -896,26 +1260,26 @@ function renderPostCard(post) {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (Fixed Camera Badge)
+// PROFILE VIEW (With Voice Call & Video Call in Profile)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
   const userAvatar = getUserAvatar(p);
-  const myPosts = state.posts.filter(item => item.user_id === state.user?.id);
-  const myPhotos = myPosts.filter(item => item.media_url);
+  const myPosts = state.posts.filter((item) => item.user_id === state.user?.id);
+  const myPhotos = myPosts.filter((item) => item.media_url);
 
   let tabContentHtml = '';
   if (state.profileTab === 'posts') {
     tabContentHtml = myPosts.length === 0
       ? `<div class="card-ui empty"><p class="muted">You haven't posted yet.</p></div>`
-      : myPosts.map(post => renderPostCard(post)).join('');
+      : myPosts.map((post) => renderPostCard(post)).join('');
   } else if (state.profileTab === 'photos') {
     tabContentHtml = `
       <div class="card-ui">
         <b>Photos (${myPhotos.length})</b>
         <div class="photos-grid" style="margin-top:12px;">
           ${myPhotos.length === 0 ? `<p class="muted" style="padding:10px 0;">No photos uploaded yet.</p>` : ''}
-          ${myPhotos.map(ph => `<img src="${ph.media_url}" loading="lazy">`).join('')}
+          ${myPhotos.map((ph) => `<img src="${ph.media_url}" loading="lazy">`).join('')}
         </div>
       </div>
     `;
@@ -975,7 +1339,6 @@ function renderProfileView() {
           ${(p.current_city || p.location) ? `<small class="muted" style="display:block;margin-top:4px;">📍 ${escapeHtml(p.current_city || p.location)}</small>` : ''}
         </div>
 
-        <!-- STATS -->
         <div class="stats">
           <div class="stat"><b>${myPosts.length}</b><span class="muted">Posts</span></div>
           <div class="stat"><b>${state.friends.length}</b><span class="muted">Friends</span></div>
@@ -983,7 +1346,6 @@ function renderProfileView() {
           <div class="stat"><b>0</b><span class="muted">Following</span></div>
         </div>
 
-        <!-- TABS -->
         <div class="tabs">
           <button class="${state.profileTab === 'posts' ? 'active' : ''}" id="tabPostsBtn">Posts</button>
           <button class="${state.profileTab === 'photos' ? 'active' : ''}" id="tabPhotosBtn">Photos</button>
@@ -1007,7 +1369,7 @@ function renderFriendsView() {
       <b style="font-size:16px;display:block;margin-top:10px;">Friend Requests (${state.friendRequests.length})</b>
       <div style="margin:10px 0 20px;">
         ${state.friendRequests.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No pending friend requests</p>` : ''}
-        ${state.friendRequests.map(r => `
+        ${state.friendRequests.map((r) => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(r.requester)}"></div>
             <div class="grow">
@@ -1015,7 +1377,7 @@ function renderFriendsView() {
               <div class="muted" style="font-size:12px;">@${escapeHtml(r.requester?.username || '')}</div>
             </div>
             <div class="row" style="gap:8px;">
-              <button class="btn primary acceptReqBtn" data-id="${r.id}">Confirm</button>
+              <button class="btn primary acceptReqBtn" data-id="${r.id}" data-requester="${r.requester_id}">Confirm</button>
               <button class="btn secondary rejectReqBtn" data-id="${r.id}">Delete</button>
             </div>
           </div>
@@ -1025,7 +1387,7 @@ function renderFriendsView() {
       <b style="font-size:16px;display:block;margin-top:10px;">Your Friends (${state.friends.length})</b>
       <div style="margin:10px 0 24px;">
         ${state.friends.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No friends added yet.</p>` : ''}
-        ${state.friends.map(fr => `
+        ${state.friends.map((fr) => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
             <div class="grow">
@@ -1034,7 +1396,11 @@ function renderFriendsView() {
                 ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
               </div>
             </div>
-            <button class="icon-btn startChatBtn" data-user-id="${fr.id}">${ICONS.messages}</button>
+            <div class="row" style="gap:6px;">
+              <button class="icon-btn-minimal startDirectVoiceCallBtn" data-user-id="${fr.id}" title="Voice Call" style="color:#315cff;">${ICONS.phone}</button>
+              <button class="icon-btn-minimal startDirectVideoCallBtn" data-user-id="${fr.id}" title="Video Call" style="color:#7142ff;">${ICONS.video}</button>
+              <button class="icon-btn-minimal startChatBtn" data-user-id="${fr.id}" title="Chat">${ICONS.messages}</button>
+            </div>
           </div>
         `).join('')}
       </div>
@@ -1042,7 +1408,7 @@ function renderFriendsView() {
       <b style="font-size:16px;display:block;margin-top:10px;">Discover People on Alapon</b>
       <div style="margin-top:10px;">
         ${state.suggestedUsers.length === 0 ? `<p class="muted" style="padding:8px 0;font-size:13.5px;">No new suggestions right now.</p>` : ''}
-        ${state.suggestedUsers.map(u => `
+        ${state.suggestedUsers.map((u) => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(u)}"></div>
             <div class="grow">
@@ -1058,7 +1424,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// MESSENGER VIEW
+// PRO MESSENGER VIEW (Screen 1: Call/Video Actions in Header)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -1067,7 +1433,7 @@ function renderMessagesView() {
 
     return `
       <div class="chat-fullscreen-wrapper">
-        <!-- FIXED CHAT HEADER -->
+        <!-- FIXED STICKY CHAT HEADER WITH VOICE & VIDEO CALL BUTTONS -->
         <div class="chat-header-bar">
           <button class="icon-btn-minimal" id="backToChatListBtn" title="Back">${ICONS.back}</button>
           <div class="avatar" style="width:40px;height:40px;margin-left:4px;"><img src="${friendAvatar}"></div>
@@ -1077,9 +1443,14 @@ function renderMessagesView() {
               ${isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
             </small>
           </div>
-          <button class="icon-btn-minimal" id="startVoiceCallBtn" title="Audio Call" style="color:#315cff;">
-            ${ICONS.phone}
-          </button>
+          <div class="row" style="gap:4px;">
+            <button class="icon-btn-minimal" id="startVoiceCallBtn" title="Voice Call" style="color:#315cff;">
+              ${ICONS.phone}
+            </button>
+            <button class="icon-btn-minimal" id="startVideoCallBtn" title="Video Call" style="color:#7142ff;">
+              ${ICONS.video}
+            </button>
+          </div>
         </div>
 
         <!-- WALLPAPER CONTAINER WITH DARK OVERLAY -->
@@ -1099,7 +1470,7 @@ function renderMessagesView() {
           <button class="btn ghost" id="cancelReplyBtn" style="padding:4px 8px;">✕</button>
         </div>
 
-        <!-- INPUT BAR -->
+        <!-- FIXED CHAT INPUT DOCK -->
         <div class="chat-input-dock">
           <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
           <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
@@ -1122,7 +1493,7 @@ function renderMessagesView() {
       <input class="input" type="text" id="filterChatConversations" placeholder="Search conversations..." style="margin:14px 0;">
       <div>
         ${state.friends.length === 0 ? `<p class="muted center" style="padding:20px 0;">Add friends to start messaging!</p>` : ''}
-        ${state.friends.map(fr => `
+        ${state.friends.map((fr) => `
           <div class="list-row startChatBtn" data-user-id="${fr.id}" style="cursor:pointer;">
             <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
             <div class="grow">
@@ -1140,35 +1511,238 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// AUDIO CALL MODAL
+// FULL CALL SYSTEM OVERLAYS (MATCHING SCREENS 2 - 7)
 // ----------------------------------------------------
-function renderAudioCallModal() {
-  if (!state.activeCallingState) return '';
-  const callUser = state.activeCallingState.user || {};
-  const isInc = state.activeCallingState.isIncoming;
+function renderCallSystemOverlay() {
+  const c = state.call;
+  if (c.state === 'idle') return '';
 
-  return `
-    <div class="full-modal-back audio-call-overlay">
-      <div class="audio-call-card">
-        <div class="avatar call-pulse-avatar" style="width:96px;height:96px;margin:0 auto 16px;">
-          <img src="${getUserAvatar(callUser)}">
+  const otherUser = c.otherUser || { full_name: 'User' };
+  const otherAvatar = getUserAvatar(otherUser);
+
+  // Hidden Audio Element for Remote Voice
+  const remoteAudioTag = `<audio id="callRemoteAudio" autoplay playsinline></audio>`;
+
+  // ----------------------------------------------------
+  // SCREEN 2: CALLING SCREEN (SENDER SIDE)
+  // ----------------------------------------------------
+  if (c.state === 'calling' || c.state === 'connecting') {
+    return `
+      <div class="call-full-screen-overlay">
+        ${remoteAudioTag}
+        <div class="call-top-bar-info">
+          <span class="call-type-badge">${c.callType === 'video' ? 'Outgoing Video Call' : 'Outgoing Voice Call'}</span>
         </div>
-        <h3 style="color:#fff;margin:0;font-size:22px;">${escapeHtml(callUser.full_name || 'Friend')}</h3>
-        <p style="color:#a5b4fc;margin:6px 0 24px;" id="callDurationText">${isInc ? 'Incoming Audio Call...' : 'Calling...'}</p>
 
-        <div class="row center" style="gap:20px;justify-content:center;">
-          ${isInc ? `
-            <button class="btn-call accept-call" id="acceptIncomingCallBtn" title="Accept">
-              ${ICONS.phone}
-            </button>
-          ` : ''}
-          <button class="btn-call end-call" id="declineOrEndCallBtn" title="Decline / End">
-            ✕
+        <div class="call-center-profile-box">
+          <div class="call-avatar-glow-ring">
+            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
+          </div>
+          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
+          <p class="call-status-label">${c.state === 'connecting' ? 'Connecting...' : 'Calling...'}</p>
+          
+          <div class="call-audio-waveform">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="call-bottom-action-bar">
+          <button class="call-btn-circle end-call-btn" id="cancelOutgoingCallBtn" title="End Call">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
           </button>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  }
+
+  // ----------------------------------------------------
+  // SCREEN 3 & 4: INCOMING CALL SCREEN (RECEIVER SIDE)
+  // ----------------------------------------------------
+  if (c.state === 'ringing') {
+    const isVideo = c.callType === 'video';
+    return `
+      <div class="call-full-screen-overlay incoming-call-bg">
+        <div class="call-top-bar-info">
+          <div class="call-type-indicator-row">
+            ${isVideo ? ICONS.video : ICONS.phone}
+            <span>${isVideo ? 'Incoming Video Call' : 'Incoming Voice Call'}</span>
+          </div>
+        </div>
+
+        <div class="call-center-profile-box">
+          <div class="call-avatar-glow-ring incoming-pulse">
+            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
+          </div>
+          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
+          <p class="call-status-label">${isVideo ? 'Incoming video call...' : 'Incoming voice call...'}</p>
+        </div>
+
+        <div class="call-incoming-actions-row">
+          <div class="call-action-col">
+            <button class="call-btn-circle end-call-btn" id="declineCallBtn" title="Decline">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+            </button>
+            <span class="call-action-label">Decline</span>
+          </div>
+
+          <div class="call-action-col">
+            <button class="call-btn-circle accept-call-btn" id="acceptCallBtn" title="Accept">
+              ${isVideo ? ICONS.video : ICONS.phone}
+            </button>
+            <span class="call-action-label">${isVideo ? 'Answer Video' : 'Accept'}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ----------------------------------------------------
+  // SCREEN 5: CALL CONNECTED (VOICE CALL)
+  // ----------------------------------------------------
+  if (c.state === 'connected' && c.callType === 'voice') {
+    return `
+      <div class="call-full-screen-overlay connected-voice-bg">
+        ${remoteAudioTag}
+        <div class="call-connected-top-header">
+          <div class="avatar" style="width:36px;height:36px;"><img src="${otherAvatar}"></div>
+          <div>
+            <b style="font-size:14px;color:#fff;display:block;">${escapeHtml(otherUser.full_name)}</b>
+            <small style="color:#10b981;font-size:11px;">🟢 Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span></small>
+          </div>
+        </div>
+
+        <div class="call-center-profile-box">
+          <div class="call-avatar-glow-ring connected-pulse">
+            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
+          </div>
+          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
+          <p class="call-connected-timer-badge">
+            <span style="color:#38bdf8;">📞</span> Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span>
+          </p>
+        </div>
+
+        <div class="call-connected-dock-glass">
+          <div class="call-dock-row">
+            <button class="call-dock-btn ${c.isMuted ? 'active-mute' : ''}" id="toggleCallMuteBtn">
+              ${c.isMuted ? ICONS.micOff : ICONS.mic}
+              <span>${c.isMuted ? 'Unmute' : 'Mute'}</span>
+            </button>
+
+            <button class="call-dock-btn" id="toggleCallSpeakerBtn">
+              ${ICONS.speaker}
+              <span>Speaker</span>
+            </button>
+
+            <button class="call-dock-btn" id="callAddPersonDisabledBtn" style="opacity:0.6;">
+              ${ICONS.friends}
+              <span>Add</span>
+            </button>
+          </div>
+
+          <div style="margin-top:20px;text-align:center;">
+            <button class="call-btn-circle end-call-btn" id="hangupCallBtn" title="End Call">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+            </button>
+            <div style="color:#cbd5e1;font-size:12px;margin-top:6px;font-weight:700;">End Call</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ----------------------------------------------------
+  // SCREEN 6: CALL CONNECTED (VIDEO CALL)
+  // ----------------------------------------------------
+  if (c.state === 'connected' && c.callType === 'video') {
+    return `
+      <div class="call-full-screen-overlay video-call-bg">
+        ${remoteAudioTag}
+        <!-- FULLSCREEN REMOTE VIDEO STREAM -->
+        <video id="callRemoteVideo" class="call-remote-video-fullscreen" autoplay playsinline></video>
+
+        <!-- TOP BAR DURATION & STATUS -->
+        <div class="call-video-top-status-bar">
+          <div class="row" style="gap:8px;">
+            <span style="color:#10b981;">🟢</span>
+            <span style="color:#fff;font-weight:700;font-size:13px;">Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span></span>
+          </div>
+        </div>
+
+        <!-- FLOATING LOCAL VIDEO PIP (TOP-RIGHT) -->
+        <div class="call-local-pip-box">
+          <video id="callLocalVideo" class="call-local-pip-video" autoplay playsinline muted></video>
+          ${c.isVideoOff ? `<div class="pip-video-off-cover">${ICONS.videoOff}</div>` : ''}
+        </div>
+
+        <!-- BOTTOM GLASS CONTROL DOCK -->
+        <div class="call-video-control-dock">
+          <button class="call-video-control-btn ${c.isMuted ? 'active-mute' : ''}" id="toggleCallMuteBtn" title="Mute/Unmute">
+            ${c.isMuted ? ICONS.micOff : ICONS.mic}
+            <span>${c.isMuted ? 'Unmute' : 'Mute'}</span>
+          </button>
+
+          <button class="call-video-control-btn ${c.isVideoOff ? 'active-mute' : ''}" id="toggleCallCameraBtn" title="Camera On/Off">
+            ${c.isVideoOff ? ICONS.videoOff : ICONS.video}
+            <span>Camera</span>
+          </button>
+
+          <button class="call-video-control-btn call-video-end-btn" id="hangupCallBtn" title="End Call">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+            <span>End</span>
+          </button>
+
+          <button class="call-video-control-btn" id="toggleCallSpeakerBtn" title="Speaker">
+            ${ICONS.speaker}
+            <span>Speaker</span>
+          </button>
+
+          <button class="call-video-control-btn" id="flipCallCameraBtn" title="Flip Camera">
+            ${ICONS.flipCamera}
+            <span>Flip</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ----------------------------------------------------
+  // SCREEN 7: CALL END (CALL SUMMARY)
+  // ----------------------------------------------------
+  if (c.state === 'ended') {
+    return `
+      <div class="call-full-screen-overlay summary-bg">
+        <div class="call-center-profile-box">
+          <div class="call-avatar-glow-ring call-ended-ring">
+            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
+            <span class="call-ended-badge-icon">✕</span>
+          </div>
+
+          <h2 class="call-user-name" style="margin-top:16px;">Call Ended</h2>
+          <p class="muted" style="color:#a5b4fc;font-size:14px;">${escapeHtml(otherUser.full_name)}</p>
+
+          <div class="call-summary-duration-pill">
+            <span style="font-size:16px;">⏱</span>
+            <b>${formatCallDuration(c.durationSeconds)}</b>
+            <span style="color:#cbd5e1;font-size:12px;">Call Duration</span>
+          </div>
+
+          <div class="call-summary-action-col">
+            <button class="btn primary full call-summary-again-btn" id="callAgainBtn">
+              ${c.callType === 'video' ? ICONS.video : ICONS.phone} &nbsp; Call Again
+            </button>
+
+            <button class="btn secondary full call-summary-msg-btn" id="callMessageBtn">
+              ${ICONS.messages} &nbsp; Message
+            </button>
+          </div>
+        </div>
+
+        <button class="call-summary-close-circle" id="closeCallSummaryBtn" title="Close">✕</button>
+      </div>
+    `;
+  }
+
+  return '';
 }
 
 // ----------------------------------------------------
@@ -1236,7 +1810,7 @@ async function loadPostComments(postId) {
     if (state.commentsList.length === 0) {
       container.innerHTML = `<p class="muted center" style="padding:20px 0;">No comments yet. Be the first to comment!</p>`;
     } else {
-      container.innerHTML = state.commentsList.map(c => `
+      container.innerHTML = state.commentsList.map((c) => `
         <div class="list-row" style="align-items:flex-start;padding:10px 0;">
           <div class="avatar" style="width:34px;height:34px;margin-top:2px;">
             <img src="${getUserAvatar(c.profiles)}">
@@ -1255,7 +1829,7 @@ async function loadPostComments(postId) {
   }
 }
 
-async function handleSharePost(postId, postText) {
+async function handleSharePost(postId, postAuthorId, postText) {
   const shareUrl = window.location.href;
   if (navigator.share) {
     try {
@@ -1264,19 +1838,20 @@ async function handleSharePost(postId, postText) {
         text: postText ? postText.substring(0, 100) : 'Check this post on Alapon Lite!',
         url: shareUrl
       });
-      await recordShare(postId);
+      await recordShare(postId, postAuthorId);
       showToast('Shared successfully! 🚀');
     } catch (e) {}
   } else {
     navigator.clipboard.writeText(shareUrl).then(async () => {
-      await recordShare(postId);
+      await recordShare(postId, postAuthorId);
       showToast('Post link copied to clipboard! 📋');
     });
   }
 }
 
-async function recordShare(postId) {
+async function recordShare(postId, postAuthorId) {
   await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
+  await triggerNotification(postAuthorId, 'post_share', `shared your post`, postId);
   await loadFeed();
   renderApp();
 }
@@ -1288,7 +1863,52 @@ function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'edit-profile') {
+  if (state.modal === 'notifications') {
+    container.innerHTML = `
+      <div class="full-modal-back notif-fullscreen-overlay">
+        <div class="full-modal notif-modal-card">
+          <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:14px;margin-bottom:8px;">
+            <div class="row" style="gap:8px;">
+              <span style="color:#315cff;">${ICONS.bell}</span>
+              <b style="font-size:17px;">Notifications (${state.notifications.length})</b>
+            </div>
+            <button class="btn ghost" id="closeNotifModal" style="font-size:18px;">✕</button>
+          </div>
+          
+          <div class="notif-scroll-body" style="overflow-y:auto;flex:1;">
+            ${state.notifications.length === 0 ? `
+              <div class="empty-notif-box">
+                <div style="font-size:40px;margin-bottom:8px;">🔔</div>
+                <b>No notifications yet.</b>
+                <p class="muted" style="font-size:13px;margin-top:4px;">When people interact with you, alerts will appear here!</p>
+              </div>
+            ` : ''}
+            
+            ${state.notifications.map((n) => `
+              <div class="list-row notif-interactive-item ${n.is_read ? '' : 'unread'}" data-notif-id="${n.id}">
+                <div class="avatar" style="width:42px;height:42px;">
+                  <img src="${getUserAvatar(n.actor)}">
+                </div>
+                <div class="grow" style="font-size:13.5px;line-height:1.35;">
+                  <b>${escapeHtml(n.actor?.full_name || 'Someone')}</b> ${escapeHtml(n.message)}
+                  <small class="muted" style="display:block;font-size:11px;margin-top:3px;">${formatTimeAgo(n.created_at)}</small>
+                </div>
+                <span class="notif-arrow-indicator">❯</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeNotifModal').onclick = () => { state.modal = null; renderActiveModal(); };
+    document.querySelectorAll('.notif-interactive-item').forEach((item) => {
+      item.onclick = () => {
+        const notif = state.notifications.find((n) => n.id === item.dataset.notifId);
+        if (notif) handleNotificationClick(notif);
+      };
+    });
+  } else if (state.modal === 'edit-profile') {
     const p = state.profile || {};
     const curAvatar = getUserAvatar(p);
 
@@ -1312,40 +1932,14 @@ function renderActiveModal() {
               </div>
             </div>
 
-            <div class="field">
-              <label>Full Name</label>
-              <input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}">
-            </div>
-            <div class="field">
-              <label>Username</label>
-              <input class="input" type="text" id="editUsername" value="${escapeHtml(p.username || '')}">
-            </div>
-            <div class="field">
-              <label>Bio (About you)</label>
-              <textarea class="input" id="editBio" rows="2" placeholder="Write something about yourself...">${escapeHtml(p.bio || '')}</textarea>
-            </div>
-            <div class="field">
-              <label>Phone Number</label>
-              <input class="input" type="text" id="editPhone" placeholder="+880 1xxxxxxxxx" value="${escapeHtml(p.phone || '')}">
-            </div>
-            <div class="field">
-              <label>Current City (বর্তমান শহর)</label>
-              <input class="input locSearchInput" type="text" id="editCurrentCity" placeholder="Search City..." value="${escapeHtml(p.current_city || p.location || '')}">
-              <div id="citySearchResults" class="search-drop-results"></div>
-            </div>
-            <div class="field">
-              <label>Hometown (নিজ শহর / আদি নিবাস)</label>
-              <input class="input locSearchInput" type="text" id="editHometown" placeholder="Search Hometown..." value="${escapeHtml(p.hometown || '')}">
-              <div id="hometownSearchResults" class="search-drop-results"></div>
-            </div>
-            <div class="field">
-              <label>Workplace / Work City (কর্মস্থল)</label>
-              <input class="input" type="text" id="editWorkplace" placeholder="e.g. Software Engineer at Tech Corp" value="${escapeHtml(p.workplace || '')}">
-            </div>
-            <div class="field">
-              <label>Education (শিক্ষাপ্রতিষ্ঠান)</label>
-              <input class="input" type="text" id="editEducation" placeholder="e.g. Studied at Dhaka University" value="${escapeHtml(p.education || '')}">
-            </div>
+            <div class="field"><label>Full Name</label><input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}"></div>
+            <div class="field"><label>Username</label><input class="input" type="text" id="editUsername" value="${escapeHtml(p.username || '')}"></div>
+            <div class="field"><label>Bio</label><textarea class="input" id="editBio" rows="2">${escapeHtml(p.bio || '')}</textarea></div>
+            <div class="field"><label>Phone</label><input class="input" type="text" id="editPhone" value="${escapeHtml(p.phone || '')}"></div>
+            <div class="field"><label>Current City</label><input class="input locSearchInput" type="text" id="editCurrentCity" value="${escapeHtml(p.current_city || p.location || '')}"><div id="citySearchResults" class="search-drop-results"></div></div>
+            <div class="field"><label>Hometown</label><input class="input locSearchInput" type="text" id="editHometown" value="${escapeHtml(p.hometown || '')}"><div id="hometownSearchResults" class="search-drop-results"></div></div>
+            <div class="field"><label>Workplace</label><input class="input" type="text" id="editWorkplace" value="${escapeHtml(p.workplace || '')}"></div>
+            <div class="field"><label>Education</label><input class="input" type="text" id="editEducation" value="${escapeHtml(p.education || '')}"></div>
             <div class="field">
               <label>Gender</label>
               <select class="input" id="editGender">
@@ -1361,7 +1955,6 @@ function renderActiveModal() {
     `;
 
     document.getElementById('closeEditModal').onclick = () => { state.modal = null; renderActiveModal(); };
-
     document.getElementById('modalChangeAvatarBtn').onclick = () => document.getElementById('modalChangeAvatarFile').click();
     document.getElementById('modalChangeAvatarFile').onchange = async (e) => {
       const file = e.target.files[0];
@@ -1428,11 +2021,17 @@ function renderActiveModal() {
       if (!text || !state.activeCommentsPostId) return;
       input.value = '';
 
+      const post = state.posts.find((p) => p.id === state.activeCommentsPostId);
       await supabase.from('comments').insert({
         post_id: state.activeCommentsPostId,
         user_id: state.user.id,
         content: text
       });
+
+      if (post) {
+        await triggerNotification(post.user_id, 'post_comment', `commented: "${text.substring(0, 30)}..."`, post.id);
+      }
+
       loadPostComments(state.activeCommentsPostId);
       loadFeed();
     };
@@ -1475,7 +2074,7 @@ function renderActiveModal() {
           <div id="feelingPickerBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
             <b style="font-size:13px;">How are you feeling?</b>
             <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
-              ${['Happy 😊', 'Blessed 🙏', 'Excited 🤩', 'Loved ❤️', 'Crazy 🤪', 'Sad 😢', 'Cool 😎'].map(f => `
+              ${['Happy 😊', 'Blessed 🙏', 'Excited 🤩', 'Loved ❤️', 'Crazy 🤪', 'Sad 😢', 'Cool 😎'].map((f) => `
                 <button class="btn secondary feelingSelectBtn" data-val="${f}" style="padding:5px 10px;font-size:12px;">${f}</button>
               `).join('')}
             </div>
@@ -1521,7 +2120,7 @@ function renderActiveModal() {
     if (rmLoc) rmLoc.onclick = () => { state.postDraft.location = ''; renderActiveModal(); };
 
     document.getElementById('toggleFeelingBtn').onclick = () => document.getElementById('feelingPickerBox').classList.toggle('hide');
-    document.querySelectorAll('.feelingSelectBtn').forEach(b => {
+    document.querySelectorAll('.feelingSelectBtn').forEach((b) => {
       b.onclick = () => { state.postDraft.feeling = b.dataset.val; renderActiveModal(); };
     });
 
@@ -1532,40 +2131,6 @@ function renderActiveModal() {
     });
 
     document.getElementById('publishPostBtn').onclick = handlePostPublish;
-  } else if (state.modal === 'drawer') {
-    const p = state.profile || {};
-    const userAvatar = getUserAvatar(p);
-
-    container.innerHTML = `
-      <div class="full-modal-back" style="justify-content:flex-start;">
-        <div class="drawer-modal">
-          <div class="row between" style="margin-bottom:18px;border-bottom:1px solid #f0f2f8;padding-bottom:14px;">
-            <div class="row" style="gap:12px;">
-              <div class="avatar"><img src="${userAvatar}"></div>
-              <div>
-                <b>${escapeHtml(p.full_name || '')}</b>
-                <div class="muted" style="font-size:12px;">@${escapeHtml(p.username || '')}</div>
-              </div>
-            </div>
-            <button class="btn ghost" id="closeDrawerBtn" style="font-size:18px;">✕</button>
-          </div>
-
-          <button class="navitem drawerNav" data-view="feed">${ICONS.home} Home</button>
-          <button class="navitem drawerNav" data-view="friends">${ICONS.friends} Friends</button>
-          <button class="navitem drawerNav" data-view="messages">${ICONS.messages} Messages</button>
-          <button class="navitem drawerNav" data-view="profile">${ICONS.profile} Profile</button>
-          <button class="navitem drawerNav" data-view="settings">${ICONS.settings} Settings</button>
-          <div class="divider"></div>
-          <button class="btn secondary full" id="drawerLogoutBtn" style="color:#d92d20;">${ICONS.logout} Log Out</button>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('closeDrawerBtn').onclick = () => { state.modal = null; renderActiveModal(); };
-    document.querySelectorAll('.drawerNav').forEach(btn => {
-      btn.onclick = () => { state.currentView = btn.dataset.view; state.modal = null; renderApp(); };
-    });
-    document.getElementById('drawerLogoutBtn').onclick = () => supabase.auth.signOut();
   } else if (state.modal === 'search') {
     container.innerHTML = `
       <div class="full-modal-back">
@@ -1588,7 +2153,7 @@ function renderActiveModal() {
       const { data } = await supabase.from('profiles').select('*').or(`full_name.ilike.%${q}%,username.ilike.%${q}%`).limit(10);
       const resEl = document.getElementById('liveSearchResults');
       if (data && data.length) {
-        resEl.innerHTML = data.map(u => `
+        resEl.innerHTML = data.map((u) => `
           <div class="list-row">
             <div class="avatar"><img src="${getUserAvatar(u)}"></div>
             <div class="grow">
@@ -1598,9 +2163,10 @@ function renderActiveModal() {
             <button class="btn primary sendFriendReqBtn" data-id="${u.id}" style="padding:6px 12px;font-size:12px;">Add Friend</button>
           </div>
         `).join('');
-        document.querySelectorAll('.sendFriendReqBtn').forEach(b => {
+        document.querySelectorAll('.sendFriendReqBtn').forEach((b) => {
           b.onclick = async () => {
             await supabase.from('friendships').insert({ requester_id: state.user.id, receiver_id: b.dataset.id, status: 'pending' });
+            await triggerNotification(b.dataset.id, 'friend_request', 'sent you a friend request');
             b.innerText = 'Sent ✓';
             b.disabled = true;
           };
@@ -1609,75 +2175,6 @@ function renderActiveModal() {
         resEl.innerHTML = `<p class="muted center">No user found.</p>`;
       }
     };
-  } else if (state.modal === 'notifications') {
-    container.innerHTML = `
-      <div class="full-modal-back">
-        <div class="full-modal" style="height:min(520px, 90vh);">
-          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
-            <b>Notifications</b>
-            <button class="btn ghost" id="closeNotifModal">✕</button>
-          </div>
-          <div style="overflow-y:auto;flex:1;">
-            ${state.notifications.length === 0 ? `<p class="muted center" style="padding:30px 0;">No notifications yet.</p>` : ''}
-            ${state.notifications.map(n => `
-              <div class="list-row">
-                <div class="avatar" style="width:36px;height:36px;"><img src="${getUserAvatar(n.actor)}"></div>
-                <div class="grow" style="font-size:13px;">
-                  <b>${escapeHtml(n.actor?.full_name || 'Someone')}</b> ${escapeHtml(n.message)}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-    document.getElementById('closeNotifModal').onclick = () => { state.modal = null; renderActiveModal(); };
-  } else if (state.modal === 'settings-sub') {
-    let subTitle = 'Security';
-    let subBody = '';
-    if (state.settingsSubType === 'security') {
-      subTitle = 'Account & Security';
-      subBody = `<p class="muted" style="margin-bottom:12px;">Manage your login email and security settings.</p><div class="list-row"><div class="grow">Email: <b>${escapeHtml(state.user?.email || '')}</b></div></div><div class="list-row"><div class="grow">Two-Factor Authentication</div><input type="checkbox" checked></div>`;
-    } else if (state.settingsSubType === 'privacy') {
-      subTitle = 'Privacy & Policy';
-      subBody = `<div class="list-row"><div class="grow">Private Account</div><input type="checkbox"></div><div class="list-row"><div class="grow">Allow search indexing</div><input type="checkbox" checked></div>`;
-    } else if (state.settingsSubType === 'notifications') {
-      subTitle = 'Notification Preferences';
-      subBody = `<div class="list-row"><div class="grow">Push Notifications</div><input type="checkbox" checked></div><div class="list-row"><div class="grow">Friend Request Alerts</div><input type="checkbox" checked></div><div class="list-row"><div class="grow">Direct Message Alerts</div><input type="checkbox" checked></div>`;
-    } else if (state.settingsSubType === 'language') {
-      subTitle = 'Language';
-      subBody = `<div class="list-row"><div class="grow">English</div><b>✓</b></div><div class="list-row"><div class="grow">বাংলা (Bangla)</div></div>`;
-    }
-
-    container.innerHTML = `
-      <div class="full-modal-back">
-        <div class="full-modal" style="height:auto;max-height:90vh;">
-          <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
-            <b>${subTitle}</b>
-            <button class="btn ghost" id="closeSettingsSubModal">✕</button>
-          </div>
-          <div>${subBody}</div>
-        </div>
-      </div>
-    `;
-    document.getElementById('closeSettingsSubModal').onclick = () => { state.modal = null; renderActiveModal(); };
-  } else if (state.modal === 'view-story' && state.activeStory) {
-    const s = state.activeStory;
-    container.innerHTML = `
-      <div class="full-modal-back" style="background:rgba(0,0,0,0.92);">
-        <div style="position:relative;max-width:440px;width:100%;height:85vh;display:flex;flex-direction:column;justify-content:center;">
-          <div class="row between" style="position:absolute;top:10px;left:10px;right:10px;z-index:10;color:#fff;">
-            <div class="row" style="gap:8px;">
-              <div class="avatar" style="width:36px;height:36px;"><img src="${getUserAvatar(s.profiles)}"></div>
-              <b>${escapeHtml(s.profiles?.full_name || 'User')}</b>
-            </div>
-            <button class="btn ghost" id="closeStoryViewBtn" style="color:#fff;font-size:20px;">✕</button>
-          </div>
-          <img src="${s.media_url}" style="max-height:80vh;width:100%;object-fit:contain;border-radius:12px;">
-        </div>
-      </div>
-    `;
-    document.getElementById('closeStoryViewBtn').onclick = () => { state.modal = null; state.activeStory = null; renderActiveModal(); };
   } else if (state.modal === 'msg-options') {
     const msg = state._selectedMsg;
     const isMine = msg.sender_id === state.user.id;
@@ -1686,7 +2183,7 @@ function renderActiveModal() {
       <div class="full-modal-back msg-action-sheet-back" id="closeMsgOptionsBack">
         <div class="msg-action-sheet">
           <div class="reaction-palette">
-            ${['❤️', '👍', '😂', '😮', '😢', '🔥'].map(emoji => `
+            ${['❤️', '👍', '😂', '😮', '😢', '🔥'].map((emoji) => `
               <button class="reaction-btn-pop" data-emoji="${emoji}">${emoji}</button>
             `).join('')}
           </div>
@@ -1708,7 +2205,7 @@ function renderActiveModal() {
       if (e.target.id === 'closeMsgOptionsBack') { state.modal = null; renderActiveModal(); }
     };
 
-    document.querySelectorAll('.reaction-btn-pop').forEach(b => {
+    document.querySelectorAll('.reaction-btn-pop').forEach((b) => {
       b.onclick = async () => {
         const emoji = b.dataset.emoji;
         const currentReactions = msg.reactions || {};
@@ -1763,12 +2260,12 @@ function setupLocationSearchInput(inputId, resultsDivId, onSelectCallback) {
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=4`);
       const results = await res.json();
-      resultsDiv.innerHTML = results.map(r => `
-        <div class="list-row selectLocItem" data-val="${escapeHtml(r.display_name.split(',').slice(0,2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
-          📍 ${escapeHtml(r.display_name.split(',').slice(0,3).join(','))}
+      resultsDiv.innerHTML = results.map((r) => `
+        <div class="list-row selectLocItem" data-val="${escapeHtml(r.display_name.split(',').slice(0, 2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
+          📍 ${escapeHtml(r.display_name.split(',').slice(0, 3).join(','))}
         </div>
       `).join('');
-      resultsDiv.querySelectorAll('.selectLocItem').forEach(item => {
+      resultsDiv.querySelectorAll('.selectLocItem').forEach((item) => {
         item.onclick = () => {
           input.value = item.dataset.val;
           resultsDiv.innerHTML = '';
@@ -1809,10 +2306,10 @@ async function handlePostPublish() {
 function attachGlobalEvents() {
   const bindNav = (id, view) => {
     const el = document.getElementById(id);
-    if (el) el.onclick = () => { 
-      state.currentView = view; 
+    if (el) el.onclick = () => {
+      state.currentView = view;
       if (view !== 'messages') state.activeChatUser = null;
-      renderApp(); 
+      renderApp();
     };
   };
 
@@ -1843,7 +2340,6 @@ function attachGlobalEvents() {
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  // Profile avatar upload
   const avatarBadge = document.getElementById('cameraBadgeUploadTrigger');
   const avatarFile = document.getElementById('changeAvatarInput');
   if (avatarBadge && avatarFile) {
@@ -1884,11 +2380,11 @@ function attachGlobalEvents() {
     };
   }
 
-  document.querySelectorAll('.viewStoryBtn').forEach(b => {
+  document.querySelectorAll('.viewStoryBtn').forEach((b) => {
     b.onclick = () => {
       const sId = b.dataset.storyId;
       const uId = b.dataset.storyUser;
-      const story = sId ? state.stories.find(s => s.id === sId) : state.stories.find(s => s.user_id === uId);
+      const story = sId ? state.stories.find((s) => s.id === sId) : state.stories.find((s) => s.user_id === uId);
       if (story) {
         state.activeStory = story;
         state.modal = 'view-story';
@@ -1904,52 +2400,42 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
-  document.querySelectorAll('.settingsOptRow').forEach(r => {
-    r.onclick = () => {
-      state.settingsSubType = r.dataset.type;
-      state.modal = 'settings-sub';
-      renderActiveModal();
-    };
-  });
-
-  const sideLogout = document.getElementById('sideLogoutBtn');
-  if (sideLogout) sideLogout.onclick = () => supabase.auth.signOut();
-  const settingsLogout = document.getElementById('settingsLogoutBtn');
-  if (settingsLogout) settingsLogout.onclick = () => supabase.auth.signOut();
-
-  document.querySelectorAll('.likePostBtn').forEach(btn => {
+  document.querySelectorAll('.likePostBtn').forEach((btn) => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
-      const post = state.posts.find(p => p.id === postId);
-      const existing = post?.post_likes?.find(l => l.user_id === state.user.id);
+      const authorId = btn.dataset.author;
+      const post = state.posts.find((p) => p.id === postId);
+      const existing = post?.post_likes?.find((l) => l.user_id === state.user.id);
       if (existing) {
         await supabase.from('post_likes').delete().eq('id', existing.id);
       } else {
         await supabase.from('post_likes').insert({ post_id: postId, user_id: state.user.id });
+        await triggerNotification(authorId, 'post_like', `reacted ❤️ to your post`, postId);
       }
       await loadFeed();
       renderApp();
     };
   });
 
-  document.querySelectorAll('.commentPostBtn').forEach(btn => {
+  document.querySelectorAll('.commentPostBtn').forEach((btn) => {
     btn.onclick = () => { openCommentsModal(btn.dataset.id); };
   });
 
-  document.querySelectorAll('.sharePostBtn').forEach(btn => {
-    btn.onclick = () => { handleSharePost(btn.dataset.id, btn.dataset.text); };
+  document.querySelectorAll('.sharePostBtn').forEach((btn) => {
+    btn.onclick = () => { handleSharePost(btn.dataset.id, btn.dataset.author, btn.dataset.text); };
   });
 
-  document.querySelectorAll('.acceptReqBtn').forEach(btn => {
+  document.querySelectorAll('.acceptReqBtn').forEach((btn) => {
     btn.onclick = async () => {
       await supabase.from('friendships').update({ status: 'accepted' }).eq('id', btn.dataset.id);
+      await triggerNotification(btn.dataset.requester, 'friend_request', `accepted your friend request`);
       await loadFriendsData();
       await loadSuggestedUsers();
       renderApp();
     };
   });
 
-  document.querySelectorAll('.rejectReqBtn').forEach(btn => {
+  document.querySelectorAll('.rejectReqBtn').forEach((btn) => {
     btn.onclick = async () => {
       await supabase.from('friendships').delete().eq('id', btn.dataset.id);
       await loadFriendsData();
@@ -1958,18 +2444,19 @@ function attachGlobalEvents() {
     };
   });
 
-  document.querySelectorAll('.sendSuggestedFriendReqBtn').forEach(btn => {
+  document.querySelectorAll('.sendSuggestedFriendReqBtn').forEach((btn) => {
     btn.onclick = async () => {
       await supabase.from('friendships').insert({ requester_id: state.user.id, receiver_id: btn.dataset.id, status: 'pending' });
+      await triggerNotification(btn.dataset.id, 'friend_request', 'sent you a friend request');
       btn.innerText = 'Sent ✓';
       btn.disabled = true;
       showToast('Friend request sent! 👥');
     };
   });
 
-  document.querySelectorAll('.startChatBtn').forEach(btn => {
+  document.querySelectorAll('.startChatBtn').forEach((btn) => {
     btn.onclick = () => {
-      const friend = state.friends.find(f => f.id === btn.dataset.userId);
+      const friend = state.friends.find((f) => f.id === btn.dataset.userId);
       if (friend) {
         state.activeChatUser = friend;
         state.currentView = 'messages';
@@ -1978,38 +2465,84 @@ function attachGlobalEvents() {
     };
   });
 
-  // Messenger actions
+  // Direct Call Triggers from Friends List
+  document.querySelectorAll('.startDirectVoiceCallBtn').forEach((btn) => {
+    btn.onclick = () => {
+      const friend = state.friends.find((f) => f.id === btn.dataset.userId);
+      if (friend) startOutgoingCall(friend, 'voice');
+    };
+  });
+
+  document.querySelectorAll('.startDirectVideoCallBtn').forEach((btn) => {
+    btn.onclick = () => {
+      const friend = state.friends.find((f) => f.id === btn.dataset.userId);
+      if (friend) startOutgoingCall(friend, 'video');
+    };
+  });
+
+  // Messenger Header Actions
   const backChat = document.getElementById('backToChatListBtn');
-  if (backChat) backChat.onclick = () => { 
-    state.activeChatUser = null; 
+  if (backChat) backChat.onclick = () => {
+    state.activeChatUser = null;
     state.replyingToMessage = null;
-    renderApp(); 
+    renderApp();
   };
 
-  const startCall = document.getElementById('startVoiceCallBtn');
-  if (startCall && state.activeChatUser) {
-    startCall.onclick = () => startAudioCall(state.activeChatUser);
+  const startVoice = document.getElementById('startVoiceCallBtn');
+  if (startVoice && state.activeChatUser) {
+    startVoice.onclick = () => startOutgoingCall(state.activeChatUser, 'voice');
   }
 
-  const acceptCall = document.getElementById('acceptIncomingCallBtn');
-  if (acceptCall) {
-    acceptCall.onclick = () => {
-      stopRingtone();
-      if (state.activeCallingState?.user) {
-        const targetChannel = supabase.channel(`call_channel_${state.activeCallingState.user.id}`);
-        targetChannel.subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            targetChannel.send({ type: 'broadcast', event: 'call_accepted', payload: {} });
-          }
-        });
-      }
-      const dur = document.getElementById('callDurationText');
-      if (dur) dur.innerText = 'Connected (Audio Active)';
+  const startVideo = document.getElementById('startVideoCallBtn');
+  if (startVideo && state.activeChatUser) {
+    startVideo.onclick = () => startOutgoingCall(state.activeChatUser, 'video');
+  }
+
+  // CALL OVERLAY ACTION BUTTONS
+  const cancelOutgoing = document.getElementById('cancelOutgoingCallBtn');
+  if (cancelOutgoing) cancelOutgoing.onclick = () => endActiveCall('cancelled');
+
+  const acceptCall = document.getElementById('acceptCallBtn');
+  if (acceptCall) acceptCall.onclick = () => acceptIncomingCall();
+
+  const declineCall = document.getElementById('declineCallBtn');
+  if (declineCall) declineCall.onclick = () => declineIncomingCall();
+
+  const hangupCall = document.getElementById('hangupCallBtn');
+  if (hangupCall) hangupCall.onclick = () => endActiveCall('ended');
+
+  const muteBtn = document.getElementById('toggleCallMuteBtn');
+  if (muteBtn) muteBtn.onclick = toggleMute;
+
+  const camBtn = document.getElementById('toggleCallCameraBtn');
+  if (camBtn) camBtn.onclick = toggleCamera;
+
+  const flipBtn = document.getElementById('flipCallCameraBtn');
+  if (flipBtn) flipBtn.onclick = flipCamera;
+
+  const closeSummary = document.getElementById('closeCallSummaryBtn');
+  if (closeSummary) closeSummary.onclick = () => { state.call.state = 'idle'; renderApp(); };
+
+  const callAgain = document.getElementById('callAgainBtn');
+  if (callAgain && state.call.otherUser) {
+    callAgain.onclick = () => {
+      const u = state.call.otherUser;
+      const t = state.call.callType;
+      state.call.state = 'idle';
+      startOutgoingCall(u, t);
     };
   }
 
-  const endCall = document.getElementById('declineOrEndCallBtn');
-  if (endCall) endCall.onclick = endActiveCall;
+  const callMsg = document.getElementById('callMessageBtn');
+  if (callMsg && state.call.otherUser) {
+    callMsg.onclick = () => {
+      const u = state.call.otherUser;
+      state.call.state = 'idle';
+      state.activeChatUser = u;
+      state.currentView = 'messages';
+      renderApp();
+    };
+  }
 
   // Chat Image Upload
   const triggerImg = document.getElementById('triggerChatPhotoUpload');
@@ -2088,21 +2621,6 @@ function attachGlobalEvents() {
       document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
     };
   }
-
-  const coverChangeBtn = document.getElementById('changeCoverBtn');
-  const coverChangeInput = document.getElementById('changeCoverInput');
-  if (coverChangeBtn && coverChangeInput) {
-    coverChangeBtn.onclick = () => coverChangeInput.click();
-    coverChangeInput.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const ext = file.name.split('.').pop();
-      const url = await uploadFile('covers', `cover_${state.user.id}_${Date.now()}.${ext}`, file);
-      await supabase.from('profiles').update({ cover_url: url }).eq('id', state.user.id);
-      await loadUserProfile();
-      renderApp();
-    };
-  }
 }
 
 async function sendChatMessage({ text = '', mediaUrl = '', mediaType = null }) {
@@ -2121,6 +2639,8 @@ async function sendChatMessage({ text = '', mediaUrl = '', mediaType = null }) {
     reply_to: replyData
   });
 
+  await triggerNotification(state.activeChatUser.id, 'message', `sent you a message: "${text ? text.substring(0, 25) : 'Attachment'}"`);
+
   state.replyingToMessage = null;
   document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
   loadChatMessages(state.activeChatUser.id);
@@ -2137,14 +2657,14 @@ async function loadChatMessages(otherUserId) {
     .order('created_at', { ascending: true });
 
   if (messages && messages.length > 0) {
-    const unreadIds = messages.filter(m => m.receiver_id === state.user.id && !m.is_read).map(m => m.id);
+    const unreadIds = messages.filter((m) => m.receiver_id === state.user.id && !m.is_read).map((m) => m.id);
     if (unreadIds.length > 0) {
       await supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).in('id', unreadIds);
     }
 
-    const visibleMessages = messages.filter(m => !(m.deleted_for || []).includes(state.user.id));
+    const visibleMessages = messages.filter((m) => !(m.deleted_for || []).includes(state.user.id));
 
-    listEl.innerHTML = visibleMessages.map(m => {
+    listEl.innerHTML = visibleMessages.map((m) => {
       const isMine = m.sender_id === state.user.id;
       const reactions = m.reactions || {};
       const reactionEmojis = Object.values(reactions);
@@ -2195,12 +2715,11 @@ async function loadChatMessages(otherUserId) {
 }
 
 function attachMessageInteractions(messagesList) {
-  document.querySelectorAll('.msg-swipe-wrapper').forEach(wrapper => {
+  document.querySelectorAll('.msg-swipe-wrapper').forEach((wrapper) => {
     const msgId = wrapper.dataset.msgId;
-    const msg = messagesList.find(m => m.id === msgId);
+    const msg = messagesList.find((m) => m.id === msgId);
     if (!msg) return;
 
-    // Long Press to open reaction & delete action sheet
     let pressTimer = null;
     const startPress = () => {
       pressTimer = setTimeout(() => {
@@ -2222,7 +2741,6 @@ function attachMessageInteractions(messagesList) {
       renderActiveModal();
     });
 
-    // Swipe Left or Right to Reply
     let startX = 0;
     let currentX = 0;
 
@@ -2259,7 +2777,7 @@ function attachMessageInteractions(messagesList) {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+  return String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
 }
 
 function formatClockTime(isoString) {
