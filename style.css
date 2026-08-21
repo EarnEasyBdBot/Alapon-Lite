@@ -1,5 +1,5 @@
 /* ============================================================
-   Alapon Social App — Clean Modern Responsive Stylesheet
+   Alapon Social App — Clean Modern Design System
    ============================================================ */
 
 * {
@@ -28,9 +28,10 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
+  background: transparent;
 }
 
-/* Boot / Loading Screen */
+/* Boot & Brand */
 .boot {
   min-height: 100vh;
   display: grid;
@@ -41,26 +42,18 @@ button {
 }
 
 .boot .logo, .brand-logo {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: 16px;
   background: linear-gradient(135deg, #315cff, #7544ff);
   color: #fff;
   display: grid;
   place-items: center;
   font-size: 26px;
-  font-weight: 900;
   box-shadow: 0 10px 25px rgba(49, 92, 255, 0.25);
 }
 
-.boot span {
-  color: #81879c;
-  font-size: 14px;
-}
-
-/* ============================================================
-   AUTH SCREENS (Login & Signup)
-   ============================================================ */
+/* Auth Screens */
 .auth {
   min-height: 100vh;
   display: grid;
@@ -84,13 +77,12 @@ button {
 .hero-inner h1 {
   font-size: 56px;
   letter-spacing: -2px;
-  margin: 15px 0 10px;
+  margin: 15px 0 8px;
   font-weight: 900;
 }
 
 .hero-inner p {
   font-size: 18px;
-  line-height: 1.6;
   opacity: 0.9;
 }
 
@@ -104,11 +96,11 @@ button {
 }
 
 .card {
-  width: min(100%, 460px);
+  width: min(100%, 450px);
 }
 
 .card h2 {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
@@ -141,9 +133,9 @@ button {
 }
 
 .input:focus {
-  border-color: #5365ef;
+  border-color: #315cff;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(83, 101, 239, 0.12);
+  box-shadow: 0 0 0 4px rgba(49, 92, 255, 0.12);
 }
 
 .btn {
@@ -169,10 +161,6 @@ button {
 .secondary {
   background: #eef1ff;
   color: #3544cc;
-}
-
-.secondary:hover {
-  background: #e1e6ff;
 }
 
 .ghost {
@@ -202,7 +190,7 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 20px 0;
+  margin: 18px 0;
   color: #8a90a5;
   font-size: 13px;
 }
@@ -214,15 +202,32 @@ button {
   flex: 1;
 }
 
-/* ============================================================
-   MAIN APPLICATION SHELL (Header, Layout, Navigation)
-   ============================================================ */
+/* Gender Selection Pills */
+.gender-pill {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid #e3e6ef;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fafbfe;
+  transition: 0.2s;
+}
+
+.gender-pill.active {
+  border-color: #315cff;
+  background: #eef2ff;
+  color: #315cff;
+}
+
+/* App Shell */
 .app-shell {
   min-height: 100vh;
 }
 
 .topbar {
-  height: 70px;
+  height: 68px;
   background: #fff;
   border-bottom: 1px solid #e8eaf1;
   display: flex;
@@ -241,7 +246,7 @@ button {
   font-size: 21px;
   font-weight: 900;
   min-width: 150px;
-  color: #171a2f;
+  cursor: pointer;
 }
 
 .brand-logo {
@@ -307,22 +312,21 @@ button {
 
 .side {
   position: sticky;
-  top: 92px;
+  top: 90px;
   height: max-content;
 }
 
 .navitem {
   width: 100%;
-  padding: 13px 16px;
+  padding: 12px 16px;
   border-radius: 13px;
-  background: transparent;
   text-align: left;
   color: #3d435f;
   font-weight: 700;
   margin-bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   transition: all 0.15s ease;
 }
 
@@ -331,9 +335,7 @@ button {
   color: #3445d2;
 }
 
-/* ============================================================
-   FEED, CARDS & STORIES
-   ============================================================ */
+/* Feed Cards & Stories */
 .feed {
   min-width: 0;
 }
@@ -344,7 +346,7 @@ button {
   border-radius: 19px;
   padding: 18px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(32, 38, 77, 0.04);
+  box-shadow: 0 4px 20px rgba(32, 38, 77, 0.03);
 }
 
 .stories {
@@ -379,11 +381,9 @@ button {
   height: 46px;
   border-radius: 50%;
   object-fit: cover;
-  background: linear-gradient(135deg, #e5e9ff, #f3e9ff);
+  background: #eef2ff;
   display: grid;
   place-items: center;
-  font-weight: 900;
-  color: #3b46c7;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -398,7 +398,6 @@ button {
   width: 62px;
   height: 62px;
   margin: auto;
-  border: 3px solid #5264f0;
 }
 
 .composer {
@@ -411,7 +410,6 @@ button {
   flex: 1;
 }
 
-/* Post Cards */
 .post-head {
   display: flex;
   gap: 12px;
@@ -420,10 +418,10 @@ button {
 
 .post-media {
   width: 100%;
-  max-height: 520px;
+  max-height: 500px;
   object-fit: cover;
-  border-radius: 15px;
-  margin-top: 12px;
+  border-radius: 14px;
+  margin-top: 10px;
   background: #eef0f6;
 }
 
@@ -432,15 +430,17 @@ button {
   grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid #edf0f5;
   margin-top: 12px;
-  padding-top: 8px;
+  padding-top: 6px;
 }
 
 .post-actions button {
-  background: transparent;
   padding: 10px 6px;
   border-radius: 10px;
   color: #555c77;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: 0.15s;
 }
 
@@ -449,37 +449,22 @@ button {
   color: #3445d2;
 }
 
-/* ============================================================
-   PROFILE & TABS
-   ============================================================ */
+/* Profile */
 .profile-cover {
   height: 190px;
   border-radius: 18px;
   background: linear-gradient(125deg, #315cff, #7844ff);
   position: relative;
-  overflow: hidden;
-}
-
-.profile-cover:after {
-  content: "";
-  position: absolute;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  right: -80px;
-  top: -100px;
 }
 
 .profile-main {
   margin-top: -48px;
   padding: 0 20px;
-  position: relative;
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
+  width: 96px;
+  height: 96px;
   border: 4px solid #fff;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
@@ -488,7 +473,7 @@ button {
   display: flex;
   justify-content: space-around;
   text-align: center;
-  margin: 18px 0;
+  margin: 16px 0;
   border-top: 1px solid #edf0f5;
   border-bottom: 1px solid #edf0f5;
   padding: 12px 0;
@@ -506,15 +491,13 @@ button {
 
 .tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   border-bottom: 1px solid #e2e5f2;
   margin-top: 15px;
-  overflow-x: auto;
 }
 
 .tabs button {
   padding: 12px 18px;
-  background: transparent;
   font-weight: 800;
   color: #6d7390;
   border-bottom: 3px solid transparent;
@@ -525,9 +508,7 @@ button {
   border-bottom: 3px solid #5364ed;
 }
 
-/* ============================================================
-   LIST ROWS, MESSAGES & MODALS
-   ============================================================ */
+/* List Rows & Messenger */
 .list-row {
   display: flex;
   align-items: center;
@@ -544,70 +525,32 @@ button {
   flex: 1;
 }
 
-.bottom-nav {
-  display: none;
-}
-
-/* Modals */
-.modal-back {
-  position: fixed;
-  inset: 0;
-  background: rgba(13, 18, 61, 0.5);
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: #fff;
-  border-radius: 24px;
-  width: min(580px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
-}
-
-.progress {
-  height: 6px;
-  background: #e8eaf5;
-  border-radius: 99px;
-  overflow: hidden;
-  margin: 10px 0 20px;
-}
-
-.progress i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #315cff, #7142ff);
-  border-radius: 99px;
-  transition: width 0.3s ease;
-}
-
-.empty {
-  text-align: center;
-  padding: 40px 10px;
-  color: #7d849c;
-}
-
-/* Direct Chat */
-.chat {
+.chat-view {
   height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
 }
 
 .chat-list {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 0;
+  padding: 14px 18px;
 }
 
 .bubble {
   max-width: 75%;
-  padding: 11px 15px;
+  padding: 11px 16px;
   border-radius: 18px;
   margin: 8px 0;
   white-space: pre-wrap;
@@ -631,28 +574,79 @@ button {
 .chat-input {
   display: flex;
   gap: 10px;
-  padding-top: 12px;
+  padding: 12px 18px;
   border-top: 1px solid #eee;
+  background: #fff;
 }
 
 .chat-input textarea {
   resize: none;
-  min-height: 48px;
+  min-height: 44px;
+}
+
+/* Fullscreen Modals */
+.full-modal-back {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 18, 61, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.full-modal {
+  background: #fff;
+  width: min(600px, 100%);
+  height: min(700px, 100vh);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.drawer-modal {
+  background: #fff;
+  width: 280px;
+  height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-post-textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 16px;
+  min-height: 140px;
+  margin-top: 10px;
+  line-height: 1.6;
 }
 
 .tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: #eef0ff;
-  color: #394bd0;
+  color: #315cff;
   border-radius: 99px;
   padding: 5px 12px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
-/* ============================================================
-   RESPONSIVE MEDIA QUERIES (Mobile & Tablet)
-   ============================================================ */
+.hide {
+  display: none !important;
+}
+
+.bottom-nav {
+  display: none;
+}
+
+/* Responsive */
 @media (max-width: 960px) {
   .layout {
     grid-template-columns: 1fr;
@@ -667,23 +661,34 @@ button {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 66px;
+    height: 64px;
     background: #fff;
     border-top: 1px solid #e2e5f2;
-    z-index: 30;
+    z-index: 40;
     justify-content: space-around;
     align-items: center;
     padding-bottom: env(safe-area-inset-bottom);
   }
   .bottom-nav .navitem {
     width: auto;
-    min-width: 50px;
+    min-width: 48px;
     text-align: center;
-    padding: 8px 6px;
+    padding: 6px;
     font-size: 11px;
     margin: 0;
     flex-direction: column;
+    gap: 3px;
     justify-content: center;
+  }
+  .bot-create-btn {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #315cff, #7142ff) !important;
+    color: #fff !important;
+    display: grid !important;
+    place-items: center !important;
+    box-shadow: 0 6px 18px rgba(49, 92, 255, 0.35);
   }
   .feed {
     padding-bottom: 75px;
@@ -707,28 +712,9 @@ button {
     border-radius: 0;
     padding: 24px;
   }
-  .card-ui {
-    border-radius: 16px;
-    padding: 14px;
+  .full-modal {
+    height: 100vh;
+    border-radius: 0;
+    padding: 16px;
   }
-  .profile-cover {
-    height: 140px;
-  }
-  .profile-avatar {
-    width: 85px;
-    height: 85px;
-  }
-  .post-actions button {
-    font-size: 12px;
-  }
-  .stories {
-    gap: 10px;
-  }
-  .story {
-    min-width: 66px;
-  }
-  .story .avatar {
-    width: 56px;
-    height: 56px;
-  }
-}
+   }
