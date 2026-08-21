@@ -1,5 +1,5 @@
 /* ============================================================
-   Alapon Lite — Modern Pixel-Perfect Responsive CSS
+   Alapon Lite — Premium Modern Stylesheet & Animated Splash
    ============================================================ */
 
 * {
@@ -31,26 +31,220 @@ button {
   background: transparent;
 }
 
-/* Boot Screen */
-.boot {
+/* ============================================================
+   PREMIUM 5.5s ANIMATED SPLASH SCREEN
+   ============================================================ */
+.splash-screen {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 12px;
-  background: #f4f6fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: radial-gradient(circle at center, #1b2660 0%, #0d1235 60%, #060818 100%);
+  color: #fff;
+  overflow: hidden;
 }
 
-.boot .logo, .brand-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+.splash-bg-glow {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(49, 92, 255, 0.4), rgba(117, 68, 255, 0.4));
+  filter: blur(80px);
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0.9; }
+}
+
+.splash-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-logo-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.splash-logo-pulse {
+  position: absolute;
+  inset: -12px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #315cff, #7544ff);
+  opacity: 0.6;
+  filter: blur(14px);
+  animation: logoPulse 2s infinite alternate;
+}
+
+@keyframes logoPulse {
+  0% { transform: scale(0.9); opacity: 0.4; }
+  100% { transform: scale(1.15); opacity: 0.8; }
+}
+
+.splash-logo {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
   background: linear-gradient(135deg, #315cff, #7544ff);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 24px;
-  box-shadow: 0 10px 25px rgba(49, 92, 255, 0.25);
+  font-size: 36px;
+  box-shadow: 0 12px 35px rgba(49, 92, 255, 0.4);
+  animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.splash-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff, #c7d2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.splash-tagline {
+  font-size: 14px;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 34px;
+}
+
+.splash-loader-bar {
+  width: 180px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.splash-loader-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #315cff, #a855f7);
+  border-radius: 99px;
+  animation: loadFill 5.2s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
+}
+
+@keyframes loadFill {
+  0% { width: 0%; }
+  30% { width: 45%; }
+  70% { width: 80%; }
+  100% { width: 100%; }
+}
+
+.splash-status {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 12px;
+  animation: fadeInOut 2s infinite alternate;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.9; }
+}
+
+/* ============================================================
+   CLICKABLE RICH TEXT STYLING (#tags, @mentions, links)
+   ============================================================ */
+.rich-link {
+  color: #315cff !important;
+  text-decoration: none;
+  font-weight: 600;
+}
+.rich-link:hover {
+  text-decoration: underline;
+}
+
+.rich-mention {
+  color: #315cff !important;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 1px 4px;
+  background: #eef2ff;
+  border-radius: 6px;
+  display: inline-block;
+}
+.rich-mention:hover {
+  background: #dbe4ff;
+}
+
+.rich-hashtag {
+  color: #7142ff !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rich-hashtag:hover {
+  text-decoration: underline;
+}
+
+/* Toast Popup */
+.toast-popup {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #171a2f;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 200;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: slideToast 0.3s ease-out;
+}
+
+@keyframes slideToast {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* ============================================================
+   COMMENTS BOTTOM SHEET & BUBBLE
+   ============================================================ */
+.comments-modal {
+  height: min(580px, 90vh);
+  display: flex;
+  flex-direction: column;
+}
+
+.comments-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.comment-bubble-box {
+  background: #f1f4fa;
+  padding: 8px 14px;
+  border-radius: 16px;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.comment-input-bar {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f5;
 }
 
 /* Auth Screens */
@@ -347,7 +541,7 @@ button {
 .post-caption {
   margin: 10px 0 6px;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   white-space: pre-wrap;
 }
 
