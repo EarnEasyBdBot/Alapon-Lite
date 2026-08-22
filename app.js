@@ -1,4 +1,4 @@
-// app.js — Alapon (Professional UI Icons, Nested Facebook Comments, Natural Messenger Images, Hashtag Search & Chat Themes)
+// app.js — Alapon (Instant Auth, Pop Sound, Shorts Feature, Pro Profile & Messenger)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,9 +9,10 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Professional Vector / SVG Icons (No UI Emojis)
+// Pure Vector / SVG Icons (No Emojis as UI Icons)
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
   friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   followers: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   following: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>`,
@@ -37,22 +38,21 @@ const ICONS = {
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
   info: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  lock: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
-  archive: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`
+  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`
 };
 
 // Global App State
 const state = {
   user: null,
   profile: null,
-  currentView: 'feed', // 'feed', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
+  currentView: 'feed', // 'feed', 'shorts', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
   profileTab: 'posts',
   activeChatUser: null,
   activeHashtag: '',
   hashtagPosts: [],
-  onlineUsers: new Map(), // userId -> { online: boolean, last_active: ISOString }
+  onlineUsers: new Map(),
   posts: [],
+  shorts: [],
   stories: [],
   friends: [],
   friendRequests: [],
@@ -68,10 +68,9 @@ const state = {
     activeStatusEnabled: localStorage.getItem('alapon_active_status') !== 'false'
   },
   modal: null,
-  settingsSubType: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
-  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
+  postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' }
 };
 
 const app = document.getElementById('app');
@@ -82,7 +81,32 @@ function getUserAvatar(prof) {
 }
 
 // ----------------------------------------------------
-// HASHTAG & RICH TEXT PARSER (Clickable Tags & Mentions)
+// POP REACTION SOUND SYSTEM
+// ----------------------------------------------------
+function playReactionSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(320, now);
+    osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.12);
+  } catch (e) {}
+}
+
+// ----------------------------------------------------
+// HASHTAG & RICH TEXT PARSER
 // ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
@@ -168,7 +192,7 @@ function handleNotificationClick(n) {
 }
 
 // ----------------------------------------------------
-// 3D SPLASH SCREEN
+// APP INITIALIZATION
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
@@ -186,7 +210,7 @@ async function init() {
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3000));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2600));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -205,6 +229,7 @@ async function init() {
       await loadUserProfile();
       await loadInitialData();
       setupRealtime();
+      state.currentView = 'feed';
       renderApp();
     } else if (event === 'SIGNED_OUT') {
       state.user = null;
@@ -223,8 +248,8 @@ function render3DSplashScreen() {
       <div class="floating-badge badge-mid-right">${ICONS.search}</div>
 
       <div class="splash-3d-center">
-        <div style="width:105px;height:105px;max-width:105px;max-height:105px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:105px;height:105px;object-fit:contain;display:block;">
+        <div style="width:100px;height:100px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:100px;height:100px;object-fit:contain;display:block;">
         </div>
         <h1 class="splash-3d-title">Alapon</h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
@@ -254,6 +279,7 @@ function render3DSplashScreen() {
 
 // Data loaders
 async function loadUserProfile() {
+  if (!state.user) return;
   const { data } = await supabase.from('profiles').select('*').eq('id', state.user.id).single();
   if (data) state.profile = data;
 }
@@ -261,6 +287,7 @@ async function loadUserProfile() {
 async function loadInitialData() {
   await Promise.all([
     loadFeed(),
+    loadShorts(),
     loadStories(),
     loadFriendsData(),
     loadSuggestedUsers(),
@@ -275,6 +302,15 @@ async function loadFeed() {
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
     .order('created_at', { ascending: false });
   if (data) state.posts = data;
+}
+
+async function loadShorts() {
+  const { data } = await supabase
+    .from('posts')
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
+    .eq('media_type', 'video')
+    .order('created_at', { ascending: false });
+  state.shorts = data || [];
 }
 
 async function loadStories() {
@@ -330,7 +366,7 @@ async function loadUnreadCounts() {
 }
 
 // ----------------------------------------------------
-// REALTIME & PRESENCE (Online / Last Active Tracking)
+// REALTIME & PRESENCE
 // ----------------------------------------------------
 function setupRealtime() {
   const presenceChannel = supabase.channel('online_presence', {
@@ -359,7 +395,7 @@ function setupRealtime() {
 
   supabase
     .channel('public:alapon_general_sync')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, async () => { await loadFeed(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, async () => { await loadFeed(); await loadShorts(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
       if (state.activeCommentsPost?.id === payload.new?.post_id) {
         loadPostComments(state.activeCommentsPost.id);
@@ -371,6 +407,7 @@ function setupRealtime() {
       }
       loadUnreadCounts().then(renderTopbarCounters);
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
       loadNotifications().then(() => { loadUnreadCounts().then(renderTopbarCounters); });
     })
@@ -389,7 +426,7 @@ function renderTopbarCounters() {
   }
 
   const msgBadges = document.querySelectorAll('.header-msg-badge, .bot-msg-badge');
-  msgBadges.forEach(b => {
+  msgBadges.forEach((b) => {
     if (state.unreadMessagesCount > 0) {
       b.innerText = state.unreadMessagesCount;
       b.style.display = 'grid';
@@ -430,7 +467,7 @@ function renderAuth(mode = 'login') {
             <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
               <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
             </div>
-            <h1>Alapon Lite</h1>
+            <h1>Alapon</h1>
             <p>Connect • Share • Grow</p>
           </div>
         </div>
@@ -555,7 +592,7 @@ function renderSignupStep() {
           <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
             <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
           </div>
-          <h1>Alapon Lite</h1>
+          <h1>Alapon</h1>
           <p>Connect • Share • Grow</p>
         </div>
       </div>
@@ -627,6 +664,7 @@ function renderSignupStep() {
       if (!file) return;
       try {
         const ext = file.name.split('.').pop();
+        const path = `avatars/${Date.now()}_reg.${ext}`;
         const url = await uploadFile('avatars', path, file);
         state.signupDraft.avatarUrl = url;
         document.getElementById('signupAvatarPreview').innerHTML = `<img src="${url}">`;
@@ -651,9 +689,17 @@ async function handleFinalSignup() {
   if (error) {
     alert(error.message);
   } else {
-    const { error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
-    if (loginErr) {
-      alert('Account created! Please login.');
+    // Instant Auto Login without requiring restart
+    const { data: logData, error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
+    if (!loginErr && logData?.session?.user) {
+      state.user = logData.session.user;
+      await loadUserProfile();
+      await loadInitialData();
+      setupRealtime();
+      state.currentView = 'feed';
+      renderApp();
+      showToast('Welcome to Alapon! 🎉');
+    } else {
       renderAuth('login');
     }
   }
@@ -669,16 +715,23 @@ async function handleLoginSubmit(e) {
     if (!data) return alert('Username not found. Please use email.');
     email = data;
   }
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
+  const { data: logData, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    alert(error.message);
+  } else if (logData?.session?.user) {
+    state.user = logData.session.user;
+    await loadUserProfile();
+    await loadInitialData();
+    setupRealtime();
+    state.currentView = 'feed';
+    renderApp();
+  }
 }
 
 // ----------------------------------------------------
 // MAIN APPLICATION SHELL
 // ----------------------------------------------------
 function renderApp() {
-  const p = state.profile || { full_name: 'User', username: 'user' };
-  const currentAvatar = getUserAvatar(p);
   const isChatActive = state.currentView === 'messages' && state.activeChatUser !== null;
 
   app.innerHTML = `
@@ -718,6 +771,7 @@ function renderApp() {
         <aside class="side">
           <div class="card-ui" style="padding:10px;">
             <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="sideHomeBtn">${ICONS.home} Home</button>
+            <button class="navitem ${state.currentView === 'shorts' ? 'active' : ''}" id="sideShortsBtn">${ICONS.shorts} Shorts</button>
             <button class="navitem ${state.currentView === 'friends' ? 'active' : ''}" id="sideFriendsBtn">${ICONS.friends} Friends</button>
             <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="sideMessagesBtn">
               ${ICONS.messages} Messages ${state.unreadMessagesCount > 0 ? `<span class="badge" style="position:static;display:inline-block;margin-left:auto;">${state.unreadMessagesCount}</span>` : ''}
@@ -750,7 +804,7 @@ function renderApp() {
       ${!isChatActive ? `
         <nav class="bottom-nav">
           <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
-          <button class="navitem ${state.currentView === 'friends' ? 'active' : ''}" id="botFriends">${ICONS.friends}<span>Friends</span></button>
+          <button class="navitem ${state.currentView === 'shorts' ? 'active' : ''}" id="botShorts">${ICONS.shorts}<span>Shorts</span></button>
           <button class="navitem bot-create-btn" id="botCreate">${ICONS.plus}</button>
           <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="botMessages">
             <div style="position:relative;display:inline-block;">
@@ -797,6 +851,7 @@ function renderFriendRequestsSidebar() {
 function renderCurrentViewContent() {
   switch (state.currentView) {
     case 'feed': return renderFeedView();
+    case 'shorts': return renderShortsView();
     case 'profile': return renderProfileView();
     case 'friends': return renderFriendsView();
     case 'messages': return renderMessagesView();
@@ -871,7 +926,13 @@ function renderPostCard(post) {
       </div>
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
-      ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">` : ''}
+      ${post.media_url ? (post.media_type === 'video' ? `
+        <div class="post-video-wrap">
+          <video src="${post.media_url}" controls playsinline class="post-media-video"></video>
+        </div>
+      ` : `
+        <img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">
+      `) : ''}
 
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
@@ -898,6 +959,56 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
+// SHORTS VIDEO VIEW (Reels / TikTok Style)
+// ----------------------------------------------------
+function renderShortsView() {
+  return `
+    <div class="shorts-feed-container">
+      ${state.shorts.length === 0 ? `
+        <div class="shorts-empty-state">
+          <div style="font-size:48px;margin-bottom:12px;">🎬</div>
+          <b>No Shorts Videos Yet</b>
+          <p class="muted" style="margin-top:6px;font-size:13px;">Upload vertical videos to share moments with friends!</p>
+          <button class="btn primary" id="uploadShortsTriggerBtn" style="margin-top:16px;">
+            ${ICONS.video} &nbsp; Upload Short Video
+          </button>
+        </div>
+      ` : ''}
+
+      ${state.shorts.map((s, idx) => `
+        <div class="shorts-video-card" data-short-id="${s.id}">
+          <video src="${s.media_url}" loop playsinline class="shorts-video-player" id="shortPlayer_${idx}"></video>
+          
+          <div class="shorts-overlay-bottom">
+            <div class="shorts-author-info">
+              <div class="avatar" style="width:36px;height:36px;border:2px solid #fff;"><img src="${getUserAvatar(s.profiles)}"></div>
+              <b style="color:#fff;font-size:14px;">${escapeHtml(s.profiles?.full_name || 'User')}</b>
+            </div>
+            <p class="shorts-caption-text">${formatRichText(s.content || '')}</p>
+          </div>
+
+          <div class="shorts-side-actions">
+            <button class="shorts-action-btn likePostBtn ${s.post_likes?.some(l => l.user_id === state.user?.id) ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
+              <span class="like-icon-holder">${s.post_likes?.some(l => l.user_id === state.user?.id) ? ICONS.heart : ICONS.heartOutline}</span>
+              <span class="post-like-count" style="font-size:11px;font-weight:700;">${s.post_likes?.length || 0}</span>
+            </button>
+
+            <button class="shorts-action-btn commentPostBtn" data-id="${s.id}">
+              ${ICONS.comment}
+              <span style="font-size:11px;font-weight:700;">${s.comments?.length || 0}</span>
+            </button>
+
+            <button class="shorts-action-btn sharePostBtn" data-id="${s.id}" data-author="${s.user_id}">
+              ${ICONS.share}
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ----------------------------------------------------
 // HASHTAG SEARCH RESULT VIEW
 // ----------------------------------------------------
 function renderHashtagSearchView() {
@@ -919,7 +1030,7 @@ function renderHashtagSearchView() {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (Real Dynamic Counts, No Fake Badges, Original SVG Icons)
+// PROFILE VIEW (Exact 10:24 Reference Matching, Real Counts Only)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -930,7 +1041,7 @@ function renderProfileView() {
   let tabContentHtml = '';
   if (state.profileTab === 'posts') {
     tabContentHtml = `
-      <!-- CREATE POST IN PROFILE -->
+      <!-- CREATE POST DOCK IN PROFILE -->
       <div class="card-ui profile-create-post-dock">
         <div class="row" style="gap:10px;align-items:center;">
           <div class="avatar" style="width:40px;height:40px;"><img src="${userAvatar}"></div>
@@ -940,15 +1051,15 @@ function renderProfileView() {
         </div>
         <div class="profile-create-actions-row">
           <button class="profile-post-action-btn" id="profBtnPhoto">${ICONS.image} <span>Photo</span></button>
+          <button class="profile-post-action-btn" id="profBtnVideo">${ICONS.shorts} <span>Video</span></button>
           <button class="profile-post-action-btn" id="profBtnFeeling">${ICONS.smile} <span>Feeling</span></button>
-          <button class="profile-post-action-btn" id="profBtnLocation">${ICONS.location} <span>Check In</span></button>
           <button class="btn primary profile-quick-post-btn" id="profBtnSubmitPost">
             ${ICONS.send} Post
           </button>
         </div>
       </div>
 
-      <!-- POSTS STREAM -->
+      <!-- PROFILE POSTS STREAM -->
       <div class="profile-posts-list">
         ${myPosts.length === 0 ? `<div class="card-ui empty"><p class="muted center" style="padding:20px 0;">You haven't created any posts yet.</p></div>` : ''}
         ${myPosts.map((post) => renderPostCard(post)).join('')}
@@ -1023,7 +1134,7 @@ function renderProfileView() {
           ${p.bio ? `<p class="premium-profile-bio">${escapeHtml(p.bio)}</p>` : `<p class="premium-profile-bio muted" style="font-size:13px;font-style:italic;">No bio added yet.</p>`}
         </div>
 
-        <!-- STATS CARDS (ORIGINAL ICONS, NO HARDCODED NUMBERS) -->
+        <!-- STATS CARDS (ORIGINAL ICONS, REAL COUNTS ONLY) -->
         <div class="premium-stats-grid">
           <div class="premium-stat-card">
             <span class="stat-card-icon">${ICONS.postsDoc}</span>
@@ -1128,7 +1239,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// PRO MESSENGER VIEW (Natural Facebook Messenger Image & Text Layout)
+// PRO MESSENGER VIEW (Natural Messenger Bubble, Text & Image)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -1151,7 +1262,7 @@ function renderMessagesView() {
           </button>
         </div>
 
-        <!-- CHAT STREAM WITH CHOSEN THEME / WALLPAPER -->
+        <!-- CHAT STREAM WITH CHOSEN THEME -->
         <div class="chat-wallpaper-container" style="background-image: url('${state.chatThemes.selectedBg}');">
           <div class="chat-dark-overlay"></div>
           
@@ -1246,14 +1357,6 @@ function renderMessagingSettingsView() {
           <div class="muted" style="font-size:12px;">Allow messages from non-friends</div>
         </div>
         <input type="checkbox" checked style="width:20px;height:20px;cursor:pointer;">
-      </div>
-
-      <div class="list-row">
-        <div class="grow">
-          <b>Privacy & Safety</b>
-          <div class="muted" style="font-size:12px;">End-to-end encrypted messaging filters</div>
-        </div>
-        <span class="muted">❯</span>
       </div>
 
       <b style="display:block;margin:20px 0 10px;font-size:15px;">Chat Themes & Background</b>
@@ -1360,7 +1463,6 @@ function renderCommentsStream() {
     return;
   }
 
-  // Nested comments grouping (Parent and Replies)
   const parents = state.commentsList.filter(c => !c.parent_id);
   const replies = state.commentsList.filter(c => c.parent_id);
 
@@ -1386,7 +1488,6 @@ function renderCommentsStream() {
           ${c.user_id === state.user?.id ? `<button class="fb-comment-action-btn deleteCommentBtn" data-id="${c.id}" style="color:#ef4444;">Delete</button>` : ''}
         </div>
 
-        <!-- NESTED REPLIES -->
         ${childReplies.length > 0 ? `
           <div class="fb-nested-replies-wrap">
             ${childReplies.map(r => `
@@ -1438,6 +1539,7 @@ function attachCommentInteractions() {
 
   document.querySelectorAll('.likeCommentBtn').forEach(btn => {
     btn.onclick = () => {
+      playReactionSound();
       btn.classList.toggle('liked');
       btn.innerText = btn.classList.contains('liked') ? 'Liked' : 'Like';
     };
@@ -1488,11 +1590,15 @@ function renderActiveModal() {
             </div>
           ` : ''}
 
-          ${post.media_url ? `
+          ${post.media_url ? (post.media_type === 'video' ? `
+            <div class="post-video-wrap">
+              <video src="${post.media_url}" controls playsinline class="post-media-video"></video>
+            </div>
+          ` : `
             <div class="fb-post-media-wrap">
               <img src="${post.media_url}" class="fb-post-full-image" loading="lazy">
             </div>
-          ` : ''}
+          `) : ''}
 
           <div class="fb-post-reactions-bar">
             <div class="row" style="gap:4px;align-items:center;">
@@ -1544,6 +1650,7 @@ function renderActiveModal() {
     };
 
     document.getElementById('detailPostLikeBtn').onclick = async () => {
+      playReactionSound();
       const btn = document.getElementById('detailPostLikeBtn');
       const authorId = post.user_id;
       const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
@@ -1640,6 +1747,7 @@ function renderActiveModal() {
           </div>
 
           <button class="navitem drawerNav" data-view="feed">${ICONS.home} Home</button>
+          <button class="navitem drawerNav" data-view="shorts">${ICONS.shorts} Shorts</button>
           <button class="navitem drawerNav" data-view="friends">${ICONS.friends} Friends</button>
           <button class="navitem drawerNav" data-view="messages">${ICONS.messages} Messages</button>
           <button class="navitem drawerNav" data-view="profile">${ICONS.profile} Profile</button>
@@ -1752,7 +1860,7 @@ function renderActiveModal() {
         await supabase.from('profiles').update({ avatar_url: url }).eq('id', state.user.id);
         await loadUserProfile();
         renderActiveModal();
-      } catch(err) { alert('Upload error: ' + err.message); }
+      } catch (err) { alert('Upload error: ' + err.message); }
     };
 
     document.getElementById('saveProfileEditBtn').onclick = async () => {
@@ -1783,7 +1891,7 @@ function renderActiveModal() {
         <div class="full-modal">
           <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:14px;">
             <button class="btn ghost" id="closeCreatePostModal">${ICONS.back}</button>
-            <b>Create Post</b>
+            <b>Create Post / Shorts</b>
             <button class="btn primary" id="publishPostBtn" style="padding:7px 18px;">Publish</button>
           </div>
 
@@ -1801,14 +1909,26 @@ function renderActiveModal() {
           <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind? (Use #tags or @mentions)">${escapeHtml(state.postDraft.content)}</textarea>
 
           <div id="createPostMediaPreview">
-            ${state.postDraft.mediaUrl ? `<div style="position:relative;margin:10px 0;"><img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"><button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button></div>` : ''}
+            ${state.postDraft.mediaUrl ? (state.postDraft.mediaType === 'video' ? `
+              <div style="position:relative;margin:10px 0;">
+                <video src="${state.postDraft.mediaUrl}" controls style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"></video>
+                <button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button>
+              </div>
+            ` : `
+              <div style="position:relative;margin:10px 0;">
+                <img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;">
+                <button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button>
+              </div>
+            `) : ''}
           </div>
 
           <div class="card-ui row between" style="padding:10px 14px;margin-top:14px;background:#f9fbff;">
             <span style="font-size:13px;font-weight:700;">Add to post:</span>
             <div class="row" style="gap:6px;">
               <input type="file" id="postPhotoUploadInput" accept="image/*" style="display:none;">
+              <input type="file" id="postVideoUploadInput" accept="video/*" style="display:none;">
               <button class="icon-btn" id="attachPhotoBtn" title="Photo">${ICONS.image}</button>
+              <button class="icon-btn" id="attachVideoBtn" title="Shorts Video">${ICONS.shorts}</button>
               <button class="icon-btn" id="toggleFeelingBtn" title="Feeling">${ICONS.smile}</button>
               <button class="icon-btn" id="toggleLocationBtn" title="Location">${ICONS.location}</button>
             </div>
@@ -1818,6 +1938,7 @@ function renderActiveModal() {
     `;
 
     document.getElementById('closeCreatePostModal').onclick = () => { state.modal = null; renderActiveModal(); };
+    
     document.getElementById('attachPhotoBtn').onclick = () => document.getElementById('postPhotoUploadInput').click();
     document.getElementById('postPhotoUploadInput').onchange = async (e) => {
       const file = e.target.files[0];
@@ -1826,8 +1947,24 @@ function renderActiveModal() {
         const ext = file.name.split('.').pop();
         const url = await uploadFile('post-media', `posts/${Date.now()}_img.${ext}`, file);
         state.postDraft.mediaUrl = url;
+        state.postDraft.mediaType = 'image';
         renderActiveModal();
       } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+
+    document.getElementById('attachVideoBtn').onclick = () => document.getElementById('postVideoUploadInput').click();
+    document.getElementById('postVideoUploadInput').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        showToast('Uploading video short... ⏳');
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('post-media', `shorts/${Date.now()}_vid.${ext}`, file);
+        state.postDraft.mediaUrl = url;
+        state.postDraft.mediaType = 'video';
+        renderActiveModal();
+        showToast('Video ready! 🎬');
+      } catch (err) { alert('Video upload failed: ' + err.message); }
     };
 
     const rmImg = document.getElementById('removePostMedia');
@@ -1886,12 +2023,13 @@ function renderActiveModal() {
 async function handlePostPublish() {
   const content = document.getElementById('createPostText').value.trim();
   const privacy = document.getElementById('postPrivacySelect').value;
-  if (!content && !state.postDraft.mediaUrl) return alert('Please enter text or attach an image.');
+  if (!content && !state.postDraft.mediaUrl) return alert('Please enter text or attach media.');
 
   const { error } = await supabase.from('posts').insert({
     user_id: state.user.id,
     content,
     media_url: state.postDraft.mediaUrl,
+    media_type: state.postDraft.mediaType || 'image',
     privacy
   });
 
@@ -1899,10 +2037,38 @@ async function handlePostPublish() {
     alert('Error publishing post: ' + error.message);
   } else {
     state.modal = null;
-    state.postDraft = { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' };
+    state.postDraft = { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' };
     await loadFeed();
+    await loadShorts();
     renderApp();
+    showToast('Published successfully! 🚀');
   }
+}
+
+async function handleSharePost(postId, postAuthorId, postText) {
+  const shareUrl = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Alapon Post',
+        text: postText ? postText.substring(0, 100) : 'Check this out on Alapon!',
+        url: shareUrl
+      });
+      await recordShare(postId, postAuthorId);
+      showToast('Shared successfully! 🚀');
+    } catch (e) {}
+  } else {
+    navigator.clipboard.writeText(shareUrl).then(async () => {
+      await recordShare(postId, postAuthorId);
+      showToast('Link copied to clipboard! 📋');
+    });
+  }
+}
+
+async function recordShare(postId, postAuthorId) {
+  await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
+  await triggerNotification(postAuthorId, 'post_share', `shared your post`, postId);
+  await loadFeed();
 }
 
 // ----------------------------------------------------
@@ -1921,6 +2087,8 @@ function attachGlobalEvents() {
   bindNav('brandHomeBtn', 'feed');
   bindNav('sideHomeBtn', 'feed');
   bindNav('botHome', 'feed');
+  bindNav('sideShortsBtn', 'shorts');
+  bindNav('botShorts', 'shorts');
   bindNav('sideFriendsBtn', 'friends');
   bindNav('botFriends', 'friends');
   bindNav('sideMessagesBtn', 'messages');
@@ -1950,16 +2118,17 @@ function attachGlobalEvents() {
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  // Profile Fake Input
+  const uploadShortsBtn = document.getElementById('uploadShortsTriggerBtn');
+  if (uploadShortsBtn) uploadShortsBtn.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
+
   const profFakeInput = document.getElementById('profileTriggerCreatePost');
   if (profFakeInput) profFakeInput.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  ['profBtnPhoto', 'profBtnFeeling', 'profBtnLocation', 'profBtnSubmitPost'].forEach((id) => {
+  ['profBtnPhoto', 'profBtnVideo', 'profBtnFeeling', 'profBtnSubmitPost'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
   });
 
-  // Profile Avatar Upload
   const avatarBadge = document.getElementById('cameraBadgeUploadTrigger');
   const avatarFile = document.getElementById('changeAvatarInput');
   if (avatarBadge && avatarFile) {
@@ -1978,7 +2147,6 @@ function attachGlobalEvents() {
     };
   }
 
-  // Cover Photo Upload
   const coverChangeBtn = document.getElementById('changeCoverBtn');
   const coverChangeInput = document.getElementById('changeCoverInput');
   if (coverChangeBtn && coverChangeInput) {
@@ -2044,9 +2212,11 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
-  // Smooth Like Click
+  // Smooth Like Click with Reaction Pop Sound
   document.querySelectorAll('.likePostBtn').forEach((btn) => {
-    btn.onclick = async () => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      playReactionSound();
       const postId = btn.dataset.id;
       const authorId = btn.dataset.author;
       const post = state.posts.find((p) => p.id === postId);
@@ -2056,7 +2226,7 @@ function attachGlobalEvents() {
       const isCurrentlyLiked = existingIndex > -1;
 
       const iconHolder = btn.querySelector('.like-icon-holder');
-      const counterEl = btn.closest('.post-card')?.querySelector('.post-like-count');
+      const counterEl = btn.closest('.post-card, .shorts-video-card')?.querySelector('.post-like-count');
 
       if (isCurrentlyLiked) {
         post.post_likes.splice(existingIndex, 1);
@@ -2149,8 +2319,7 @@ function attachGlobalEvents() {
     };
   }
 
-  // Theme option clicks
-  document.querySelectorAll('.theme-option-box').forEach(box => {
+  document.querySelectorAll('.theme-option-box').forEach((box) => {
     box.onclick = () => {
       const bg = box.dataset.bg;
       state.chatThemes.selectedBg = bg;
