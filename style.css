@@ -1,5 +1,5 @@
 /* ============================================================
-   Alapon Lite — Complete Pro Design System & Calling UI Engine
+   Alapon Lite — Facebook Style Post/Comments & Pro App Engine
    ============================================================ */
 
 * {
@@ -12,7 +12,7 @@ html, body {
   width: 100%;
   height: 100%;
   height: 100dvh;
-  overflow: hidden !important; /* সম্পূর্ণ স্ক্রিনের বাউন্স ও স্ক্রল বন্ধ */
+  overflow: hidden !important; /* সম্পূর্ণ স্ক্রিনের বাউন্স ও অপ্রয়োজনীয় স্ক্রল বন্ধ */
   position: fixed;
   overscroll-behavior: none;
 }
@@ -199,426 +199,217 @@ button {
 }
 
 /* ============================================================
-   FULL VOICE & VIDEO CALLING UI (SCREENS 2 - 7)
+   FACEBOOK STYLE POST DETAIL & COMMENTS SCREEN (EXACT MATCH)
    ============================================================ */
-.call-full-screen-overlay {
+.fb-post-detail-screen {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background: radial-gradient(circle at 50% 30%, #170d47 0%, #0a0427 60%, #030013 100%);
-  z-index: 500;
+  background: #ffffff;
+  z-index: 300;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  animation: fbSlideIn 0.2s ease-out;
+}
+
+@keyframes fbSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.fb-detail-topbar {
+  height: 56px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 40px 20px env(safe-area-inset-bottom);
-  color: #ffffff;
-  overflow: hidden;
-  animation: callFadeIn 0.25s ease-out;
-}
-
-@keyframes callFadeIn {
-  from { opacity: 0; transform: scale(1.02); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.call-top-bar-info {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  padding: 0 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f6;
+  flex-shrink: 0;
   z-index: 10;
 }
 
-.call-type-badge {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 6px 14px;
-  border-radius: 99px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #c7d2fe;
-}
-
-.call-type-indicator-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #c7d2fe;
-}
-
-.call-center-profile-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  z-index: 10;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-.call-avatar-glow-ring {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 3.5px solid #38bdf8;
-  box-shadow: 0 0 35px rgba(56, 189, 248, 0.5);
-  display: grid;
-  place-items: center;
-  margin-bottom: 20px;
-}
-
-.call-big-avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.incoming-pulse {
-  animation: incomingGlow 1.8s infinite alternate;
-}
-
-@keyframes incomingGlow {
-  0% { transform: scale(1); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-  100% { transform: scale(1.08); box-shadow: 0 0 45px rgba(56, 189, 248, 0.85); }
-}
-
-.connected-pulse {
-  border-color: #38bdf8;
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
-}
-
-.call-user-name {
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  margin-bottom: 4px;
-}
-
-.call-status-label {
-  font-size: 15px;
-  color: #a5b4fc;
-  font-weight: 500;
-}
-
-/* Audio Waveform Animation */
-.call-audio-waveform {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  height: 28px;
-  margin-top: 16px;
-}
-
-.call-audio-waveform span {
-  width: 4px;
-  background: #38bdf8;
-  border-radius: 99px;
-  animation: wavePulse 1.2s ease-in-out infinite alternate;
-}
-
-.call-audio-waveform span:nth-child(1) { height: 10px; animation-delay: 0.1s; }
-.call-audio-waveform span:nth-child(2) { height: 22px; animation-delay: 0.3s; }
-.call-audio-waveform span:nth-child(3) { height: 28px; animation-delay: 0.5s; }
-.call-audio-waveform span:nth-child(4) { height: 18px; animation-delay: 0.2s; }
-.call-audio-waveform span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
-
-@keyframes wavePulse {
-  0% { transform: scaleY(0.4); opacity: 0.5; }
-  100% { transform: scaleY(1.3); opacity: 1; }
-}
-
-/* Bottom Action Buttons */
-.call-bottom-action-bar {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  z-index: 10;
-  margin-bottom: 20px;
-}
-
-.call-btn-circle {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s ease;
-}
-
-.call-btn-circle:active {
-  transform: scale(0.92);
-}
-
-.end-call-btn {
-  background: #ef4444;
-  color: #ffffff;
-}
-
-.accept-call-btn {
-  background: #10b981;
-  color: #ffffff;
-}
-
-.call-incoming-actions-row {
-  width: 100%;
-  max-width: 320px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 10;
-  margin-bottom: 24px;
-}
-
-.call-action-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.call-action-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #cbd5e1;
-}
-
-/* Voice Call Connected Screen (Screen 5) */
-.call-connected-top-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 10;
-}
-
-.call-connected-timer-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px);
-  padding: 6px 14px;
-  border-radius: 99px;
-  font-size: 13px;
-  font-weight: 700;
-  margin-top: 10px;
-}
-
-.call-connected-dock-glass {
-  width: 100%;
-  max-width: 360px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  border-radius: 28px;
-  padding: 20px 16px;
-  z-index: 10;
-  margin-bottom: 12px;
-}
-
-.call-dock-row {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.call-dock-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  justify-content: center;
-  transition: all 0.15s ease;
-}
-
-.call-dock-btn:active {
-  transform: scale(0.94);
-}
-
-.call-dock-btn.active-mute {
-  background: #ef4444 !important;
-  color: #ffffff !important;
-}
-
-/* Video Call Connected Screen (Screen 6) */
-.call-remote-video-fullscreen {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
-  background: #000;
-}
-
-.call-video-top-status-bar {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 20;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  padding: 6px 12px;
-  border-radius: 99px;
-}
-
-.call-local-pip-box {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 105px;
-  height: 145px;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  z-index: 20;
-  background: #111;
-}
-
-.call-local-pip-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pip-video-off-cover {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: #1e293b;
-  color: #94a3b8;
-}
-
-.call-video-control-dock {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(380px, 92%);
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  border-radius: 30px;
-  padding: 12px 14px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 20;
-}
-
-.call-video-control-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  justify-content: center;
-}
-
-.call-video-control-btn.active-mute {
-  background: #ef4444;
-}
-
-.call-video-end-btn {
-  background: #ef4444 !important;
-  width: 52px;
-  height: 52px;
-}
-
-/* Call Ended / Summary Screen (Screen 7) */
-.call-ended-ring {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 35px rgba(239, 68, 68, 0.45) !important;
-}
-
-.call-ended-badge-icon {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #ef4444;
-  color: #fff;
-  border: 3px solid #090527;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.call-summary-duration-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 10px 22px;
-  border-radius: 16px;
-  margin: 22px 0 28px;
-  font-size: 18px;
-}
-
-.call-summary-action-col {
-  width: min(320px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.call-summary-again-btn {
-  background: linear-gradient(90deg, #315cff, #7142ff) !important;
-  padding: 14px !important;
-  border-radius: 16px !important;
-}
-
-.call-summary-msg-btn {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  padding: 14px !important;
-  border-radius: 16px !important;
-}
-
-.call-summary-close-circle {
-  position: absolute;
-  bottom: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
+.fb-detail-title {
   font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.fb-detail-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background: #ffffff;
+}
+
+.fb-post-author-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 8px;
+}
+
+.fb-post-text-content {
+  padding: 6px 16px 10px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #0f172a;
+}
+
+.fb-see-translation {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.fb-post-media-wrap {
+  width: 100%;
+  background: #000000;
+  margin-bottom: 8px;
+}
+
+.fb-post-full-image {
+  width: 100%;
+  max-height: 580px;
+  object-fit: contain;
+  display: block;
+}
+
+.fb-post-reactions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-reaction-icons-stack {
+  font-size: 14px;
+  letter-spacing: -2px;
+}
+
+.fb-post-actions-dock {
   display: grid;
-  place-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-action-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 8px;
+  color: #475569;
+  font-weight: 700;
+  font-size: 13.5px;
+  transition: 0.15s ease;
+}
+
+.fb-action-tab-btn:hover {
+  background: #f8fafc;
+}
+
+.fb-action-tab-btn.liked {
+  color: #ef4444 !important;
+}
+
+.fb-comments-filter-row {
+  padding: 12px 16px 4px;
+  font-size: 13.5px;
+  color: #1e293b;
+}
+
+.fb-comments-stream {
+  padding: 10px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fb-comment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fb-comment-bubble {
+  background: #f1f5f9;
+  border-radius: 18px;
+  padding: 10px 14px;
+  max-width: 85%;
+}
+
+.fb-comment-author {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.fb-comment-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+.fb-comment-media {
+  max-width: 180px;
+  border-radius: 10px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.fb-comment-time {
+  font-size: 11px;
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+}
+
+.fb-comment-input-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  z-index: 40;
+}
+
+.fb-comment-input-field {
+  flex: 1;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 9px 16px;
+  outline: none;
+  font-size: 14px;
+  background: #f8fafc;
+}
+
+.fb-comment-input-field:focus {
+  border-color: #315cff;
+  background: #ffffff;
 }
 
 /* ============================================================
-   PRO MESSENGER VIEW
+   PRO MESSENGER (FIXED TOP, FIXED BOTTOM, SCROLLABLE CENTER)
    ============================================================ */
 .chat-fullscreen-wrapper {
   height: 100%;
@@ -1274,7 +1065,7 @@ button {
 .post-card { padding: 14px 16px; }
 .post-head { display: flex; gap: 12px; align-items: center; }
 .post-caption { margin: 10px 0 6px; font-size: 15px; }
-.post-media { width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px; margin-top: 8px; }
+.post-media { width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px; margin-top: 8px; cursor: pointer; }
 .post-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
