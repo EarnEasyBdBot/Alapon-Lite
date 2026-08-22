@@ -1,4 +1,4 @@
-// app.js — Alapon Lite (Fixed Images, WebRTC 2-Way Voice/Video, Smooth Reacts, Real Phone Ringtone, Voice & Chat Media)
+// app.js — Alapon Lite (Facebook Style Post Detail & Comments, Pro Messenger, Voice/Image Chat & Smooth UI)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -33,19 +33,13 @@ const ICONS = {
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
-  phone: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-  video: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
-  videoOff: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="m16 16 7 5V7l-7 5"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   mic: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-  micOff: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M19 10v2a7 7 0 0 1-.12 1.28M5 10v2a7 7 0 0 0 10.88 5.88"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-  flipCamera: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/><path d="m16 9-3-3 3-3"/><path d="m8 15 3 3-3 3"/></svg>`,
-  speaker: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`,
   stop: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
   trash: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`
 };
 
-// Global App State
+// Global State
 const state = {
   user: null,
   profile: null,
@@ -60,7 +54,7 @@ const state = {
   friendRequests: [],
   suggestedUsers: [],
   notifications: [],
-  activeCommentsPostId: null,
+  activeCommentsPost: null,
   commentsList: [],
   unreadMessagesCount: 0,
   unreadNotificationsCount: 0,
@@ -69,29 +63,7 @@ const state = {
   activeStory: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
-  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' },
-
-  // CALL STATE ENGINE
-  call: {
-    state: 'idle',
-    callId: null,
-    callType: 'voice',
-    isIncoming: false,
-    otherUser: null,
-    startedAt: null,
-    connectedAt: null,
-    durationSeconds: 0,
-    timerInterval: null,
-    timeoutTimer: null,
-    isMuted: false,
-    isVideoOff: false,
-    facingMode: 'user',
-    pc: null,
-    localStream: null,
-    remoteStream: null,
-    channel: null,
-    iceCandidatesQueue: []
-  }
+  postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
 };
 
 let mediaRecorder = null;
@@ -99,14 +71,6 @@ let audioChunks = [];
 let isRecordingAudio = false;
 
 const app = document.getElementById('app');
-
-const RTC_CONFIG = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' }
-  ]
-};
 
 function getUserAvatar(prof) {
   if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
@@ -153,7 +117,7 @@ function showToast(msg) {
 }
 
 // ----------------------------------------------------
-// NOTIFICATION DISPATCHER & HANDLER
+// NOTIFICATIONS
 // ----------------------------------------------------
 async function triggerNotification(targetUserId, type, message, targetId = null) {
   if (!targetUserId || targetUserId === state.user?.id) return;
@@ -172,13 +136,7 @@ function handleNotificationClick(n) {
   supabase.from('notifications').update({ is_read: true }).eq('id', n.id).then(loadNotifications);
 
   if (n.type === 'post_like' || n.type === 'post_comment' || n.type === 'post_share') {
-    state.currentView = 'feed';
-    renderApp();
-    setTimeout(() => {
-      const el = document.querySelector(`[data-post-id="${n.target_id}"]`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      if (n.type === 'post_comment') openCommentsModal(n.target_id);
-    }, 150);
+    openCommentsModal(n.target_id);
   } else if (n.type === 'friend_request') {
     state.currentView = 'friends';
     renderApp();
@@ -187,432 +145,6 @@ function handleNotificationClick(n) {
     state.currentView = 'messages';
     renderApp();
   }
-}
-
-// ----------------------------------------------------
-// REALISTIC PHONE RINGTONE (Dual-Tone Melody Engine)
-// ----------------------------------------------------
-let ringtoneAudioContext = null;
-let ringtoneInterval = null;
-
-function playRingtone() {
-  stopRingtone();
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    ringtoneAudioContext = ctx;
-
-    const playDualTone = () => {
-      if (!ringtoneAudioContext || ringtoneAudioContext.state === 'closed') return;
-      
-      const now = ringtoneAudioContext.currentTime;
-      const osc1 = ringtoneAudioContext.createOscillator();
-      const osc2 = ringtoneAudioContext.createOscillator();
-      const gain = ringtoneAudioContext.createGain();
-
-      osc1.frequency.setValueAtTime(440, now); // Standard Telephone Tone 1
-      osc2.frequency.setValueAtTime(480, now); // Standard Telephone Tone 2
-
-      // Smooth Envelope (2s Ring, 3s Silence)
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.1);
-      gain.gain.setValueAtTime(0.08, now + 1.8);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
-
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ringtoneAudioContext.destination);
-
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 2.0);
-      osc2.stop(now + 2.0);
-    };
-
-    playDualTone();
-    ringtoneInterval = setInterval(playDualTone, 4000);
-  } catch (e) {}
-}
-
-function stopRingtone() {
-  if (ringtoneInterval) {
-    clearInterval(ringtoneInterval);
-    ringtoneInterval = null;
-  }
-  if (ringtoneAudioContext) {
-    try { ringtoneAudioContext.close(); } catch (e) {}
-    ringtoneAudioContext = null;
-  }
-}
-
-// ----------------------------------------------------
-// WEBRTC SIGNALING & TWO-WAY AUDIO/VIDEO ENGINE
-// ----------------------------------------------------
-function setupUserCallSignaling() {
-  if (!state.user) return;
-  const userChannel = supabase.channel(`user_calls_${state.user.id}`);
-  userChannel
-    .on('broadcast', { event: 'incoming_call_request' }, async ({ payload }) => {
-      if (state.call.state !== 'idle') {
-        const replyChannel = supabase.channel(`call_signaling_${payload.callId}`);
-        replyChannel.subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            replyChannel.send({ type: 'broadcast', event: 'call_busy', payload: { callId: payload.callId } });
-          }
-        });
-        return;
-      }
-      handleIncomingCall(payload);
-    })
-    .subscribe();
-}
-
-async function startOutgoingCall(targetUser, type = 'voice') {
-  if (state.call.state !== 'idle') {
-    showToast('Another call is already active.');
-    return;
-  }
-
-  const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
-  state.call = {
-    ...state.call,
-    state: 'calling',
-    callId,
-    callType: type,
-    isIncoming: false,
-    otherUser: targetUser,
-    startedAt: new Date().toISOString(),
-    connectedAt: null,
-    durationSeconds: 0,
-    isMuted: false,
-    isVideoOff: false,
-    iceCandidatesQueue: []
-  };
-
-  renderApp();
-  playRingtone();
-
-  setupCallChannel(callId);
-
-  // Send broadcast to Receiver
-  const receiverChannel = supabase.channel(`user_calls_${targetUser.id}`);
-  receiverChannel.subscribe((status) => {
-    if (status === 'SUBSCRIBED') {
-      receiverChannel.send({
-        type: 'broadcast',
-        event: 'incoming_call_request',
-        payload: {
-          callId,
-          callType: type,
-          caller: state.profile || { full_name: 'User', id: state.user.id }
-        }
-      });
-    }
-  });
-
-  state.call.timeoutTimer = setTimeout(() => {
-    if (state.call.state === 'calling') {
-      showToast('No answer.');
-      endActiveCall('missed');
-    }
-  }, 35000);
-}
-
-function handleIncomingCall(payload) {
-  state.call = {
-    ...state.call,
-    state: 'ringing',
-    callId: payload.callId,
-    callType: payload.callType || 'voice',
-    isIncoming: true,
-    otherUser: payload.caller,
-    startedAt: new Date().toISOString(),
-    connectedAt: null,
-    durationSeconds: 0,
-    isMuted: false,
-    isVideoOff: false,
-    iceCandidatesQueue: []
-  };
-
-  renderApp();
-  playRingtone();
-  setupCallChannel(payload.callId);
-}
-
-function setupCallChannel(callId) {
-  if (state.call.channel) {
-    supabase.removeChannel(state.call.channel);
-  }
-
-  const ch = supabase.channel(`call_signaling_${callId}`);
-  state.call.channel = ch;
-
-  ch.on('broadcast', { event: 'call_accepted' }, async () => {
-    stopRingtone();
-    if (!state.call.isIncoming) {
-      await initializeWebRTC(true);
-    }
-  })
-  .on('broadcast', { event: 'call_declined' }, () => {
-    stopRingtone();
-    showToast('Call declined.');
-    endActiveCall('declined');
-  })
-  .on('broadcast', { event: 'call_busy' }, () => {
-    stopRingtone();
-    showToast('User is busy on another call.');
-    endActiveCall('busy');
-  })
-  .on('broadcast', { event: 'webrtc_offer' }, async ({ payload }) => {
-    if (state.call.isIncoming) {
-      await initializeWebRTC(false);
-      await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-      
-      // Process queued ICE candidates
-      while (state.call.iceCandidatesQueue.length > 0) {
-        const cand = state.call.iceCandidatesQueue.shift();
-        try { await state.call.pc.addIceCandidate(cand); } catch(e){}
-      }
-
-      const answer = await state.call.pc.createAnswer();
-      await state.call.pc.setLocalDescription(answer);
-      ch.send({ type: 'broadcast', event: 'webrtc_answer', payload: { sdp: answer } });
-    }
-  })
-  .on('broadcast', { event: 'webrtc_answer' }, async ({ payload }) => {
-    if (!state.call.isIncoming && state.call.pc) {
-      await state.call.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-      
-      while (state.call.iceCandidatesQueue.length > 0) {
-        const cand = state.call.iceCandidatesQueue.shift();
-        try { await state.call.pc.addIceCandidate(cand); } catch(e){}
-      }
-    }
-  })
-  .on('broadcast', { event: 'ice_candidate' }, async ({ payload }) => {
-    if (payload.candidate) {
-      const candidate = new RTCIceCandidate(payload.candidate);
-      if (state.call.pc && state.call.pc.remoteDescription && state.call.pc.remoteDescription.type) {
-        try { await state.call.pc.addIceCandidate(candidate); } catch (e) {}
-      } else {
-        state.call.iceCandidatesQueue.push(candidate);
-      }
-    }
-  })
-  .on('broadcast', { event: 'call_ended' }, () => {
-    endActiveCall('remote_ended');
-  })
-  .subscribe();
-}
-
-async function initializeWebRTC(isCaller) {
-  clearTimeout(state.call.timeoutTimer);
-  state.call.state = 'connecting';
-  renderApp();
-
-  try {
-    const isVideo = state.call.callType === 'video';
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      },
-      video: isVideo ? { facingMode: state.call.facingMode } : false
-    });
-
-    state.call.localStream = stream;
-    attachLocalMediaStream(stream);
-
-    const pc = new RTCPeerConnection(RTC_CONFIG);
-    state.call.pc = pc;
-
-    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-
-    pc.onicecandidate = (event) => {
-      if (event.candidate && state.call.channel) {
-        state.call.channel.send({
-          type: 'broadcast',
-          event: 'ice_candidate',
-          payload: { candidate: event.candidate }
-        });
-      }
-    };
-
-    pc.ontrack = (event) => {
-      state.call.remoteStream = event.streams[0];
-      attachRemoteMediaStream(event.streams[0]);
-    };
-
-    pc.onconnectionstatechange = () => {
-      if (pc.connectionState === 'connected') {
-        state.call.state = 'connected';
-        state.call.connectedAt = new Date().toISOString();
-        startCallTimer();
-        renderApp();
-      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-        showToast('Call connection lost.');
-        endActiveCall('failed');
-      }
-    };
-
-    if (isCaller) {
-      const offer = await pc.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: isVideo
-      });
-      await pc.setLocalDescription(offer);
-      state.call.channel.send({ type: 'broadcast', event: 'webrtc_offer', payload: { sdp: offer } });
-    }
-  } catch (err) {
-    showToast(`${state.call.callType === 'video' ? 'Camera/Microphone' : 'Microphone'} permission required.`);
-    endActiveCall('permission_denied');
-  }
-}
-
-function attachLocalMediaStream(stream) {
-  setTimeout(() => {
-    const localVideoEl = document.getElementById('callLocalVideo');
-    if (localVideoEl) {
-      localVideoEl.srcObject = stream;
-    }
-  }, 100);
-}
-
-function attachRemoteMediaStream(stream) {
-  setTimeout(() => {
-    const remoteVideoEl = document.getElementById('callRemoteVideo');
-    const remoteAudioEl = document.getElementById('callRemoteAudio');
-    if (remoteVideoEl && state.call.callType === 'video') {
-      remoteVideoEl.srcObject = stream;
-    }
-    if (remoteAudioEl) {
-      remoteAudioEl.srcObject = stream;
-      remoteAudioEl.play().catch(() => {});
-    }
-  }, 100);
-}
-
-function startCallTimer() {
-  clearInterval(state.call.timerInterval);
-  state.call.durationSeconds = 0;
-  state.call.timerInterval = setInterval(() => {
-    state.call.durationSeconds++;
-    const timerEls = document.querySelectorAll('.call-live-timer-text');
-    const formatted = formatCallDuration(state.call.durationSeconds);
-    timerEls.forEach((el) => { el.innerText = formatted; });
-  }, 1000);
-}
-
-async function acceptIncomingCall(withVideo = null) {
-  stopRingtone();
-  if (withVideo !== null) {
-    state.call.callType = withVideo ? 'video' : 'voice';
-  }
-  if (state.call.channel) {
-    state.call.channel.send({ type: 'broadcast', event: 'call_accepted', payload: {} });
-  }
-  await initializeWebRTC(false);
-}
-
-function declineIncomingCall() {
-  stopRingtone();
-  if (state.call.channel) {
-    state.call.channel.send({ type: 'broadcast', event: 'call_declined', payload: {} });
-  }
-  endActiveCall('declined');
-}
-
-function endActiveCall(reason = 'ended') {
-  stopRingtone();
-  clearTimeout(state.call.timeoutTimer);
-  clearInterval(state.call.timerInterval);
-
-  if (state.call.channel) {
-    if (reason !== 'remote_ended' && reason !== 'declined' && reason !== 'busy') {
-      state.call.channel.send({ type: 'broadcast', event: 'call_ended', payload: {} });
-    }
-    supabase.removeChannel(state.call.channel);
-  }
-
-  if (state.call.localStream) {
-    state.call.localStream.getTracks().forEach((track) => track.stop());
-  }
-
-  if (state.call.pc) {
-    try { state.call.pc.close(); } catch(e){}
-  }
-
-  const finalDuration = state.call.durationSeconds;
-  const lastUser = state.call.otherUser;
-  const lastType = state.call.callType;
-
-  state.call = {
-    state: (reason === 'ended' || reason === 'remote_ended' || finalDuration > 0) ? 'ended' : 'idle',
-    callId: null,
-    callType: lastType,
-    isIncoming: false,
-    otherUser: lastUser,
-    startedAt: null,
-    connectedAt: null,
-    durationSeconds: finalDuration,
-    timerInterval: null,
-    timeoutTimer: null,
-    isMuted: false,
-    isVideoOff: false,
-    facingMode: 'user',
-    pc: null,
-    localStream: null,
-    remoteStream: null,
-    channel: null,
-    iceCandidatesQueue: []
-  };
-
-  renderApp();
-}
-
-function toggleMute() {
-  if (!state.call.localStream) return;
-  const audioTrack = state.call.localStream.getAudioTracks()[0];
-  if (audioTrack) {
-    audioTrack.enabled = !audioTrack.enabled;
-    state.call.isMuted = !audioTrack.enabled;
-    renderApp();
-  }
-}
-
-function toggleCamera() {
-  if (!state.call.localStream || state.call.callType !== 'video') return;
-  const videoTrack = state.call.localStream.getVideoTracks()[0];
-  if (videoTrack) {
-    videoTrack.enabled = !videoTrack.enabled;
-    state.call.isVideoOff = !videoTrack.enabled;
-    renderApp();
-  }
-}
-
-async function flipCamera() {
-  if (state.call.callType !== 'video' || !state.call.localStream) return;
-  state.call.facingMode = state.call.facingMode === 'user' ? 'environment' : 'user';
-  try {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: { facingMode: state.call.facingMode }
-    });
-    const videoTrack = newStream.getVideoTracks()[0];
-    const sender = state.call.pc?.getSenders().find((s) => s.track && s.track.kind === 'video');
-    if (sender) sender.replaceTrack(videoTrack);
-    state.call.localStream.getVideoTracks()[0].stop();
-    state.call.localStream = newStream;
-    attachLocalMediaStream(newStream);
-  } catch (e) {
-    showToast('Cannot switch camera.');
-  }
-}
-
-function formatCallDuration(sec) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 // ----------------------------------------------------
@@ -642,7 +174,6 @@ async function init() {
     await loadUserProfile();
     await loadInitialData();
     setupRealtime();
-    setupUserCallSignaling();
     renderApp();
   } else {
     renderAuth('login');
@@ -654,7 +185,6 @@ async function init() {
       await loadUserProfile();
       await loadInitialData();
       setupRealtime();
-      setupUserCallSignaling();
       renderApp();
     } else if (event === 'SIGNED_OUT') {
       state.user = null;
@@ -780,7 +310,7 @@ async function loadUnreadCounts() {
 }
 
 // ----------------------------------------------------
-// REALTIME SYNC (Seamless background update without resetting scroll)
+// REALTIME (Background Data Sync)
 // ----------------------------------------------------
 function setupRealtime() {
   const presenceChannel = supabase.channel('online_presence', {
@@ -805,8 +335,8 @@ function setupRealtime() {
       await loadFeed();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
-      if (state.activeCommentsPostId === payload.new?.post_id) {
-        loadPostComments(state.activeCommentsPostId);
+      if (state.activeCommentsPost?.id === payload.new?.post_id) {
+        loadPostComments(state.activeCommentsPost.id);
       }
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
@@ -839,7 +369,7 @@ function updateActiveUserStatus() {
 }
 
 // ----------------------------------------------------
-// AUTH FLOW
+// AUTH (Login & 5-Step Signup)
 // ----------------------------------------------------
 function renderAuth(mode = 'login') {
   if (mode === 'login') {
@@ -1047,7 +577,6 @@ function renderSignupStep() {
       if (!file) return;
       try {
         const ext = file.name.split('.').pop();
-        const path = `avatars/${Date.now()}_reg.${ext}`;
         const url = await uploadFile('avatars', path, file);
         state.signupDraft.avatarUrl = url;
         document.getElementById('signupAvatarPreview').innerHTML = `<img src="${url}">`;
@@ -1140,7 +669,7 @@ function renderApp() {
           </div>
         </aside>
 
-        <!-- MAIN VIEW (INDEPENDENT INNER SCROLL) -->
+        <!-- MAIN VIEW CONTAINER (INDEPENDENT INNER SCROLL) -->
         <main class="feed">
           ${renderCurrentViewContent()}
         </main>
@@ -1168,10 +697,7 @@ function renderApp() {
         </nav>
       ` : ''}
 
-      <!-- FULL CALL OVERLAY (SCREENS 2 - 7) -->
-      ${renderCallSystemOverlay()}
-
-      <!-- MODALS -->
+      <!-- MODALS & FACEBOOK STYLE COMMENT VIEW -->
       <div id="modalContainer"></div>
     </div>
   `;
@@ -1277,7 +803,7 @@ function renderPostCard(post) {
       </div>
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
-      ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy">` : ''}
+      ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">` : ''}
 
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b class="post-like-count">${likesCount}</b></div>
@@ -1298,6 +824,10 @@ function renderPostCard(post) {
     </div>
   `;
 }
+
+window.openPostDetail = (postId) => {
+  openCommentsModal(postId);
+};
 
 // ----------------------------------------------------
 // PROFILE VIEW
@@ -1436,11 +966,7 @@ function renderFriendsView() {
                 ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
               </div>
             </div>
-            <div class="row" style="gap:6px;">
-              <button class="icon-btn-minimal startDirectVoiceCallBtn" data-user-id="${fr.id}" title="Voice Call" style="color:#315cff;">${ICONS.phone}</button>
-              <button class="icon-btn-minimal startDirectVideoCallBtn" data-user-id="${fr.id}" title="Video Call" style="color:#7142ff;">${ICONS.video}</button>
-              <button class="icon-btn-minimal startChatBtn" data-user-id="${fr.id}" title="Chat">${ICONS.messages}</button>
-            </div>
+            <button class="icon-btn-minimal startChatBtn" data-user-id="${fr.id}" title="Chat">${ICONS.messages}</button>
           </div>
         `).join('')}
       </div>
@@ -1464,7 +990,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// PRO MESSENGER VIEW
+// PRO MESSENGER VIEW (Clean Chat without Call Buttons)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -1482,14 +1008,6 @@ function renderMessagesView() {
             <small id="chatUserActiveStatus" style="font-size:11px;font-weight:600;">
               ${isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
             </small>
-          </div>
-          <div class="row" style="gap:4px;">
-            <button class="icon-btn-minimal" id="startVoiceCallBtn" title="Voice Call" style="color:#315cff;">
-              ${ICONS.phone}
-            </button>
-            <button class="icon-btn-minimal" id="startVideoCallBtn" title="Video Call" style="color:#7142ff;">
-              ${ICONS.video}
-            </button>
           </div>
         </div>
 
@@ -1551,275 +1069,24 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// FULL CALL SYSTEM OVERLAYS
-// ----------------------------------------------------
-function renderCallSystemOverlay() {
-  const c = state.call;
-  if (c.state === 'idle') return '';
-
-  const otherUser = c.otherUser || { full_name: 'User' };
-  const otherAvatar = getUserAvatar(otherUser);
-
-  const remoteAudioTag = `<audio id="callRemoteAudio" autoplay playsinline></audio>`;
-
-  // SCREEN 2: CALLING SENDER
-  if (c.state === 'calling' || c.state === 'connecting') {
-    return `
-      <div class="call-full-screen-overlay">
-        ${remoteAudioTag}
-        <div class="call-top-bar-info">
-          <span class="call-type-badge">${c.callType === 'video' ? 'Outgoing Video Call' : 'Outgoing Voice Call'}</span>
-        </div>
-
-        <div class="call-center-profile-box">
-          <div class="call-avatar-glow-ring">
-            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
-          </div>
-          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
-          <p class="call-status-label">${c.state === 'connecting' ? 'Connecting...' : 'Calling...'}</p>
-          
-          <div class="call-audio-waveform">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-        </div>
-
-        <div class="call-bottom-action-bar">
-          <button class="call-btn-circle end-call-btn" id="cancelOutgoingCallBtn" title="End Call">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // SCREEN 3 & 4: INCOMING
-  if (c.state === 'ringing') {
-    const isVideo = c.callType === 'video';
-    return `
-      <div class="call-full-screen-overlay incoming-call-bg">
-        <div class="call-top-bar-info">
-          <div class="call-type-indicator-row">
-            ${isVideo ? ICONS.video : ICONS.phone}
-            <span>${isVideo ? 'Incoming Video Call' : 'Incoming Voice Call'}</span>
-          </div>
-        </div>
-
-        <div class="call-center-profile-box">
-          <div class="call-avatar-glow-ring incoming-pulse">
-            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
-          </div>
-          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
-          <p class="call-status-label">${isVideo ? 'Incoming video call...' : 'Incoming voice call...'}</p>
-        </div>
-
-        <div class="call-incoming-actions-row">
-          <div class="call-action-col">
-            <button class="call-btn-circle end-call-btn" id="declineCallBtn" title="Decline">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
-            </button>
-            <span class="call-action-label">Decline</span>
-          </div>
-
-          <div class="call-action-col">
-            <button class="call-btn-circle accept-call-btn" id="acceptCallBtn" title="Accept">
-              ${isVideo ? ICONS.video : ICONS.phone}
-            </button>
-            <span class="call-action-label">${isVideo ? 'Answer Video' : 'Accept'}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // SCREEN 5: VOICE CONNECTED
-  if (c.state === 'connected' && c.callType === 'voice') {
-    return `
-      <div class="call-full-screen-overlay connected-voice-bg">
-        ${remoteAudioTag}
-        <div class="call-connected-top-header">
-          <div class="avatar" style="width:36px;height:36px;"><img src="${otherAvatar}"></div>
-          <div>
-            <b style="font-size:14px;color:#fff;display:block;">${escapeHtml(otherUser.full_name)}</b>
-            <small style="color:#10b981;font-size:11px;">🟢 Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span></small>
-          </div>
-        </div>
-
-        <div class="call-center-profile-box">
-          <div class="call-avatar-glow-ring connected-pulse">
-            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
-          </div>
-          <h2 class="call-user-name">${escapeHtml(otherUser.full_name)}</h2>
-          <p class="call-connected-timer-badge">
-            <span style="color:#38bdf8;">📞</span> Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span>
-          </p>
-        </div>
-
-        <div class="call-connected-dock-glass">
-          <div class="call-dock-row">
-            <button class="call-dock-btn ${c.isMuted ? 'active-mute' : ''}" id="toggleCallMuteBtn">
-              ${c.isMuted ? ICONS.micOff : ICONS.mic}
-              <span>${c.isMuted ? 'Unmute' : 'Mute'}</span>
-            </button>
-
-            <button class="call-dock-btn" id="toggleCallSpeakerBtn">
-              ${ICONS.speaker}
-              <span>Speaker</span>
-            </button>
-
-            <button class="call-dock-btn" id="callAddPersonDisabledBtn" style="opacity:0.6;">
-              ${ICONS.friends}
-              <span>Add</span>
-            </button>
-          </div>
-
-          <div style="margin-top:20px;text-align:center;">
-            <button class="call-btn-circle end-call-btn" id="hangupCallBtn" title="End Call">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
-            </button>
-            <div style="color:#cbd5e1;font-size:12px;margin-top:6px;font-weight:700;">End Call</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // SCREEN 6: VIDEO CONNECTED
-  if (c.state === 'connected' && c.callType === 'video') {
-    return `
-      <div class="call-full-screen-overlay video-call-bg">
-        ${remoteAudioTag}
-        <video id="callRemoteVideo" class="call-remote-video-fullscreen" autoplay playsinline></video>
-
-        <div class="call-video-top-status-bar">
-          <div class="row" style="gap:8px;">
-            <span style="color:#10b981;">🟢</span>
-            <span style="color:#fff;font-weight:700;font-size:13px;">Connected • <span class="call-live-timer-text">${formatCallDuration(c.durationSeconds)}</span></span>
-          </div>
-        </div>
-
-        <div class="call-local-pip-box">
-          <video id="callLocalVideo" class="call-local-pip-video" autoplay playsinline muted></video>
-          ${c.isVideoOff ? `<div class="pip-video-off-cover">${ICONS.videoOff}</div>` : ''}
-        </div>
-
-        <div class="call-video-control-dock">
-          <button class="call-video-control-btn ${c.isMuted ? 'active-mute' : ''}" id="toggleCallMuteBtn" title="Mute/Unmute">
-            ${c.isMuted ? ICONS.micOff : ICONS.mic}
-            <span>${c.isMuted ? 'Unmute' : 'Mute'}</span>
-          </button>
-
-          <button class="call-video-control-btn ${c.isVideoOff ? 'active-mute' : ''}" id="toggleCallCameraBtn" title="Camera On/Off">
-            ${c.isVideoOff ? ICONS.videoOff : ICONS.video}
-            <span>Camera</span>
-          </button>
-
-          <button class="call-video-control-btn call-video-end-btn" id="hangupCallBtn" title="End Call">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.28 8.78 7.42 7 12 7s8.72 1.78 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
-            <span>End</span>
-          </button>
-
-          <button class="call-video-control-btn" id="toggleCallSpeakerBtn" title="Speaker">
-            ${ICONS.speaker}
-            <span>Speaker</span>
-          </button>
-
-          <button class="call-video-control-btn" id="flipCallCameraBtn" title="Flip Camera">
-            ${ICONS.flipCamera}
-            <span>Flip</span>
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // SCREEN 7: CALL ENDED
-  if (c.state === 'ended') {
-    return `
-      <div class="call-full-screen-overlay summary-bg">
-        <div class="call-center-profile-box">
-          <div class="call-avatar-glow-ring call-ended-ring">
-            <img src="${otherAvatar}" class="call-big-avatar" alt="Avatar">
-            <span class="call-ended-badge-icon">✕</span>
-          </div>
-
-          <h2 class="call-user-name" style="margin-top:16px;">Call Ended</h2>
-          <p class="muted" style="color:#a5b4fc;font-size:14px;">${escapeHtml(otherUser.full_name)}</p>
-
-          <div class="call-summary-duration-pill">
-            <span style="font-size:16px;">⏱</span>
-            <b>${formatCallDuration(c.durationSeconds)}</b>
-            <span style="color:#cbd5e1;font-size:12px;">Call Duration</span>
-          </div>
-
-          <div class="call-summary-action-col">
-            <button class="btn primary full call-summary-again-btn" id="callAgainBtn">
-              ${c.callType === 'video' ? ICONS.video : ICONS.phone} &nbsp; Call Again
-            </button>
-
-            <button class="btn secondary full call-summary-msg-btn" id="callMessageBtn">
-              ${ICONS.messages} &nbsp; Message
-            </button>
-          </div>
-        </div>
-
-        <button class="call-summary-close-circle" id="closeCallSummaryBtn" title="Close">✕</button>
-      </div>
-    `;
-  }
-
-  return '';
-}
-
-// ----------------------------------------------------
-// SETTINGS VIEW
-// ----------------------------------------------------
-function renderSettingsView() {
-  const p = state.profile || {};
-  const userAvatar = getUserAvatar(p);
-
-  return `
-    <div class="card-ui">
-      <h2>Settings</h2>
-      <div class="list-row" style="margin:16px 0;">
-        <div class="avatar"><img src="${userAvatar}"></div>
-        <div class="grow">
-          <b>${escapeHtml(p.full_name || '')}</b>
-          <div class="muted">@${escapeHtml(p.username || '')}</div>
-        </div>
-      </div>
-
-      <div class="list-row settingsOptRow" data-type="security" style="cursor:pointer;">
-        <div class="grow"><b>🛡️ Account & Security</b></div>
-        <span class="muted">❯</span>
-      </div>
-      <div class="list-row settingsOptRow" data-type="privacy" style="cursor:pointer;">
-        <div class="grow"><b>🔒 Privacy & Policy</b></div>
-        <span class="muted">❯</span>
-      </div>
-      <div class="list-row settingsOptRow" data-type="notifications" style="cursor:pointer;">
-        <div class="grow"><b>🔔 Notification Preferences</b></div>
-        <span class="muted">❯</span>
-      </div>
-      <div class="list-row settingsOptRow" data-type="language" style="cursor:pointer;">
-        <div class="grow"><b>🌐 Language (English)</b></div>
-        <span class="muted">❯</span>
-      </div>
-
-      <button class="btn secondary full" id="settingsLogoutBtn" style="margin-top:25px;color:#d92d20;background:#fee4e2;">
-        ${ICONS.logout} &nbsp; Log Out
-      </button>
-    </div>
-  `;
-}
-
-// ----------------------------------------------------
-// COMMENTS & SHARE LOGIC
+// FACEBOOK STYLE POST DETAIL & COMMENTS VIEW (Exact like Screenshot)
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
-  state.activeCommentsPostId = postId;
-  state.modal = 'comments';
+  let post = state.posts.find((p) => p.id === postId);
+  if (!post) {
+    const { data } = await supabase
+      .from('posts')
+      .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
+      .eq('id', postId)
+      .single();
+    if (data) post = data;
+  }
+  
+  if (!post) return;
+  state.activeCommentsPost = post;
+  state.modal = 'post-comments';
   renderActiveModal();
-  await loadPostComments(postId);
+  await loadPostComments(post.id);
 }
 
 async function loadPostComments(postId) {
@@ -1830,22 +1097,21 @@ async function loadPostComments(postId) {
     .order('created_at', { ascending: true });
 
   state.commentsList = data || [];
-  const container = document.getElementById('commentsContainerList');
+  const container = document.getElementById('fbPostCommentsStream');
   if (container) {
     if (state.commentsList.length === 0) {
-      container.innerHTML = `<p class="muted center" style="padding:20px 0;">No comments yet. Be the first to comment!</p>`;
+      container.innerHTML = `<p class="muted center" style="padding:24px 0;">Be the first to comment on this post!</p>`;
     } else {
       container.innerHTML = state.commentsList.map((c) => `
-        <div class="list-row" style="align-items:flex-start;padding:10px 0;">
-          <div class="avatar" style="width:34px;height:34px;margin-top:2px;">
+        <div class="fb-comment-row">
+          <div class="avatar" style="width:36px;height:36px;">
             <img src="${getUserAvatar(c.profiles)}">
           </div>
-          <div class="comment-bubble-box">
-            <b>${escapeHtml(c.profiles?.full_name || 'User')}</b>
-            <div style="font-size:13.5px;margin-top:3px;word-break:break-word;">
-              ${formatRichText(c.content)}
-            </div>
-            <small class="muted" style="font-size:11px;margin-top:4px;display:block;">${formatTimeAgo(c.created_at)}</small>
+          <div class="fb-comment-bubble">
+            <b class="fb-comment-author">${escapeHtml(c.profiles?.full_name || 'User')}</b>
+            <div class="fb-comment-text">${formatRichText(c.content)}</div>
+            ${c.media_url ? `<img src="${c.media_url}" class="fb-comment-media" onclick="window.open('${c.media_url}')">` : ''}
+            <small class="muted fb-comment-time">${formatTimeAgo(c.created_at)}</small>
           </div>
         </div>
       `).join('');
@@ -1854,40 +1120,189 @@ async function loadPostComments(postId) {
   }
 }
 
-async function handleSharePost(postId, postAuthorId, postText) {
-  const shareUrl = window.location.href;
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'Alapon Lite Post',
-        text: postText ? postText.substring(0, 100) : 'Check this post on Alapon Lite!',
-        url: shareUrl
-      });
-      await recordShare(postId, postAuthorId);
-      showToast('Shared successfully! 🚀');
-    } catch (e) {}
-  } else {
-    navigator.clipboard.writeText(shareUrl).then(async () => {
-      await recordShare(postId, postAuthorId);
-      showToast('Post link copied to clipboard! 📋');
-    });
-  }
-}
-
-async function recordShare(postId, postAuthorId) {
-  await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
-  await triggerNotification(postAuthorId, 'post_share', `shared your post`, postId);
-  await loadFeed();
-}
-
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER
+// ALL MODALS CONTROLLER (Facebook Style Post/Comments Included)
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'drawer') {
+  if (state.modal === 'post-comments' && state.activeCommentsPost) {
+    const post = state.activeCommentsPost;
+    const authorAvatar = getUserAvatar(post.profiles);
+    const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
+    const likesCount = post.post_likes?.length || 0;
+    const commentsCount = post.comments?.length || state.commentsList.length;
+    const sharesCount = post.post_shares?.length || 0;
+
+    container.innerHTML = `
+      <div class="fb-post-detail-screen">
+        <!-- TOP NAV HEADER -->
+        <div class="fb-detail-topbar">
+          <button class="icon-btn-minimal" id="closePostDetailBtn">${ICONS.back}</button>
+          <b class="fb-detail-title">${escapeHtml(post.profiles?.full_name || 'User')}'s post</b>
+          <button class="icon-btn-minimal" id="detailSearchBtn">${ICONS.search}</button>
+        </div>
+
+        <!-- SCROLLABLE POST & COMMENTS BODY -->
+        <div class="fb-detail-scroll-area">
+          <!-- POST AUTHOR HEADER -->
+          <div class="fb-post-author-row">
+            <div class="avatar" style="width:44px;height:44px;"><img src="${authorAvatar}"></div>
+            <div>
+              <div style="font-weight:800;font-size:15px;display:flex;align-items:center;gap:4px;">
+                ${escapeHtml(post.profiles?.full_name || 'User')}
+                ${post.profiles?.is_verified ? `<span style="color:#245bff;">✔</span>` : ''}
+              </div>
+              <small class="muted" style="font-size:12px;">
+                Suggested for you • ${formatTimeAgo(post.created_at)} • 🌐
+              </small>
+            </div>
+            <button class="btn ghost" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
+          </div>
+
+          <!-- POST CAPTION -->
+          ${post.content ? `
+            <div class="fb-post-text-content">
+              ${formatRichText(post.content)}
+              <small class="muted fb-see-translation">See translation</small>
+            </div>
+          ` : ''}
+
+          <!-- POST IMAGE / MEDIA -->
+          ${post.media_url ? `
+            <div class="fb-post-media-wrap">
+              <img src="${post.media_url}" class="fb-post-full-image" loading="lazy">
+            </div>
+          ` : ''}
+
+          <!-- REACTIONS STATS BAR -->
+          <div class="fb-post-reactions-bar">
+            <div class="row" style="gap:4px;align-items:center;">
+              <span class="fb-reaction-icons-stack">👍😢❤️</span>
+              <b style="font-size:13px;color:#475569;">${likesCount}</b>
+            </div>
+            <div class="row" style="gap:10px;font-size:12.5px;color:#64748b;">
+              <span>💬 ${commentsCount}</span>
+              <span>↗ ${sharesCount}</span>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS ROW -->
+          <div class="fb-post-actions-dock">
+            <button class="fb-action-tab-btn ${isLiked ? 'liked' : ''}" id="detailPostLikeBtn">
+              ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; <span>Like</span>
+            </button>
+            <button class="fb-action-tab-btn" id="focusCommentInputBtn">
+              ${ICONS.comment} &nbsp; <span>Comment</span>
+            </button>
+            <button class="fb-action-tab-btn" id="detailPostShareBtn">
+              ${ICONS.share} &nbsp; <span>Share</span>
+            </button>
+          </div>
+
+          <!-- FILTER BAR -->
+          <div class="fb-comments-filter-row">
+            <b>Most relevant ⌵</b>
+          </div>
+
+          <!-- COMMENTS STREAM -->
+          <div class="fb-comments-stream" id="fbPostCommentsStream">
+            <p class="muted center" style="padding:20px 0;">Loading comments...</p>
+          </div>
+        </div>
+
+        <!-- FIXED BOTTOM COMMENT INPUT DOCK -->
+        <form class="fb-comment-input-bar" id="submitFbCommentForm">
+          <input type="file" id="fbCommentMediaInput" accept="image/*" style="display:none;">
+          <button type="button" class="icon-btn-minimal" id="triggerFbCommentMedia">${ICONS.image}</button>
+          
+          <input class="fb-comment-input-field" type="text" id="fbCommentTextInput" placeholder="Write a comment..." autocomplete="off" required>
+          
+          <button type="submit" class="chat-send-btn" style="width:36px;height:36px;">${ICONS.send}</button>
+        </form>
+      </div>
+    `;
+
+    document.getElementById('closePostDetailBtn').onclick = () => { 
+      state.modal = null; 
+      state.activeCommentsPost = null; 
+      renderActiveModal(); 
+    };
+
+    document.getElementById('focusCommentInputBtn').onclick = () => {
+      document.getElementById('fbCommentTextInput')?.focus();
+    };
+
+    document.getElementById('detailPostLikeBtn').onclick = async () => {
+      const btn = document.getElementById('detailPostLikeBtn');
+      const authorId = post.user_id;
+      const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
+      const isCurrentlyLiked = existingIndex > -1;
+
+      if (isCurrentlyLiked) {
+        post.post_likes.splice(existingIndex, 1);
+        btn.classList.remove('liked');
+        await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', state.user.id);
+      } else {
+        if (!post.post_likes) post.post_likes = [];
+        post.post_likes.push({ post_id: post.id, user_id: state.user.id });
+        btn.classList.add('liked');
+        await supabase.from('post_likes').insert({ post_id: post.id, user_id: state.user.id });
+        await triggerNotification(authorId, 'post_like', `reacted ❤️ to your post`, post.id);
+      }
+      loadFeed();
+    };
+
+    document.getElementById('detailPostShareBtn').onclick = () => {
+      handleSharePost(post.id, post.user_id, post.content);
+    };
+
+    const mediaTrigger = document.getElementById('triggerFbCommentMedia');
+    const mediaInput = document.getElementById('fbCommentMediaInput');
+    let attachedCommentImg = '';
+
+    if (mediaTrigger && mediaInput) {
+      mediaTrigger.onclick = () => mediaInput.click();
+      mediaInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          showToast('Uploading image... 📤');
+          const ext = file.name.split('.').pop();
+          const url = await uploadFile('avatars', `comm_${Date.now()}.${ext}`, file);
+          attachedCommentImg = url;
+          showToast('Image attached! 📷');
+        } catch (err) {
+          const reader = new FileReader();
+          reader.onload = (re) => { attachedCommentImg = re.target.result; };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+
+    document.getElementById('submitFbCommentForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('fbCommentTextInput');
+      const text = input.value.trim();
+      if (!text && !attachedCommentImg) return;
+      input.value = '';
+
+      const imgToSubmit = attachedCommentImg;
+      attachedCommentImg = '';
+
+      await supabase.from('comments').insert({
+        post_id: post.id,
+        user_id: state.user.id,
+        content: text,
+        media_url: imgToSubmit
+      });
+
+      await triggerNotification(post.user_id, 'post_comment', `commented: "${text ? text.substring(0, 30) : 'Photo'}"`, post.id);
+      loadPostComments(post.id);
+      loadFeed();
+    };
+  } else if (state.modal === 'drawer') {
     const p = state.profile || {};
     const userAvatar = getUserAvatar(p);
 
@@ -2054,47 +1469,6 @@ function renderActiveModal() {
       renderApp();
       showToast('Profile updated successfully! ✅');
     };
-  } else if (state.modal === 'comments') {
-    container.innerHTML = `
-      <div class="full-modal-back">
-        <div class="full-modal comments-modal">
-          <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:10px;">
-            <b>Comments</b>
-            <button class="btn ghost" id="closeCommentsModal">✕</button>
-          </div>
-          <div id="commentsContainerList" class="comments-scroll-area">
-            <p class="muted center" style="padding:20px 0;">Loading comments...</p>
-          </div>
-          <form class="comment-input-bar" id="submitCommentForm">
-            <input class="input" type="text" id="newCommentInput" placeholder="Write a comment..." required>
-            <button class="btn primary" type="submit" style="padding:10px 14px;">${ICONS.send}</button>
-          </form>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('closeCommentsModal').onclick = () => { state.modal = null; state.activeCommentsPostId = null; renderActiveModal(); };
-    document.getElementById('submitCommentForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const input = document.getElementById('newCommentInput');
-      const text = input.value.trim();
-      if (!text || !state.activeCommentsPostId) return;
-      input.value = '';
-
-      const post = state.posts.find((p) => p.id === state.activeCommentsPostId);
-      await supabase.from('comments').insert({
-        post_id: state.activeCommentsPostId,
-        user_id: state.user.id,
-        content: text
-      });
-
-      if (post) {
-        await triggerNotification(post.user_id, 'post_comment', `commented: "${text.substring(0, 30)}..."`, post.id);
-      }
-
-      loadPostComments(state.activeCommentsPostId);
-      loadFeed();
-    };
   } else if (state.modal === 'create-post') {
     const p = state.profile || {};
     const userAvatar = getUserAvatar(p);
@@ -2122,7 +1496,7 @@ function renderActiveModal() {
 
           <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind? (Use #tags or @mentions)">${escapeHtml(state.postDraft.content)}</textarea>
 
-          <div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0;">
+          <div class="row" style="gap:8px;flex-wrap:wrap;margin-io:10px 0;">
             ${state.postDraft.feeling ? `<span class="tag">Feeling: ${escapeHtml(state.postDraft.feeling)} <b id="removeFeeling" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
             ${state.postDraft.location ? `<span class="tag">📍 ${escapeHtml(state.postDraft.location)} <b id="removeLocation" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
           </div>
@@ -2471,7 +1845,6 @@ function attachGlobalEvents() {
       const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
       const isCurrentlyLiked = existingIndex > -1;
 
-      // Optimistic UI Update in place
       const iconHolder = btn.querySelector('.like-icon-holder');
       const counterEl = btn.closest('.post-card')?.querySelector('.post-like-count');
 
@@ -2541,83 +1914,13 @@ function attachGlobalEvents() {
     };
   });
 
-  document.querySelectorAll('.startDirectVoiceCallBtn').forEach((btn) => {
-    btn.onclick = () => {
-      const friend = state.friends.find((f) => f.id === btn.dataset.userId);
-      if (friend) startOutgoingCall(friend, 'voice');
-    };
-  });
-
-  document.querySelectorAll('.startDirectVideoCallBtn').forEach((btn) => {
-    btn.onclick = () => {
-      const friend = state.friends.find((f) => f.id === btn.dataset.userId);
-      if (friend) startOutgoingCall(friend, 'video');
-    };
-  });
-
-  // Messenger Header Actions
+  // Messenger actions
   const backChat = document.getElementById('backToChatListBtn');
   if (backChat) backChat.onclick = () => {
     state.activeChatUser = null;
     state.replyingToMessage = null;
     renderApp();
   };
-
-  const startVoice = document.getElementById('startVoiceCallBtn');
-  if (startVoice && state.activeChatUser) {
-    startVoice.onclick = () => startOutgoingCall(state.activeChatUser, 'voice');
-  }
-
-  const startVideo = document.getElementById('startVideoCallBtn');
-  if (startVideo && state.activeChatUser) {
-    startVideo.onclick = () => startOutgoingCall(state.activeChatUser, 'video');
-  }
-
-  // CALL OVERLAY ACTION BUTTONS
-  const cancelOutgoing = document.getElementById('cancelOutgoingCallBtn');
-  if (cancelOutgoing) cancelOutgoing.onclick = () => endActiveCall('cancelled');
-
-  const acceptCall = document.getElementById('acceptCallBtn');
-  if (acceptCall) acceptCall.onclick = () => acceptIncomingCall();
-
-  const declineCall = document.getElementById('declineCallBtn');
-  if (declineCall) declineCall.onclick = () => declineIncomingCall();
-
-  const hangupCall = document.getElementById('hangupCallBtn');
-  if (hangupCall) hangupCall.onclick = () => endActiveCall('ended');
-
-  const muteBtn = document.getElementById('toggleCallMuteBtn');
-  if (muteBtn) muteBtn.onclick = toggleMute;
-
-  const camBtn = document.getElementById('toggleCallCameraBtn');
-  if (camBtn) camBtn.onclick = toggleCamera;
-
-  const flipBtn = document.getElementById('flipCallCameraBtn');
-  if (flipBtn) flipBtn.onclick = flipCamera;
-
-  const closeSummary = document.getElementById('closeCallSummaryBtn');
-  if (closeSummary) closeSummary.onclick = () => { state.call.state = 'idle'; renderApp(); };
-
-  const callAgain = document.getElementById('callAgainBtn');
-  if (callAgain && state.call.otherUser) {
-    callAgain.onclick = () => {
-      const u = state.call.otherUser;
-      const t = state.call.callType;
-      state.call.state = 'idle';
-      startOutgoingCall(u, t);
-    };
-  }
-
-  const callMsg = document.getElementById('callMessageBtn');
-  if (callMsg && state.call.otherUser) {
-    callMsg.onclick = () => {
-      const u = state.call.otherUser;
-      state.call.state = 'idle';
-      state.activeChatUser = u;
-      state.currentView = 'messages';
-      renderApp();
-    };
-  }
 
   // Chat Image Upload
   const triggerImg = document.getElementById('triggerChatPhotoUpload');
@@ -2633,7 +1936,6 @@ function attachGlobalEvents() {
         const url = await uploadFile('avatars', `chat_${Date.now()}.${ext}`, file);
         await sendChatMessage({ mediaUrl: url, mediaType: 'image' });
       } catch (err) { 
-        // Base64 inline fallback
         const reader = new FileReader();
         reader.onload = async (re) => {
           await sendChatMessage({ mediaUrl: re.target.result, mediaType: 'image' });
