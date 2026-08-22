@@ -1,4 +1,4 @@
-// app.js — Alapon (Instant Auth, Pop Sound, Shorts Feature, Pro Profile & Messenger)
+// app.js — Alapon (Shorts Screen 100% UI Match, Auto Thumbnail, Scroll Video Mute/Pause, Dedicated Shorts Upload, Real Counts)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,7 +9,7 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Vector / SVG Icons (No Emojis as UI Icons)
+// Pure Vector / SVG Icons
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
@@ -23,11 +23,13 @@ const ICONS = {
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
   settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
-  heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-  heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-  comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  share: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  heart: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  heartOutline: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  comment: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  share: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  bookmark: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
   image: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  video: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
   smile: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
   send: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
@@ -38,7 +40,10 @@ const ICONS = {
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
   info: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`
+  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+  playBtn: `<svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`,
+  fire: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+  chart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`
 };
 
 // Global App State
@@ -47,6 +52,7 @@ const state = {
   profile: null,
   currentView: 'feed', // 'feed', 'shorts', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
   profileTab: 'posts',
+  shortsFilter: 'shorts', // 'shorts', 'foryou', 'following', 'popular'
   activeChatUser: null,
   activeHashtag: '',
   hashtagPosts: [],
@@ -58,6 +64,7 @@ const state = {
   friendRequests: [],
   suggestedUsers: [],
   notifications: [],
+  savedPosts: new Set(),
   activeCommentsPost: null,
   commentsList: [],
   replyingToCommentId: null,
@@ -70,10 +77,12 @@ const state = {
   modal: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
-  postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' }
+  postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' },
+  shortDraft: { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 }
 };
 
 const app = document.getElementById('app');
+let shortsObserver = null;
 
 function getUserAvatar(prof) {
   if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
@@ -81,7 +90,7 @@ function getUserAvatar(prof) {
 }
 
 // ----------------------------------------------------
-// POP REACTION SOUND SYSTEM
+// AUDIBLE POP REACTION SOUND SYSTEM (Higher Punchy Volume)
 // ----------------------------------------------------
 function playReactionSound() {
   try {
@@ -91,18 +100,52 @@ function playReactionSound() {
     const now = ctx.currentTime;
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(320, now);
-    osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+    osc.frequency.setValueAtTime(280, now);
+    osc.frequency.exponentialRampToValueAtTime(840, now + 0.09);
 
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    gain.gain.setValueAtTime(0.38, now); // Higher volume
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.12);
+    osc.stop(now + 0.14);
   } catch (e) {}
+}
+
+// ----------------------------------------------------
+// AUTO THUMBNAIL GENERATOR (Canvas Frame Capture)
+// ----------------------------------------------------
+function generateVideoThumbnail(videoFile) {
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+      video.src = URL.createObjectURL(videoFile);
+
+      video.onloadeddata = () => {
+        video.currentTime = Math.min(1.0, (video.duration || 2) / 2);
+      };
+
+      video.onseeked = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 480;
+        canvas.height = video.videoHeight || 854;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        URL.revokeObjectURL(video.src);
+        resolve(dataUrl);
+      };
+
+      video.onerror = () => resolve('');
+    } catch (e) {
+      resolve('');
+    }
+  });
 }
 
 // ----------------------------------------------------
@@ -210,7 +253,7 @@ async function init() {
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2600));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2400));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -248,8 +291,8 @@ function render3DSplashScreen() {
       <div class="floating-badge badge-mid-right">${ICONS.search}</div>
 
       <div class="splash-3d-center">
-        <div style="width:100px;height:100px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:100px;height:100px;object-fit:contain;display:block;">
+        <div style="width:96px;height:96px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:96px;height:96px;object-fit:contain;display:block;">
         </div>
         <h1 class="splash-3d-title">Alapon</h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
@@ -300,6 +343,7 @@ async function loadFeed() {
   const { data } = await supabase
     .from('posts')
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
+    .neq('media_type', 'video') // Regular feed shows posts & photos
     .order('created_at', { ascending: false });
   if (data) state.posts = data;
 }
@@ -465,7 +509,7 @@ function renderAuth(mode = 'login') {
         <div class="auth-hero">
           <div class="hero-inner">
             <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
-              <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
+              <img src="${ASSETS.appLogo}" alt="Alapon" style="width:68px;height:68px;object-fit:contain;display:block;">
             </div>
             <h1>Alapon</h1>
             <p>Connect • Share • Grow</p>
@@ -804,20 +848,14 @@ function renderApp() {
       ${!isChatActive ? `
         <nav class="bottom-nav">
           <button class="navitem ${state.currentView === 'feed' ? 'active' : ''}" id="botHome">${ICONS.home}<span>Home</span></button>
-          <button class="navitem ${state.currentView === 'shorts' ? 'active' : ''}" id="botShorts">${ICONS.shorts}<span>Shorts</span></button>
+          <button class="navitem ${state.currentView === 'friends' ? 'active' : ''}" id="botFriends">${ICONS.friends}<span>Friends</span></button>
           <button class="navitem bot-create-btn" id="botCreate">${ICONS.plus}</button>
-          <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="botMessages">
-            <div style="position:relative;display:inline-block;">
-              ${ICONS.messages}
-              ${state.unreadMessagesCount > 0 ? `<span class="badge bot-msg-badge" style="top:-6px;right:-10px;">${state.unreadMessagesCount}</span>` : ''}
-            </div>
-            <span>Messages</span>
-          </button>
+          <button class="navitem ${state.currentView === 'shorts' ? 'active' : ''}" id="botShorts">${ICONS.shorts}<span>Shorts</span></button>
           <button class="navitem ${state.currentView === 'profile' ? 'active' : ''}" id="botProfile">${ICONS.profile}<span>Profile</span></button>
         </nav>
       ` : ''}
 
-      <!-- MODALS & FACEBOOK STYLE COMMENT VIEW -->
+      <!-- MODALS & DETAIL VIEWS -->
       <div id="modalContainer"></div>
     </div>
   `;
@@ -827,6 +865,10 @@ function renderApp() {
 
   if (isChatActive) {
     loadChatMessages(state.activeChatUser.id);
+  }
+
+  if (state.currentView === 'shorts') {
+    bindShortsInteractions();
   }
 }
 
@@ -926,13 +968,9 @@ function renderPostCard(post) {
       </div>
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
-      ${post.media_url ? (post.media_type === 'video' ? `
-        <div class="post-video-wrap">
-          <video src="${post.media_url}" controls playsinline class="post-media-video"></video>
-        </div>
-      ` : `
+      ${post.media_url ? `
         <img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">
-      `) : ''}
+      ` : ''}
 
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
@@ -959,53 +997,220 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// SHORTS VIDEO VIEW (Reels / TikTok Style)
+// SHORTS VIDEO VIEW (EXACT SCREENSHOT MATCHING)
 // ----------------------------------------------------
 function renderShortsView() {
+  const filteredShorts = state.shorts;
+
   return `
-    <div class="shorts-feed-container">
-      ${state.shorts.length === 0 ? `
-        <div class="shorts-empty-state">
-          <div style="font-size:48px;margin-bottom:12px;">🎬</div>
-          <b>No Shorts Videos Yet</b>
-          <p class="muted" style="margin-top:6px;font-size:13px;">Upload vertical videos to share moments with friends!</p>
-          <button class="btn primary" id="uploadShortsTriggerBtn" style="margin-top:16px;">
-            ${ICONS.video} &nbsp; Upload Short Video
-          </button>
-        </div>
-      ` : ''}
+    <div class="shorts-screen-wrapper">
+      <!-- TOP PILL TABS BAR (EXACT SCREENSHOT) -->
+      <div class="shorts-pill-nav-bar">
+        <button class="shorts-pill-tab ${state.shortsFilter === 'shorts' ? 'active' : ''}" data-filter="shorts">
+          ${ICONS.shorts} <span>Shorts</span>
+        </button>
+        <button class="shorts-pill-tab ${state.shortsFilter === 'foryou' ? 'active' : ''}" data-filter="foryou">
+          ${ICONS.fire} <span>For You</span>
+        </button>
+        <button class="shorts-pill-tab ${state.shortsFilter === 'following' ? 'active' : ''}" data-filter="following">
+          ${ICONS.friends} <span>Following</span>
+        </button>
+        <button class="shorts-pill-tab ${state.shortsFilter === 'popular' ? 'active' : ''}" data-filter="popular">
+          ${ICONS.chart} <span>Popular</span>
+        </button>
 
-      ${state.shorts.map((s, idx) => `
-        <div class="shorts-video-card" data-short-id="${s.id}">
-          <video src="${s.media_url}" loop playsinline class="shorts-video-player" id="shortPlayer_${idx}"></video>
-          
-          <div class="shorts-overlay-bottom">
-            <div class="shorts-author-info">
-              <div class="avatar" style="width:36px;height:36px;border:2px solid #fff;"><img src="${getUserAvatar(s.profiles)}"></div>
-              <b style="color:#fff;font-size:14px;">${escapeHtml(s.profiles?.full_name || 'User')}</b>
+        <button class="shorts-upload-pill-trigger" id="openShortsUploadModalBtn" title="Upload Short">
+          ${ICONS.plus}
+        </button>
+      </div>
+
+      <!-- VERTICAL SNAP SCROLL FEED -->
+      <div class="shorts-scroll-viewport" id="shortsScrollViewport">
+        ${filteredShorts.length === 0 ? `
+          <div class="shorts-empty-card">
+            <div style="font-size:44px;margin-bottom:12px;">🎬</div>
+            <b style="font-size:18px;">No Shorts Available</b>
+            <p class="muted" style="margin-top:6px;font-size:13px;">Upload vertical short videos to entertain the community!</p>
+            <button class="btn primary" id="emptyUploadShortsBtn" style="margin-top:18px;">
+              ${ICONS.video} &nbsp; Upload Short Video
+            </button>
+          </div>
+        ` : ''}
+
+        ${filteredShorts.map((s, idx) => {
+          const isLiked = s.post_likes?.some(l => l.user_id === state.user?.id);
+          const likesCount = s.post_likes?.length || 0;
+          const commentsCount = s.comments?.length || 0;
+          const sharesCount = s.post_shares?.length || 0;
+          const authorAvatar = getUserAvatar(s.profiles);
+          const isSaved = state.savedPosts.has(s.id);
+
+          return `
+            <div class="shorts-item-card" data-short-id="${s.id}" data-index="${idx}">
+              <video 
+                src="${s.media_url}" 
+                poster="${s.thumbnail_url || ''}" 
+                loop 
+                playsinline 
+                preload="metadata" 
+                class="shorts-video-element"
+              ></video>
+
+              <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
+              <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
+
+              <!-- TOP AUTHOR OVERLAY (INSIDE VIDEO CARD) -->
+              <div class="shorts-top-author-header">
+                <div class="avatar" style="width:38px;height:38px;border:2px solid #fff;">
+                  <img src="${authorAvatar}">
+                </div>
+                <div>
+                  <b class="shorts-author-name">${escapeHtml(s.profiles?.full_name || 'User')}</b>
+                  <small class="shorts-author-time">🌐 ${formatTimeAgo(s.created_at)}</small>
+                </div>
+                <button class="btn ghost shorts-more-btn" style="margin-left:auto;color:#fff;">${ICONS.more}</button>
+              </div>
+
+              <!-- RIGHT SIDE FLOATING ACTION ICONS (EXACT SCREENSHOT) -->
+              <div class="shorts-side-actions-bar">
+                <button class="shorts-side-btn likePostBtn ${isLiked ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
+                  <span class="like-icon-holder">${isLiked ? ICONS.heart : ICONS.heartOutline}</span>
+                  <span class="shorts-count-label post-like-count">${likesCount}</span>
+                </button>
+
+                <button class="shorts-side-btn commentPostBtn" data-id="${s.id}">
+                  ${ICONS.comment}
+                  <span class="shorts-count-label">${commentsCount}</span>
+                </button>
+
+                <button class="shorts-side-btn sharePostBtn" data-id="${s.id}" data-author="${s.user_id}" data-text="${escapeHtml(s.content || '')}">
+                  ${ICONS.share}
+                  <span class="shorts-count-label">Share</span>
+                </button>
+
+                <button class="shorts-side-btn saveShortBtn ${isSaved ? 'saved' : ''}" data-id="${s.id}">
+                  ${ICONS.bookmark}
+                  <span class="shorts-count-label">Save</span>
+                </button>
+              </div>
+
+              <!-- BOTTOM CAPTION & HASHTAGS (EXACT SCREENSHOT) -->
+              <div class="shorts-bottom-meta-box">
+                <div class="shorts-caption-title">${formatRichText(s.content || '')}</div>
+                
+                <!-- PLAYBACK PROGRESS BAR -->
+                <div class="shorts-progress-track">
+                  <div class="shorts-progress-fill"></div>
+                </div>
+              </div>
             </div>
-            <p class="shorts-caption-text">${formatRichText(s.content || '')}</p>
-          </div>
-
-          <div class="shorts-side-actions">
-            <button class="shorts-action-btn likePostBtn ${s.post_likes?.some(l => l.user_id === state.user?.id) ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
-              <span class="like-icon-holder">${s.post_likes?.some(l => l.user_id === state.user?.id) ? ICONS.heart : ICONS.heartOutline}</span>
-              <span class="post-like-count" style="font-size:11px;font-weight:700;">${s.post_likes?.length || 0}</span>
-            </button>
-
-            <button class="shorts-action-btn commentPostBtn" data-id="${s.id}">
-              ${ICONS.comment}
-              <span style="font-size:11px;font-weight:700;">${s.comments?.length || 0}</span>
-            </button>
-
-            <button class="shorts-action-btn sharePostBtn" data-id="${s.id}" data-author="${s.user_id}">
-              ${ICONS.share}
-            </button>
-          </div>
-        </div>
-      `).join('')}
+          `;
+        }).join('')}
+      </div>
     </div>
   `;
+}
+
+function bindShortsInteractions() {
+  if (shortsObserver) shortsObserver.disconnect();
+
+  const viewport = document.getElementById('shortsScrollViewport');
+  const cards = document.querySelectorAll('.shorts-item-card');
+
+  // INTERSECTION OBSERVER FOR AUTO PLAY/PAUSE & SOUND MUTE ON SCROLL
+  shortsObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const card = entry.target;
+      const video = card.querySelector('.shorts-video-element');
+      const playIcon = card.querySelector('.shorts-center-play-indicator');
+      const progressFill = card.querySelector('.shorts-progress-fill');
+
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
+        // Active video: Play
+        if (video) {
+          video.play().then(() => {
+            if (playIcon) playIcon.style.opacity = '0';
+          }).catch(() => {});
+
+          video.ontimeupdate = () => {
+            if (progressFill && video.duration) {
+              const perc = (video.currentTime / video.duration) * 100;
+              progressFill.style.width = `${perc}%`;
+            }
+          };
+        }
+      } else {
+        // Scrolled away: Automatically Pause and Mute sound
+        if (video) {
+          video.pause();
+          video.currentTime = 0;
+          if (playIcon) playIcon.style.opacity = '1';
+        }
+      }
+    });
+  }, { threshold: [0.65] });
+
+  cards.forEach((c) => {
+    shortsObserver.observe(c);
+
+    // Tap on video to toggle play/pause
+    const video = c.querySelector('.shorts-video-element');
+    const playIcon = c.querySelector('.shorts-center-play-indicator');
+
+    c.onclick = (e) => {
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.rich-hashtag')) return;
+      if (!video) return;
+
+      if (video.paused) {
+        video.play();
+        if (playIcon) playIcon.style.opacity = '0';
+      } else {
+        video.pause();
+        if (playIcon) playIcon.style.opacity = '1';
+      }
+    };
+  });
+
+  // Shorts Pill Filters
+  document.querySelectorAll('.shorts-pill-tab').forEach((pill) => {
+    pill.onclick = () => {
+      state.shortsFilter = pill.dataset.filter;
+      renderApp();
+    };
+  });
+
+  // Save Bookmark button
+  document.querySelectorAll('.saveShortBtn').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      playReactionSound();
+      const sId = btn.dataset.id;
+      if (state.savedPosts.has(sId)) {
+        state.savedPosts.delete(sId);
+        btn.classList.remove('saved');
+        showToast('Removed from Saved');
+      } else {
+        state.savedPosts.add(sId);
+        btn.classList.add('saved');
+        showToast('Saved to your collection! 🔖');
+      }
+    };
+  });
+
+  const uploadTrigger = document.getElementById('openShortsUploadModalBtn');
+  if (uploadTrigger) uploadTrigger.onclick = () => openShortsUploadModal();
+
+  const emptyUploadBtn = document.getElementById('emptyUploadShortsBtn');
+  if (emptyUploadBtn) emptyUploadBtn.onclick = () => openShortsUploadModal();
+}
+
+// ----------------------------------------------------
+// DEDICATED SHORTS UPLOAD MODAL
+// ----------------------------------------------------
+function openShortsUploadModal() {
+  state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
+  state.modal = 'upload-short';
+  renderActiveModal();
 }
 
 // ----------------------------------------------------
@@ -1051,15 +1256,15 @@ function renderProfileView() {
         </div>
         <div class="profile-create-actions-row">
           <button class="profile-post-action-btn" id="profBtnPhoto">${ICONS.image} <span>Photo</span></button>
-          <button class="profile-post-action-btn" id="profBtnVideo">${ICONS.shorts} <span>Video</span></button>
           <button class="profile-post-action-btn" id="profBtnFeeling">${ICONS.smile} <span>Feeling</span></button>
+          <button class="profile-post-action-btn" id="profBtnLocation">${ICONS.location} <span>Check In</span></button>
           <button class="btn primary profile-quick-post-btn" id="profBtnSubmitPost">
             ${ICONS.send} Post
           </button>
         </div>
       </div>
 
-      <!-- PROFILE POSTS STREAM -->
+      <!-- POSTS STREAM -->
       <div class="profile-posts-list">
         ${myPosts.length === 0 ? `<div class="card-ui empty"><p class="muted center" style="padding:20px 0;">You haven't created any posts yet.</p></div>` : ''}
         ${myPosts.map((post) => renderPostCard(post)).join('')}
@@ -1425,7 +1630,7 @@ function renderSettingsView() {
 // FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
-  let post = state.posts.find((p) => p.id === postId);
+  let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
   if (!post) {
     const { data } = await supabase
       .from('posts')
@@ -1463,11 +1668,11 @@ function renderCommentsStream() {
     return;
   }
 
-  const parents = state.commentsList.filter(c => !c.parent_id);
-  const replies = state.commentsList.filter(c => c.parent_id);
+  const parents = state.commentsList.filter((c) => !c.parent_id);
+  const replies = state.commentsList.filter((c) => c.parent_id);
 
   container.innerHTML = parents.map((c) => {
-    const childReplies = replies.filter(r => r.parent_id === c.id);
+    const childReplies = replies.filter((r) => r.parent_id === c.id);
     return `
       <div class="fb-comment-block" data-comment-id="${c.id}">
         <div class="fb-comment-row">
@@ -1490,7 +1695,7 @@ function renderCommentsStream() {
 
         ${childReplies.length > 0 ? `
           <div class="fb-nested-replies-wrap">
-            ${childReplies.map(r => `
+            ${childReplies.map((r) => `
               <div class="fb-comment-row nested" data-comment-id="${r.id}">
                 <div class="avatar" style="width:30px;height:30px;">
                   <img src="${getUserAvatar(r.profiles)}">
@@ -1516,7 +1721,7 @@ function renderCommentsStream() {
 }
 
 function attachCommentInteractions() {
-  document.querySelectorAll('.replyCommentBtn').forEach(btn => {
+  document.querySelectorAll('.replyCommentBtn').forEach((btn) => {
     btn.onclick = () => {
       state.replyingToCommentId = btn.dataset.id;
       const input = document.getElementById('fbCommentTextInput');
@@ -1527,17 +1732,17 @@ function attachCommentInteractions() {
     };
   });
 
-  document.querySelectorAll('.deleteCommentBtn').forEach(btn => {
+  document.querySelectorAll('.deleteCommentBtn').forEach((btn) => {
     btn.onclick = async () => {
       const cId = btn.dataset.id;
       await supabase.from('comments').delete().eq('id', cId);
-      state.commentsList = state.commentsList.filter(c => c.id !== cId);
+      state.commentsList = state.commentsList.filter((c) => c.id !== cId);
       renderCommentsStream();
       loadFeed();
     };
   });
 
-  document.querySelectorAll('.likeCommentBtn').forEach(btn => {
+  document.querySelectorAll('.likeCommentBtn').forEach((btn) => {
     btn.onclick = () => {
       playReactionSound();
       btn.classList.toggle('liked');
@@ -1547,13 +1752,118 @@ function attachCommentInteractions() {
 }
 
 // ----------------------------------------------------
-// ALL MODALS
+// ALL MODALS CONTROLLER
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'post-comments' && state.activeCommentsPost) {
+  if (state.modal === 'upload-short') {
+    container.innerHTML = `
+      <div class="full-modal-back">
+        <div class="full-modal">
+          <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:14px;">
+            <button class="btn ghost" id="closeShortUploadModal">${ICONS.back}</button>
+            <b>Upload Short Video</b>
+            <button class="btn primary" id="publishShortBtn" style="padding:7px 18px;">Publish</button>
+          </div>
+
+          <div style="margin:16px 0;">
+            <div class="field">
+              <label>Caption & Hashtags</label>
+              <textarea class="create-post-textarea" id="shortCaptionInput" placeholder="Write a short video title (e.g. My amazing travel #Alapon #Shorts)" rows="3"></textarea>
+            </div>
+
+            <!-- PREVIEW AREA -->
+            <div id="shortVideoPreviewArea" class="short-upload-preview-card">
+              <input type="file" id="shortVideoFileInput" accept="video/*" style="display:none;">
+              <div id="shortPlaceholderBox" class="short-placeholder-box">
+                <div style="font-size:36px;margin-bottom:8px;">📹</div>
+                <b>Select Vertical Short Video</b>
+                <p class="muted" style="font-size:12px;margin-top:4px;">MP4 or WebM (Max 60s)</p>
+                <button type="button" class="btn secondary" id="triggerShortVideoPick" style="margin-top:12px;">
+                  Choose Video
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeShortUploadModal').onclick = () => { state.modal = null; renderActiveModal(); };
+
+    const videoInput = document.getElementById('shortVideoFileInput');
+    const triggerPick = document.getElementById('triggerShortVideoPick');
+    const previewArea = document.getElementById('shortVideoPreviewArea');
+
+    if (triggerPick && videoInput) {
+      triggerPick.onclick = () => videoInput.click();
+      videoInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        showToast('Generating thumbnail & preparing video... 🎬');
+
+        // Auto Generate Thumbnail from Video Frame
+        const thumbDataUrl = await generateVideoThumbnail(file);
+        state.shortDraft.thumbnailUrl = thumbDataUrl;
+
+        const videoBlobUrl = URL.createObjectURL(file);
+        previewArea.innerHTML = `
+          <div style="position:relative;width:100%;height:320px;background:#000;border-radius:14px;overflow:hidden;">
+            <video src="${videoBlobUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+            <button id="repickShortVideoBtn" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;width:30px;height:30px;">✕</button>
+          </div>
+          <small class="muted" style="display:block;margin-top:8px;font-size:12px;">✓ Auto thumbnail generated</small>
+        `;
+
+        document.getElementById('repickShortVideoBtn').onclick = () => {
+          state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
+          openShortsUploadModal();
+        };
+
+        // Upload Video to Storage
+        try {
+          const ext = file.name.split('.').pop();
+          const uploadedUrl = await uploadFile('post-media', `shorts/${Date.now()}_video.${ext}`, file);
+          state.shortDraft.videoUrl = uploadedUrl;
+          showToast('Video ready to publish! 🚀');
+        } catch (err) {
+          // Base64 fallback if storage upload blocked
+          const reader = new FileReader();
+          reader.onload = (re) => { state.shortDraft.videoUrl = re.target.result; };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+
+    document.getElementById('publishShortBtn').onclick = async () => {
+      const caption = document.getElementById('shortCaptionInput').value.trim();
+      if (!state.shortDraft.videoUrl) return alert('Please select a video first.');
+
+      showToast('Publishing Short Video... ⏳');
+      const { error } = await supabase.from('posts').insert({
+        user_id: state.user.id,
+        content: caption,
+        media_url: state.shortDraft.videoUrl,
+        media_type: 'video',
+        thumbnail_url: state.shortDraft.thumbnailUrl,
+        privacy: 'public'
+      });
+
+      if (error) {
+        alert('Error publishing short: ' + error.message);
+      } else {
+        state.modal = null;
+        state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
+        await loadShorts();
+        state.currentView = 'shorts';
+        renderApp();
+        showToast('Short published successfully! 🎬');
+      }
+    };
+  } else if (state.modal === 'post-comments' && state.activeCommentsPost) {
     const post = state.activeCommentsPost;
     const authorAvatar = getUserAvatar(post.profiles);
     const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
@@ -1891,7 +2201,7 @@ function renderActiveModal() {
         <div class="full-modal">
           <div class="row between" style="border-bottom:1px solid #edf0f5;padding-bottom:14px;">
             <button class="btn ghost" id="closeCreatePostModal">${ICONS.back}</button>
-            <b>Create Post / Shorts</b>
+            <b>Create Post</b>
             <button class="btn primary" id="publishPostBtn" style="padding:7px 18px;">Publish</button>
           </div>
 
@@ -1909,26 +2219,19 @@ function renderActiveModal() {
           <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind? (Use #tags or @mentions)">${escapeHtml(state.postDraft.content)}</textarea>
 
           <div id="createPostMediaPreview">
-            ${state.postDraft.mediaUrl ? (state.postDraft.mediaType === 'video' ? `
-              <div style="position:relative;margin:10px 0;">
-                <video src="${state.postDraft.mediaUrl}" controls style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"></video>
-                <button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button>
-              </div>
-            ` : `
+            ${state.postDraft.mediaUrl ? `
               <div style="position:relative;margin:10px 0;">
                 <img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;">
                 <button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button>
               </div>
-            `) : ''}
+            ` : ''}
           </div>
 
           <div class="card-ui row between" style="padding:10px 14px;margin-top:14px;background:#f9fbff;">
             <span style="font-size:13px;font-weight:700;">Add to post:</span>
             <div class="row" style="gap:6px;">
               <input type="file" id="postPhotoUploadInput" accept="image/*" style="display:none;">
-              <input type="file" id="postVideoUploadInput" accept="video/*" style="display:none;">
               <button class="icon-btn" id="attachPhotoBtn" title="Photo">${ICONS.image}</button>
-              <button class="icon-btn" id="attachVideoBtn" title="Shorts Video">${ICONS.shorts}</button>
               <button class="icon-btn" id="toggleFeelingBtn" title="Feeling">${ICONS.smile}</button>
               <button class="icon-btn" id="toggleLocationBtn" title="Location">${ICONS.location}</button>
             </div>
@@ -1950,21 +2253,6 @@ function renderActiveModal() {
         state.postDraft.mediaType = 'image';
         renderActiveModal();
       } catch (err) { alert('Upload failed: ' + err.message); }
-    };
-
-    document.getElementById('attachVideoBtn').onclick = () => document.getElementById('postVideoUploadInput').click();
-    document.getElementById('postVideoUploadInput').onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        showToast('Uploading video short... ⏳');
-        const ext = file.name.split('.').pop();
-        const url = await uploadFile('post-media', `shorts/${Date.now()}_vid.${ext}`, file);
-        state.postDraft.mediaUrl = url;
-        state.postDraft.mediaType = 'video';
-        renderActiveModal();
-        showToast('Video ready! 🎬');
-      } catch (err) { alert('Video upload failed: ' + err.message); }
     };
 
     const rmImg = document.getElementById('removePostMedia');
@@ -2023,13 +2311,13 @@ function renderActiveModal() {
 async function handlePostPublish() {
   const content = document.getElementById('createPostText').value.trim();
   const privacy = document.getElementById('postPrivacySelect').value;
-  if (!content && !state.postDraft.mediaUrl) return alert('Please enter text or attach media.');
+  if (!content && !state.postDraft.mediaUrl) return alert('Please enter text or attach an image.');
 
   const { error } = await supabase.from('posts').insert({
     user_id: state.user.id,
     content,
     media_url: state.postDraft.mediaUrl,
-    media_type: state.postDraft.mediaType || 'image',
+    media_type: 'image',
     privacy
   });
 
@@ -2039,9 +2327,8 @@ async function handlePostPublish() {
     state.modal = null;
     state.postDraft = { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' };
     await loadFeed();
-    await loadShorts();
     renderApp();
-    showToast('Published successfully! 🚀');
+    showToast('Post published! 🚀');
   }
 }
 
@@ -2069,6 +2356,7 @@ async function recordShare(postId, postAuthorId) {
   await supabase.from('post_shares').insert({ post_id: postId, user_id: state.user.id });
   await triggerNotification(postAuthorId, 'post_share', `shared your post`, postId);
   await loadFeed();
+  await loadShorts();
 }
 
 // ----------------------------------------------------
@@ -2118,13 +2406,10 @@ function attachGlobalEvents() {
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  const uploadShortsBtn = document.getElementById('uploadShortsTriggerBtn');
-  if (uploadShortsBtn) uploadShortsBtn.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
-
   const profFakeInput = document.getElementById('profileTriggerCreatePost');
   if (profFakeInput) profFakeInput.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  ['profBtnPhoto', 'profBtnVideo', 'profBtnFeeling', 'profBtnSubmitPost'].forEach((id) => {
+  ['profBtnPhoto', 'profBtnFeeling', 'profBtnLocation', 'profBtnSubmitPost'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
   });
@@ -2219,14 +2504,14 @@ function attachGlobalEvents() {
       playReactionSound();
       const postId = btn.dataset.id;
       const authorId = btn.dataset.author;
-      const post = state.posts.find((p) => p.id === postId);
+      const post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
       if (!post) return;
 
       const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
       const isCurrentlyLiked = existingIndex > -1;
 
       const iconHolder = btn.querySelector('.like-icon-holder');
-      const counterEl = btn.closest('.post-card, .shorts-video-card')?.querySelector('.post-like-count');
+      const counterEl = btn.closest('.post-card, .shorts-item-card')?.querySelector('.post-like-count');
 
       if (isCurrentlyLiked) {
         post.post_likes.splice(existingIndex, 1);
