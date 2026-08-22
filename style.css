@@ -12,7 +12,7 @@ html, body {
   width: 100%;
   height: 100%;
   height: 100dvh;
-  overflow: hidden !important; /* সম্পূর্ণ স্ক্রিনের ডাবল স্ক্রল ও বাউন্স বন্ধ */
+  overflow: hidden !important; /* সম্পূর্ণ স্ক্রিনের অতিরিক্ত বাউন্স ও স্ক্রল বন্ধ */
   position: fixed;
   overscroll-behavior: none;
 }
@@ -199,7 +199,248 @@ button {
 }
 
 /* ============================================================
-   PREMIUM PROFILE CARD
+   SHORTS VIDEO VIEW (EXACT SCREENSHOT MATCHING)
+   ============================================================ */
+.shorts-screen-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  overflow: hidden;
+  position: relative;
+}
+
+/* TOP PILL TABS BAR */
+.shorts-pill-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  z-index: 30;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.shorts-pill-nav-bar::-webkit-scrollbar { display: none; }
+
+.shorts-pill-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.shorts-pill-tab.active {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+}
+
+.shorts-upload-pill-trigger {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #315cff;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+/* VERTICAL SNAP VIEWPORT */
+.shorts-scroll-viewport {
+  flex: 1;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.shorts-item-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 120px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  user-select: none;
+}
+
+.shorts-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shorts-center-play-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+/* TOP AUTHOR OVERLAY */
+.shorts-top-author-header {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 15;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.shorts-author-name {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  display: block;
+  line-height: 1.2;
+}
+
+.shorts-author-time {
+  color: #cbd5e1;
+  font-size: 11.5px;
+}
+
+/* RIGHT ACTION BAR */
+.shorts-side-actions-bar {
+  position: absolute;
+  right: 14px;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 20;
+}
+
+.shorts-side-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease;
+}
+
+.shorts-side-btn:active {
+  transform: scale(0.9);
+}
+
+.shorts-side-btn.liked {
+  color: #ef4444 !important;
+}
+
+.shorts-side-btn.saved {
+  color: #38bdf8 !important;
+}
+
+.shorts-count-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* BOTTOM META OVERLAY */
+.shorts-bottom-meta-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 70px;
+  padding: 16px 14px 8px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+  z-index: 15;
+  color: #ffffff;
+}
+
+.shorts-caption-title {
+  font-size: 14.5px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.shorts-progress-track {
+  width: 100%;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.shorts-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #38bdf8;
+  transition: width 0.1s linear;
+}
+
+.shorts-empty-card {
+  margin: auto;
+  text-align: center;
+  padding: 50px 20px;
+  color: #ffffff;
+}
+
+.short-upload-preview-card {
+  margin-top: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  padding: 20px;
+  text-align: center;
+}
+
+.short-placeholder-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   PREMIUM PROFILE CARD (10:24 REFERENCE DESIGN)
    ============================================================ */
 .premium-profile-card {
   background: #ffffff;
@@ -358,7 +599,7 @@ button {
   font-weight: 500;
 }
 
-/* 4 STATS CARDS */
+/* 4 STATS CARDS (PURE SVG ICONS) */
 .premium-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -466,103 +707,6 @@ button {
   padding: 7px 16px !important;
   border-radius: 99px !important;
   font-size: 13px !important;
-}
-
-/* ============================================================
-   SHORTS VIDEO STREAM (REELS / TIKTOK STYLE)
-   ============================================================ */
-.shorts-feed-container {
-  height: 100%;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  background: #000000;
-  display: flex;
-  flex-direction: column;
-}
-
-.shorts-video-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: calc(100vh - 120px);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-}
-
-.shorts-video-player {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.shorts-overlay-bottom {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 70px;
-  z-index: 10;
-  color: #ffffff;
-}
-
-.shorts-author-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.shorts-caption-text {
-  font-size: 14px;
-  line-height: 1.4;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-}
-
-.shorts-side-actions {
-  position: absolute;
-  right: 14px;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  z-index: 10;
-}
-
-.shorts-action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.shorts-action-btn.liked {
-  color: #ef4444 !important;
-}
-
-.shorts-empty-state {
-  margin: auto;
-  text-align: center;
-  padding: 40px 20px;
-  color: #ffffff;
-}
-
-.post-media-video {
-  width: 100%;
-  max-height: 480px;
-  border-radius: 12px;
-  background: #000;
 }
 
 /* ============================================================
