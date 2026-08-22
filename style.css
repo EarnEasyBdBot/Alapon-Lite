@@ -742,6 +742,7 @@ button {
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 4px;
+  cursor: pointer;
 }
 
 .msg-audio-player {
@@ -1335,6 +1336,15 @@ button {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.drawer-modal {
+  background: #fff;
+  width: 280px;
+  height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .create-post-textarea {
