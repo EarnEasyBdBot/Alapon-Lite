@@ -1,53 +1,57 @@
-// app.js — Alapon Lite (Premium Profile Page UI, 100% Working Chat Media/Voice, Fixed Comments & Dynamic Counters)
+// app.js — Alapon (Professional UI Icons, Nested Facebook Comments, Natural Messenger Images, Hashtag Search & Chat Themes)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
 const ASSETS = {
   appLogo: `https://i.postimg.cc/W39S6FFL/file-0000000025e8820b9949851f1e324c5f.png`,
-  chatBg: `https://i.postimg.cc/QC2zcdNB/file-00000000f8bc820b9191ddc7162e54a0.png`,
+  defaultChatBg: `https://i.postimg.cc/QC2zcdNB/file-00000000f8bc820b9191ddc7162e54a0.png`,
   maleAvatar: `https://i.postimg.cc/MK2yBQ0m/images-(8).jpg`,
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// SVG Icons
+// Pure Professional Vector / SVG Icons (No UI Emojis)
 const ICONS = {
-  home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  plus: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
-  messages: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
-  search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  friends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  followers: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  following: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>`,
+  postsDoc: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>`,
+  plus: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  messages: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+  search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
   share: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  image: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  image: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
   smile: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
-  send: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
-  back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>`,
-  camera: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
-  logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  send: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
+  back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="15 18 9 12 15 6"/></svg>`,
+  camera: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+  logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
-  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
-  mic: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-  stop: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
-  trash: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
-  reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`
+  menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
+  info: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  lock: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+  archive: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`
 };
 
 // Global App State
 const state = {
   user: null,
   profile: null,
-  currentView: 'feed',
+  currentView: 'feed', // 'feed', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
   profileTab: 'posts',
   activeChatUser: null,
-  replyingToMessage: null,
-  onlineUsers: new Set(),
+  activeHashtag: '',
+  hashtagPosts: [],
+  onlineUsers: new Map(), // userId -> { online: boolean, last_active: ISOString }
   posts: [],
   stories: [],
   friends: [],
@@ -56,19 +60,19 @@ const state = {
   notifications: [],
   activeCommentsPost: null,
   commentsList: [],
+  replyingToCommentId: null,
   unreadMessagesCount: 0,
   unreadNotificationsCount: 0,
+  chatThemes: {
+    selectedBg: localStorage.getItem('alapon_chat_bg') || ASSETS.defaultChatBg,
+    activeStatusEnabled: localStorage.getItem('alapon_active_status') !== 'false'
+  },
   modal: null,
   settingsSubType: null,
-  activeStory: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', privacy: 'public', location: '', feeling: '' }
 };
-
-let mediaRecorder = null;
-let audioChunks = [];
-let isRecordingAudio = false;
 
 const app = document.getElementById('app');
 
@@ -77,6 +81,9 @@ function getUserAvatar(prof) {
   return prof?.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
 }
 
+// ----------------------------------------------------
+// HASHTAG & RICH TEXT PARSER (Clickable Tags & Mentions)
+// ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
   let text = escapeHtml(rawText);
@@ -100,10 +107,23 @@ window.handleMentionClick = async (event, username) => {
 
 window.handleHashtagClick = (event, tag) => {
   event.stopPropagation();
-  state.currentView = 'feed';
-  showToast(`Filtering posts by #${tag}`);
-  renderApp();
+  openHashtagSearchResult(tag);
 };
+
+async function openHashtagSearchResult(tag) {
+  state.activeHashtag = tag.toLowerCase().replace('#', '');
+  state.currentView = 'hashtag-search';
+  renderApp();
+
+  const { data } = await supabase
+    .from('posts')
+    .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
+    .ilike('content', `%#${state.activeHashtag}%`)
+    .order('created_at', { ascending: false });
+
+  state.hashtagPosts = data || [];
+  renderApp();
+}
 
 function showToast(msg) {
   const existing = document.getElementById('appToast');
@@ -166,7 +186,7 @@ async function init() {
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3200));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 3000));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -197,16 +217,16 @@ async function init() {
 function render3DSplashScreen() {
   app.innerHTML = `
     <div class="splash-3d-screen">
-      <div class="floating-badge badge-top-left">👥</div>
-      <div class="floating-badge badge-top-right">💬</div>
-      <div class="floating-badge badge-mid-left">❤️</div>
-      <div class="floating-badge badge-mid-right">👍</div>
+      <div class="floating-badge badge-top-left">${ICONS.friends}</div>
+      <div class="floating-badge badge-top-right">${ICONS.messages}</div>
+      <div class="floating-badge badge-mid-left">${ICONS.heart}</div>
+      <div class="floating-badge badge-mid-right">${ICONS.search}</div>
 
       <div class="splash-3d-center">
-        <div style="width:110px;height:110px;max-width:110px;max-height:110px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:110px;height:110px;object-fit:contain;display:block;">
+        <div style="width:105px;height:105px;max-width:105px;max-height:105px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:105px;height:105px;object-fit:contain;display:block;">
         </div>
-        <h1 class="splash-3d-title">Alapon <span class="splash-verified-icon">✔</span></h1>
+        <h1 class="splash-3d-title">Alapon</h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
         <div class="splash-3d-progress-container"><div class="splash-3d-progress-bar"></div></div>
         <span class="splash-3d-loading-text">Loading...</span>
@@ -217,9 +237,9 @@ function render3DSplashScreen() {
           <ellipse cx="200" cy="200" rx="190" ry="120" fill="url(#globeGrad)" opacity="0.85"/>
           <path d="M30 180 Q200 80 370 180" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
           <path d="M80 190 Q200 110 320 190" stroke="#818cf8" stroke-width="1.5"/>
-          <circle cx="90" cy="155" r="4" fill="#38bdf8" class="pulse-node"/>
-          <circle cx="200" cy="115" r="5" fill="#f43f5e" class="pulse-node"/>
-          <circle cx="310" cy="155" r="4" fill="#a855f7" class="pulse-node"/>
+          <circle cx="90" cy="155" r="4" fill="#38bdf8"/>
+          <circle cx="200" cy="115" r="5" fill="#f43f5e"/>
+          <circle cx="310" cy="155" r="4" fill="#a855f7"/>
           <defs>
             <linearGradient id="globeGrad" x1="200" y1="80" x2="200" y2="200" gradientUnits="userSpaceOnUse">
               <stop stop-color="#312e81"/>
@@ -310,7 +330,7 @@ async function loadUnreadCounts() {
 }
 
 // ----------------------------------------------------
-// REALTIME SYNC
+// REALTIME & PRESENCE (Online / Last Active Tracking)
 // ----------------------------------------------------
 function setupRealtime() {
   const presenceChannel = supabase.channel('online_presence', {
@@ -320,20 +340,26 @@ function setupRealtime() {
   presenceChannel
     .on('presence', { event: 'sync' }, () => {
       const presenceState = presenceChannel.presenceState();
-      state.onlineUsers = new Set(Object.keys(presenceState));
-      updateActiveUserStatus();
+      const onlineMap = new Map();
+      Object.entries(presenceState).forEach(([uId, presences]) => {
+        if (presences.length > 0) {
+          onlineMap.set(uId, { online: true, last_active: presences[0].online_at });
+        }
+      });
+      state.onlineUsers = onlineMap;
+      updateChatHeaderActiveStatus();
     })
     .subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        await presenceChannel.track({ online_at: new Date().toISOString(), user_id: state.user?.id });
+        if (state.chatThemes.activeStatusEnabled) {
+          await presenceChannel.track({ online_at: new Date().toISOString(), user_id: state.user?.id });
+        }
       }
     });
 
   supabase
     .channel('public:alapon_general_sync')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, async () => {
-      await loadFeed();
-    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, async () => { await loadFeed(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
       if (state.activeCommentsPost?.id === payload.new?.post_id) {
         loadPostComments(state.activeCommentsPost.id);
@@ -345,7 +371,6 @@ function setupRealtime() {
       }
       loadUnreadCounts().then(renderTopbarCounters);
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
       loadNotifications().then(() => { loadUnreadCounts().then(renderTopbarCounters); });
     })
@@ -355,16 +380,41 @@ function setupRealtime() {
 function renderTopbarCounters() {
   const notifBadge = document.querySelector('#openNotifBtn .badge');
   if (notifBadge) {
-    if (state.unreadNotificationsCount > 0) notifBadge.innerText = state.unreadNotificationsCount;
-    else notifBadge.remove();
+    if (state.unreadNotificationsCount > 0) {
+      notifBadge.innerText = state.unreadNotificationsCount;
+      notifBadge.style.display = 'grid';
+    } else {
+      notifBadge.style.display = 'none';
+    }
   }
+
+  const msgBadges = document.querySelectorAll('.header-msg-badge, .bot-msg-badge');
+  msgBadges.forEach(b => {
+    if (state.unreadMessagesCount > 0) {
+      b.innerText = state.unreadMessagesCount;
+      b.style.display = 'grid';
+    } else {
+      b.style.display = 'none';
+    }
+  });
 }
 
-function updateActiveUserStatus() {
+function formatLastActiveStatus(otherUserId) {
+  if (!state.chatThemes.activeStatusEnabled) return `Offline`;
+  const pres = state.onlineUsers.get(otherUserId);
+  if (pres && pres.online) {
+    return `<span style="color:#10b981;">🟢 Online</span>`;
+  }
+  if (pres?.last_active) {
+    return `Offline • Last active ${formatTimeAgo(pres.last_active)}`;
+  }
+  return `Offline`;
+}
+
+function updateChatHeaderActiveStatus() {
   const statusEl = document.getElementById('chatUserActiveStatus');
   if (statusEl && state.activeChatUser) {
-    const isOnline = state.onlineUsers.has(state.activeChatUser.id);
-    statusEl.innerHTML = isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`;
+    statusEl.innerHTML = formatLastActiveStatus(state.activeChatUser.id);
   }
 }
 
@@ -470,11 +520,11 @@ function renderSignupStep() {
         <div class="row" style="gap:15px;margin-top:8px;">
           <label class="gender-pill ${state.signupDraft.gender === 'male' ? 'active' : ''}">
             <input type="radio" name="gender" value="male" ${state.signupDraft.gender === 'male' ? 'checked' : ''} style="display:none;">
-            👨 Male
+            Male
           </label>
           <label class="gender-pill ${state.signupDraft.gender === 'female' ? 'active' : ''}">
             <input type="radio" name="gender" value="female" ${state.signupDraft.gender === 'female' ? 'checked' : ''} style="display:none;">
-            👩 Female
+            Female
           </label>
         </div>
       </div>
@@ -577,7 +627,6 @@ function renderSignupStep() {
       if (!file) return;
       try {
         const ext = file.name.split('.').pop();
-        const path = `avatars/${Date.now()}_reg.${ext}`;
         const url = await uploadFile('avatars', path, file);
         state.signupDraft.avatarUrl = url;
         document.getElementById('signupAvatarPreview').innerHTML = `<img src="${url}">`;
@@ -658,7 +707,7 @@ function renderApp() {
           </button>
           <button class="icon-btn" id="openHeaderMsgBtn" title="Messages">
             ${ICONS.messages}
-            ${state.unreadMessagesCount > 0 ? `<span class="badge">${state.unreadMessagesCount}</span>` : ''}
+            ${state.unreadMessagesCount > 0 ? `<span class="badge header-msg-badge">${state.unreadMessagesCount}</span>` : ''}
           </button>
         </div>
       </header>
@@ -706,7 +755,7 @@ function renderApp() {
           <button class="navitem ${state.currentView === 'messages' ? 'active' : ''}" id="botMessages">
             <div style="position:relative;display:inline-block;">
               ${ICONS.messages}
-              ${state.unreadMessagesCount > 0 ? `<span class="badge" style="top:-6px;right:-10px;">${state.unreadMessagesCount}</span>` : ''}
+              ${state.unreadMessagesCount > 0 ? `<span class="badge bot-msg-badge" style="top:-6px;right:-10px;">${state.unreadMessagesCount}</span>` : ''}
             </div>
             <span>Messages</span>
           </button>
@@ -752,6 +801,8 @@ function renderCurrentViewContent() {
     case 'friends': return renderFriendsView();
     case 'messages': return renderMessagesView();
     case 'settings': return renderSettingsView();
+    case 'messaging-settings': return renderMessagingSettingsView();
+    case 'hashtag-search': return renderHashtagSearchView();
     default: return renderFeedView();
   }
 }
@@ -809,11 +860,11 @@ function renderPostCard(post) {
         <div>
           <div style="font-weight:800;display:flex;align-items:center;gap:5px;">
             ${escapeHtml(post.profiles?.full_name || 'User')}
-            ${post.profiles?.is_verified ? `<span style="color:#245bff;font-size:13px;">✔</span>` : ''}
+            ${post.profiles?.is_verified ? `<span class="verified-badge-pill">✔</span>` : ''}
             ${post.feeling ? `<span class="muted" style="font-size:12px;font-weight:500;">is feeling ${escapeHtml(post.feeling)}</span>` : ''}
           </div>
           <small class="muted">
-            ${formatTimeAgo(post.created_at)} ${post.location ? `• 📍 ${escapeHtml(post.location)}` : ''} • 🌐 ${post.privacy}
+            ${formatTimeAgo(post.created_at)} ${post.location ? `• ${escapeHtml(post.location)}` : ''} • 🌐 ${post.privacy || 'Public'}
           </small>
         </div>
         <button class="btn ghost more" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
@@ -823,7 +874,7 @@ function renderPostCard(post) {
       ${post.media_url ? `<img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">` : ''}
 
       <div class="row between muted post-counters">
-        <div class="row" style="gap:4px;"><span style="color:#e63946;">❤️</span> <b class="post-like-count">${likesCount}</b></div>
+        <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
         <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
       </div>
 
@@ -847,7 +898,28 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// PREMIUM PROFILE VIEW (MATCHING THE SCREENSHOT EXACTLY)
+// HASHTAG SEARCH RESULT VIEW
+// ----------------------------------------------------
+function renderHashtagSearchView() {
+  return `
+    <div class="card-ui">
+      <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
+        <div class="row" style="gap:8px;">
+          <button class="icon-btn-minimal" id="backToFeedFromHash">${ICONS.back}</button>
+          <h2 style="font-size:20px;margin:0;">#${escapeHtml(state.activeHashtag)}</h2>
+        </div>
+        <small class="muted">${state.hashtagPosts.length} posts</small>
+      </div>
+      <div class="posts-list">
+        ${state.hashtagPosts.length === 0 ? `<p class="muted center" style="padding:30px 0;">No posts found with #${escapeHtml(state.activeHashtag)}</p>` : ''}
+        ${state.hashtagPosts.map((post) => renderPostCard(post)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ----------------------------------------------------
+// PROFILE VIEW (Real Dynamic Counts, No Fake Badges, Original SVG Icons)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -858,7 +930,7 @@ function renderProfileView() {
   let tabContentHtml = '';
   if (state.profileTab === 'posts') {
     tabContentHtml = `
-      <!-- CREATE POST BOX INSIDE PROFILE -->
+      <!-- CREATE POST IN PROFILE -->
       <div class="card-ui profile-create-post-dock">
         <div class="row" style="gap:10px;align-items:center;">
           <div class="avatar" style="width:40px;height:40px;"><img src="${userAvatar}"></div>
@@ -870,14 +942,13 @@ function renderProfileView() {
           <button class="profile-post-action-btn" id="profBtnPhoto">${ICONS.image} <span>Photo</span></button>
           <button class="profile-post-action-btn" id="profBtnFeeling">${ICONS.smile} <span>Feeling</span></button>
           <button class="profile-post-action-btn" id="profBtnLocation">${ICONS.location} <span>Check In</span></button>
-          <button class="profile-post-action-btn" id="profBtnMore">${ICONS.more} <span>More</span></button>
           <button class="btn primary profile-quick-post-btn" id="profBtnSubmitPost">
             ${ICONS.send} Post
           </button>
         </div>
       </div>
 
-      <!-- PROFILE POSTS STREAM -->
+      <!-- POSTS STREAM -->
       <div class="profile-posts-list">
         ${myPosts.length === 0 ? `<div class="card-ui empty"><p class="muted center" style="padding:20px 0;">You haven't created any posts yet.</p></div>` : ''}
         ${myPosts.map((post) => renderPostCard(post)).join('')}
@@ -915,10 +986,10 @@ function renderProfileView() {
 
   return `
     <div class="premium-profile-card">
-      <!-- COVER PHOTO WITH CHANGE COVER BUTTON -->
-      <div class="premium-profile-cover" style="${p.cover_url ? `background-image:url('${p.cover_url}');` : ''}">
+      <!-- COVER PHOTO WITH WORKING GALLERY UPLOAD -->
+      <div class="premium-profile-cover" id="coverPhotoBox" style="${p.cover_url ? `background-image:url('${p.cover_url}');` : ''}">
         <input type="file" id="changeCoverInput" accept="image/*" style="display:none;">
-        <button class="premium-change-cover-btn" id="changeCoverBtn">
+        <button class="premium-change-cover-btn" id="changeCoverBtn" type="button">
           ${ICONS.camera} <span>Change Cover</span>
         </button>
       </div>
@@ -926,17 +997,17 @@ function renderProfileView() {
       <!-- PROFILE HEADER MAIN -->
       <div class="premium-profile-header-wrap">
         <div class="premium-avatar-row">
-          <!-- GLOWING RING AVATAR WITH BLUE TICK BADGE -->
+          <!-- AVATAR WITH WORKING CAMERA BADGE -->
           <div class="premium-avatar-glow-box">
             <img src="${userAvatar}" class="premium-big-avatar" alt="Avatar">
             <button class="premium-avatar-camera-btn" id="cameraBadgeUploadTrigger" title="Upload Photo">
               ${ICONS.camera}
             </button>
-            <span class="premium-verified-sub-badge">✔</span>
+            ${p.is_verified ? `<span class="premium-verified-sub-badge">✔</span>` : ''}
           </div>
           <input type="file" id="changeAvatarInput" accept="image/*" style="display:none;">
 
-          <!-- EDIT PROFILE BUTTON (RIGHT SIDE GRADIENT) -->
+          <!-- EDIT PROFILE BUTTON -->
           <button class="premium-edit-profile-pill-btn" id="openEditProfileModal">
             ${ICONS.edit} <span>Edit Profile</span>
           </button>
@@ -946,52 +1017,51 @@ function renderProfileView() {
         <div class="premium-user-info-meta">
           <h2 class="premium-profile-name">
             ${escapeHtml(p.full_name || 'User')}
-            <span class="premium-name-tick">✔</span>
+            ${p.is_verified ? `<span class="premium-name-tick">✔</span>` : ''}
           </h2>
           <span class="premium-profile-username">@${escapeHtml(p.username || 'username')}</span>
-          <p class="premium-profile-bio">${escapeHtml(p.bio || 'Dream • Work • Achieve 🚀')}</p>
+          ${p.bio ? `<p class="premium-profile-bio">${escapeHtml(p.bio)}</p>` : `<p class="premium-profile-bio muted" style="font-size:13px;font-style:italic;">No bio added yet.</p>`}
         </div>
 
-        <!-- REAL WORKING STATS CARDS (NO FAKE NUMBERS) -->
+        <!-- STATS CARDS (ORIGINAL ICONS, NO HARDCODED NUMBERS) -->
         <div class="premium-stats-grid">
           <div class="premium-stat-card">
-            <span class="stat-card-icon">🖼️</span>
+            <span class="stat-card-icon">${ICONS.postsDoc}</span>
             <b class="stat-card-number">${myPosts.length}</b>
             <span class="stat-card-label">Posts</span>
           </div>
           <div class="premium-stat-card">
-            <span class="stat-card-icon">👥</span>
+            <span class="stat-card-icon">${ICONS.friends}</span>
             <b class="stat-card-number">${state.friends.length}</b>
             <span class="stat-card-label">Friends</span>
           </div>
           <div class="premium-stat-card">
-            <span class="stat-card-icon">👥</span>
-            <b class="stat-card-number">${state.friends.length}</b>
+            <span class="stat-card-icon">${ICONS.followers}</span>
+            <b class="stat-card-number">0</b>
             <span class="stat-card-label">Followers</span>
           </div>
           <div class="premium-stat-card">
-            <span class="stat-card-icon">👤</span>
-            <b class="stat-card-number">${state.friends.length}</b>
+            <span class="stat-card-icon">${ICONS.following}</span>
+            <b class="stat-card-number">0</b>
             <span class="stat-card-label">Following</span>
           </div>
         </div>
 
-        <!-- TABS ROW -->
+        <!-- TABS ROW (ORIGINAL ICONS) -->
         <div class="premium-profile-tabs-bar">
           <button class="premium-tab-btn ${state.profileTab === 'posts' ? 'active' : ''}" id="tabPostsBtn">
-            ${ICONS.home} <span>Posts</span>
+            ${ICONS.postsDoc} <span>Posts</span>
           </button>
           <button class="premium-tab-btn ${state.profileTab === 'photos' ? 'active' : ''}" id="tabPhotosBtn">
             ${ICONS.image} <span>Photos</span>
           </button>
           <button class="premium-tab-btn ${state.profileTab === 'about' ? 'active' : ''}" id="tabAboutBtn">
-            ℹ️ <span>About</span>
+            ${ICONS.info} <span>About</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- PROFILE BODY CONTENT -->
     <div style="margin-top:12px;">${tabContentHtml}</div>
   `;
 }
@@ -1031,7 +1101,7 @@ function renderFriendsView() {
             <div class="grow">
               <b>${escapeHtml(fr.full_name || 'Friend')}</b>
               <div style="font-size:12px;">
-                ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
+                ${formatLastActiveStatus(fr.id)}
               </div>
             </div>
             <button class="icon-btn-minimal startChatBtn" data-user-id="${fr.id}" title="Chat">${ICONS.messages}</button>
@@ -1058,12 +1128,11 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// PRO MESSENGER VIEW (100% WORKING TEXT, IMAGE, VOICE)
+// PRO MESSENGER VIEW (Natural Facebook Messenger Image & Text Layout)
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
     const friendAvatar = getUserAvatar(state.activeChatUser);
-    const isOnline = state.onlineUsers.has(state.activeChatUser.id);
 
     return `
       <div class="chat-fullscreen-wrapper">
@@ -1074,36 +1143,35 @@ function renderMessagesView() {
           <div class="grow" style="margin-left:8px;">
             <b style="font-size:15px;display:block;line-height:1.2;">${escapeHtml(state.activeChatUser.full_name)}</b>
             <small id="chatUserActiveStatus" style="font-size:11px;font-weight:600;">
-              ${isOnline ? `<span style="color:#10b981;">🟢 Active Now</span>` : `<span style="color:#94a3b8;">⚪ Offline</span>`}
+              ${formatLastActiveStatus(state.activeChatUser.id)}
             </small>
           </div>
+          <button class="icon-btn-minimal" id="openChatThemeSettingBtn" title="Theme & Settings">
+            ${ICONS.palette}
+          </button>
         </div>
 
-        <!-- CHAT STREAM WITH WALLPAPER -->
-        <div class="chat-wallpaper-container" style="background-image: url('${ASSETS.chatBg}');">
+        <!-- CHAT STREAM WITH CHOSEN THEME / WALLPAPER -->
+        <div class="chat-wallpaper-container" style="background-image: url('${state.chatThemes.selectedBg}');">
           <div class="chat-dark-overlay"></div>
+          
+          <div class="chat-inner-profile-card">
+            <div class="avatar" style="width:78px;height:78px;margin:0 auto 8px;border:3px solid #fff;">
+              <img src="${friendAvatar}">
+            </div>
+            <b style="font-size:18px;color:#fff;display:block;">${escapeHtml(state.activeChatUser.full_name)}</b>
+            <p style="font-size:12px;color:#cbd5e1;margin-top:4px;">You're connected on Alapon</p>
+          </div>
+
           <div class="chat-scroll-stream" id="chatMessageList">
-            <p class="muted center" style="margin-top:40px;color:#cbd5e1;">Loading conversation...</p>
+            <p class="muted center" style="margin-top:20px;color:#cbd5e1;">Loading conversation...</p>
           </div>
         </div>
 
-        <!-- REPLY PREVIEW -->
-        <div id="chatReplyPreviewBar" class="chat-reply-preview-bar ${state.replyingToMessage ? '' : 'hide'}">
-          <div class="reply-bar-left">
-            <span style="font-size:11px;color:#315cff;font-weight:800;">Replying to ${state.replyingToMessage?.sender_id === state.user.id ? 'yourself' : escapeHtml(state.activeChatUser.full_name)}</span>
-            <p style="margin:0;font-size:12.5px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(state.replyingToMessage?.content || 'Attachment')}</p>
-          </div>
-          <button class="btn ghost" id="cancelReplyBtn" style="padding:4px 8px;">✕</button>
-        </div>
-
-        <!-- INPUT DOCK -->
-        <div class="chat-input-dock">
+        <!-- MESSENGER COMPACT COMPOSER (GALLERY, INPUT, SEND) -->
+        <div class="chat-input-dock" id="normalChatInputDock">
           <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
           <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
-          
-          <button class="icon-btn-minimal ${isRecordingAudio ? 'recording-pulse' : ''}" id="toggleVoiceRecordBtn" title="Voice Message">
-            ${isRecordingAudio ? ICONS.stop : ICONS.mic}
-          </button>
 
           <textarea class="chat-auto-input" id="chatInputText" placeholder="Type a message..." rows="1"></textarea>
           
@@ -1113,22 +1181,29 @@ function renderMessagesView() {
     `;
   }
 
+  // INBOX CONVERSATION LIST
   return `
-    <div class="card-ui">
-      <h2>Messages</h2>
-      <input class="input" type="text" id="filterChatConversations" placeholder="Search conversations..." style="margin:14px 0;">
-      <div>
-        ${state.friends.length === 0 ? `<p class="muted center" style="padding:20px 0;">Add friends to start messaging!</p>` : ''}
+    <div class="card-ui" style="padding:14px 16px;">
+      <div class="row between" style="margin-bottom:12px;">
+        <h2 style="font-size:24px;font-weight:900;">Messages</h2>
+        <button class="icon-btn-minimal" id="toMessagingSettingsBtn" title="Messaging Settings">${ICONS.settings}</button>
+      </div>
+
+      <input class="input" type="text" id="filterChatConversations" placeholder="Search conversations..." style="margin:10px 0;border-radius:99px;background:#f1f5f9;">
+      
+      <div class="messenger-inbox-list">
+        ${state.friends.length === 0 ? `<p class="muted center" style="padding:20px 0;">No conversations yet. Add friends to chat!</p>` : ''}
         ${state.friends.map((fr) => `
-          <div class="list-row startChatBtn" data-user-id="${fr.id}" style="cursor:pointer;">
-            <div class="avatar"><img src="${getUserAvatar(fr)}"></div>
-            <div class="grow">
-              <b>${escapeHtml(fr.full_name)}</b>
-              <div class="muted" style="font-size:13px;">Say hello! 👋</div>
+          <div class="messenger-chat-row startChatBtn" data-user-id="${fr.id}">
+            <div class="avatar" style="width:52px;height:52px;position:relative;">
+              <img src="${getUserAvatar(fr)}">
+              ${state.onlineUsers.get(fr.id)?.online ? `<span class="messenger-online-dot"></span>` : ''}
             </div>
-            <small style="font-size:11px;font-weight:700;">
-              ${state.onlineUsers.has(fr.id) ? `<span style="color:#10b981;">🟢 Online</span>` : `<span style="color:#94a3b8;">Offline</span>`}
-            </small>
+            <div class="grow" style="margin-left:12px;">
+              <b style="font-size:15px;color:#0f172a;display:block;">${escapeHtml(fr.full_name)}</b>
+              <div class="muted" style="font-size:12px;margin-top:2px;">Say hello! 👋</div>
+            </div>
+            <small class="muted" style="font-size:11px;">${formatLastActiveStatus(fr.id)}</small>
           </div>
         `).join('')}
       </div>
@@ -1137,7 +1212,114 @@ function renderMessagesView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL & COMMENTS
+// MESSAGING SETTINGS VIEW
+// ----------------------------------------------------
+function renderMessagingSettingsView() {
+  return `
+    <div class="card-ui">
+      <div class="row between" style="margin-bottom:16px;border-bottom:1px solid #edf0f5;padding-bottom:12px;">
+        <div class="row" style="gap:8px;">
+          <button class="icon-btn-minimal" id="backFromMsgSettings">${ICONS.back}</button>
+          <h2 style="font-size:20px;margin:0;">Messaging Settings</h2>
+        </div>
+      </div>
+
+      <div class="list-row">
+        <div class="grow">
+          <b>Active Status</b>
+          <div class="muted" style="font-size:12px;">Show when you are online and last active</div>
+        </div>
+        <input type="checkbox" id="toggleActiveStatusSetting" ${state.chatThemes.activeStatusEnabled ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer;">
+      </div>
+
+      <div class="list-row">
+        <div class="grow">
+          <b>Messaging Notifications</b>
+          <div class="muted" style="font-size:12px;">Receive push notifications for new messages</div>
+        </div>
+        <input type="checkbox" checked style="width:20px;height:20px;cursor:pointer;">
+      </div>
+
+      <div class="list-row">
+        <div class="grow">
+          <b>Message Requests</b>
+          <div class="muted" style="font-size:12px;">Allow messages from non-friends</div>
+        </div>
+        <input type="checkbox" checked style="width:20px;height:20px;cursor:pointer;">
+      </div>
+
+      <div class="list-row">
+        <div class="grow">
+          <b>Privacy & Safety</b>
+          <div class="muted" style="font-size:12px;">End-to-end encrypted messaging filters</div>
+        </div>
+        <span class="muted">❯</span>
+      </div>
+
+      <b style="display:block;margin:20px 0 10px;font-size:15px;">Chat Themes & Background</b>
+      <div class="chat-theme-palette-grid">
+        <div class="theme-option-box" data-bg="${ASSETS.defaultChatBg}" style="background:url('${ASSETS.defaultChatBg}') center/cover;">
+          <span>Abstract</span>
+        </div>
+        <div class="theme-option-box" data-bg="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=500" style="background:#3b82f6;">
+          <span>Solid Blue</span>
+        </div>
+        <div class="theme-option-box" data-bg="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500" style="background:#1e1b4b;">
+          <span>Dark Blue</span>
+        </div>
+        <div class="theme-option-box" data-bg="https://images.unsplash.com/photo-1557683316-973673baf926?w=500" style="background:linear-gradient(135deg,#7c3aed,#db2777);">
+          <span>Purple Pink</span>
+        </div>
+      </div>
+
+      <input type="file" id="customChatBgUpload" accept="image/*" style="display:none;">
+      <button class="btn secondary full" id="triggerCustomChatBgUpload" style="margin-top:14px;">
+        ${ICONS.image} &nbsp; Choose Custom Background from Gallery
+      </button>
+    </div>
+  `;
+}
+
+// ----------------------------------------------------
+// SETTINGS VIEW
+// ----------------------------------------------------
+function renderSettingsView() {
+  const p = state.profile || {};
+  const userAvatar = getUserAvatar(p);
+
+  return `
+    <div class="card-ui">
+      <h2>Settings</h2>
+      <div class="list-row" style="margin:16px 0;">
+        <div class="avatar"><img src="${userAvatar}"></div>
+        <div class="grow">
+          <b>${escapeHtml(p.full_name || '')}</b>
+          <div class="muted">@${escapeHtml(p.username || '')}</div>
+        </div>
+      </div>
+
+      <div class="list-row settingsOptRow" data-type="security" style="cursor:pointer;">
+        <div class="grow"><b>Account & Security</b></div>
+        <span class="muted">❯</span>
+      </div>
+      <div class="list-row settingsOptRow" data-type="privacy" style="cursor:pointer;">
+        <div class="grow"><b>Privacy & Policy</b></div>
+        <span class="muted">❯</span>
+      </div>
+      <div class="list-row settingsOptRow" data-type="messaging" style="cursor:pointer;" id="toMessagingSettingsRow">
+        <div class="grow"><b>Messaging Settings</b></div>
+        <span class="muted">❯</span>
+      </div>
+
+      <button class="btn secondary full" id="settingsLogoutBtn" style="margin-top:25px;color:#d92d20;background:#fee4e2;">
+        ${ICONS.logout} &nbsp; Log Out
+      </button>
+    </div>
+  `;
+}
+
+// ----------------------------------------------------
+// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId);
@@ -1152,6 +1334,7 @@ async function openCommentsModal(postId) {
   
   if (!post) return;
   state.activeCommentsPost = post;
+  state.replyingToCommentId = null;
   state.modal = 'post-comments';
   renderActiveModal();
   await loadPostComments(post.id);
@@ -1165,12 +1348,26 @@ async function loadPostComments(postId) {
     .order('created_at', { ascending: true });
 
   state.commentsList = data || [];
+  renderCommentsStream();
+}
+
+function renderCommentsStream() {
   const container = document.getElementById('fbPostCommentsStream');
-  if (container) {
-    if (state.commentsList.length === 0) {
-      container.innerHTML = `<p class="muted center" style="padding:24px 0;">Be the first to comment on this post!</p>`;
-    } else {
-      container.innerHTML = state.commentsList.map((c) => `
+  if (!container) return;
+
+  if (state.commentsList.length === 0) {
+    container.innerHTML = `<p class="muted center" style="padding:24px 0;">Be the first to comment on this post!</p>`;
+    return;
+  }
+
+  // Nested comments grouping (Parent and Replies)
+  const parents = state.commentsList.filter(c => !c.parent_id);
+  const replies = state.commentsList.filter(c => c.parent_id);
+
+  container.innerHTML = parents.map((c) => {
+    const childReplies = replies.filter(r => r.parent_id === c.id);
+    return `
+      <div class="fb-comment-block" data-comment-id="${c.id}">
         <div class="fb-comment-row">
           <div class="avatar" style="width:36px;height:36px;">
             <img src="${getUserAvatar(c.profiles)}">
@@ -1179,17 +1376,76 @@ async function loadPostComments(postId) {
             <b class="fb-comment-author">${escapeHtml(c.profiles?.full_name || 'User')}</b>
             <div class="fb-comment-text">${formatRichText(c.content)}</div>
             ${c.media_url ? `<img src="${c.media_url}" class="fb-comment-media" onclick="window.open('${c.media_url}')">` : ''}
-            <small class="muted fb-comment-time">${formatTimeAgo(c.created_at)}</small>
           </div>
         </div>
-      `).join('');
-      container.scrollTop = container.scrollHeight;
-    }
-  }
+
+        <div class="fb-comment-actions-bar">
+          <span class="fb-comment-time">${formatTimeAgo(c.created_at)}</span>
+          <button class="fb-comment-action-btn likeCommentBtn" data-id="${c.id}">Like</button>
+          <button class="fb-comment-action-btn replyCommentBtn" data-id="${c.id}" data-author="${escapeHtml(c.profiles?.full_name || 'User')}">Reply</button>
+          ${c.user_id === state.user?.id ? `<button class="fb-comment-action-btn deleteCommentBtn" data-id="${c.id}" style="color:#ef4444;">Delete</button>` : ''}
+        </div>
+
+        <!-- NESTED REPLIES -->
+        ${childReplies.length > 0 ? `
+          <div class="fb-nested-replies-wrap">
+            ${childReplies.map(r => `
+              <div class="fb-comment-row nested" data-comment-id="${r.id}">
+                <div class="avatar" style="width:30px;height:30px;">
+                  <img src="${getUserAvatar(r.profiles)}">
+                </div>
+                <div class="fb-comment-bubble">
+                  <b class="fb-comment-author">${escapeHtml(r.profiles?.full_name || 'User')}</b>
+                  <div class="fb-comment-text">${formatRichText(r.content)}</div>
+                </div>
+              </div>
+              <div class="fb-comment-actions-bar nested">
+                <span class="fb-comment-time">${formatTimeAgo(r.created_at)}</span>
+                <button class="fb-comment-action-btn likeCommentBtn" data-id="${r.id}">Like</button>
+                ${r.user_id === state.user?.id ? `<button class="fb-comment-action-btn deleteCommentBtn" data-id="${r.id}" style="color:#ef4444;">Delete</button>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+
+  attachCommentInteractions();
+}
+
+function attachCommentInteractions() {
+  document.querySelectorAll('.replyCommentBtn').forEach(btn => {
+    btn.onclick = () => {
+      state.replyingToCommentId = btn.dataset.id;
+      const input = document.getElementById('fbCommentTextInput');
+      if (input) {
+        input.placeholder = `Replying to ${btn.dataset.author}...`;
+        input.focus();
+      }
+    };
+  });
+
+  document.querySelectorAll('.deleteCommentBtn').forEach(btn => {
+    btn.onclick = async () => {
+      const cId = btn.dataset.id;
+      await supabase.from('comments').delete().eq('id', cId);
+      state.commentsList = state.commentsList.filter(c => c.id !== cId);
+      renderCommentsStream();
+      loadFeed();
+    };
+  });
+
+  document.querySelectorAll('.likeCommentBtn').forEach(btn => {
+    btn.onclick = () => {
+      btn.classList.toggle('liked');
+      btn.innerText = btn.classList.contains('liked') ? 'Liked' : 'Like';
+    };
+  });
 }
 
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER
+// ALL MODALS
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -1217,10 +1473,10 @@ function renderActiveModal() {
             <div>
               <div style="font-weight:800;font-size:15px;display:flex;align-items:center;gap:4px;">
                 ${escapeHtml(post.profiles?.full_name || 'User')}
-                ${post.profiles?.is_verified ? `<span style="color:#245bff;">✔</span>` : ''}
+                ${post.profiles?.is_verified ? `<span class="verified-badge-pill">✔</span>` : ''}
               </div>
               <small class="muted" style="font-size:12px;">
-                Suggested for you • ${formatTimeAgo(post.created_at)} • 🌐
+                ${formatTimeAgo(post.created_at)} • 🌐
               </small>
             </div>
             <button class="btn ghost" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
@@ -1229,7 +1485,6 @@ function renderActiveModal() {
           ${post.content ? `
             <div class="fb-post-text-content">
               ${formatRichText(post.content)}
-              <small class="muted fb-see-translation">See translation</small>
             </div>
           ` : ''}
 
@@ -1241,12 +1496,12 @@ function renderActiveModal() {
 
           <div class="fb-post-reactions-bar">
             <div class="row" style="gap:4px;align-items:center;">
-              <span class="fb-reaction-icons-stack">👍😢❤️</span>
+              <span style="color:#e63946;">${ICONS.heart}</span>
               <b style="font-size:13px;color:#475569;">${likesCount}</b>
             </div>
             <div class="row" style="gap:10px;font-size:12.5px;color:#64748b;">
-              <span>💬 ${commentsCount}</span>
-              <span>↗ ${sharesCount}</span>
+              <span>${commentsCount} Comments</span>
+              <span>${sharesCount} Shares</span>
             </div>
           </div>
 
@@ -1260,10 +1515,6 @@ function renderActiveModal() {
             <button class="fb-action-tab-btn" id="detailPostShareBtn">
               ${ICONS.share} &nbsp; <span>Share</span>
             </button>
-          </div>
-
-          <div class="fb-comments-filter-row">
-            <b>Most relevant ⌵</b>
           </div>
 
           <div class="fb-comments-stream" id="fbPostCommentsStream">
@@ -1307,7 +1558,7 @@ function renderActiveModal() {
         post.post_likes.push({ post_id: post.id, user_id: state.user.id });
         btn.classList.add('liked');
         await supabase.from('post_likes').insert({ post_id: post.id, user_id: state.user.id });
-        await triggerNotification(authorId, 'post_like', `reacted ❤️ to your post`, post.id);
+        await triggerNotification(authorId, 'post_like', `reacted to your post`, post.id);
       }
       loadFeed();
     };
@@ -1322,20 +1573,15 @@ function renderActiveModal() {
 
     if (mediaTrigger && mediaInput) {
       mediaTrigger.onclick = () => mediaInput.click();
-      mediaInput.onchange = async (e) => {
+      mediaInput.onchange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        try {
-          showToast('Uploading image... 📤');
-          const ext = file.name.split('.').pop();
-          const url = await uploadFile('avatars', `comm_${Date.now()}.${ext}`, file);
-          attachedCommentImg = url;
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          attachedCommentImg = re.target.result;
           showToast('Image attached! 📷');
-        } catch (err) {
-          const reader = new FileReader();
-          reader.onload = (re) => { attachedCommentImg = re.target.result; };
-          reader.readAsDataURL(file);
-        }
+        };
+        reader.readAsDataURL(file);
       };
     }
 
@@ -1349,17 +1595,20 @@ function renderActiveModal() {
       const imgToSubmit = attachedCommentImg;
       attachedCommentImg = '';
 
-      // Optimistic Instant Append
-      state.commentsList.push({
+      const newComm = {
         id: `temp_${Date.now()}`,
         post_id: post.id,
         user_id: state.user.id,
         content: text,
         media_url: imgToSubmit,
+        parent_id: state.replyingToCommentId,
         created_at: new Date().toISOString(),
         profiles: state.profile
-      });
-      loadPostComments(post.id);
+      };
+
+      state.commentsList.push(newComm);
+      renderCommentsStream();
+      state.replyingToCommentId = null;
 
       try {
         await supabase.from('comments').insert({
@@ -1369,7 +1618,7 @@ function renderActiveModal() {
         });
       } catch (err) {}
 
-      await triggerNotification(post.user_id, 'post_comment', `commented: "${text ? text.substring(0, 30) : 'Photo'}"`, post.id);
+      await triggerNotification(post.user_id, 'post_comment', `commented on your post`, post.id);
       loadFeed();
     };
   } else if (state.modal === 'drawer') {
@@ -1403,7 +1652,11 @@ function renderActiveModal() {
 
     document.getElementById('closeDrawerBtn').onclick = () => { state.modal = null; renderActiveModal(); };
     document.querySelectorAll('.drawerNav').forEach((btn) => {
-      btn.onclick = () => { state.currentView = btn.dataset.view; state.modal = null; renderApp(); };
+      btn.onclick = () => { 
+        state.currentView = btn.dataset.view; 
+        state.modal = null; 
+        renderApp(); 
+      };
     });
     document.getElementById('drawerLogoutBtn').onclick = () => supabase.auth.signOut();
   } else if (state.modal === 'notifications') {
@@ -1421,7 +1674,6 @@ function renderActiveModal() {
           <div class="notif-scroll-body" style="overflow-y:auto;flex:1;">
             ${state.notifications.length === 0 ? `
               <div class="empty-notif-box">
-                <div style="font-size:40px;margin-bottom:8px;">🔔</div>
                 <b>No notifications yet.</b>
                 <p class="muted" style="font-size:13px;margin-top:4px;">When people interact with you, alerts will appear here!</p>
               </div>
@@ -1459,7 +1711,7 @@ function renderActiveModal() {
       <div class="full-modal-back">
         <div class="full-modal" style="height:min(720px, 95vh);">
           <div class="row between" style="margin-bottom:14px;border-bottom:1px solid #edf0f5;padding-bottom:10px;">
-            <b>Edit Complete Profile</b>
+            <b>Edit Profile</b>
             <button class="btn ghost" id="closeEditModal">✕</button>
           </div>
 
@@ -1471,28 +1723,20 @@ function renderActiveModal() {
               <div>
                 <input type="file" id="modalChangeAvatarFile" accept="image/*" style="display:none;">
                 <button class="btn secondary" id="modalChangeAvatarBtn" style="padding:6px 12px;font-size:12px;">Change Avatar</button>
-                <button class="btn ghost" id="modalResetAvatarBtn" style="padding:6px 10px;font-size:12px;color:#d92d20;">Reset Default</button>
               </div>
             </div>
 
             <div class="field"><label>Full Name</label><input class="input" type="text" id="editFullName" value="${escapeHtml(p.full_name || '')}"></div>
             <div class="field"><label>Username</label><input class="input" type="text" id="editUsername" value="${escapeHtml(p.username || '')}"></div>
-            <div class="field"><label>Bio</label><textarea class="input" id="editBio" rows="2">${escapeHtml(p.bio || '')}</textarea></div>
+            <div class="field"><label>Bio</label><textarea class="input" id="editBio" rows="2" placeholder="Write about yourself...">${escapeHtml(p.bio || '')}</textarea></div>
             <div class="field"><label>Phone</label><input class="input" type="text" id="editPhone" value="${escapeHtml(p.phone || '')}"></div>
-            <div class="field"><label>Current City</label><input class="input locSearchInput" type="text" id="editCurrentCity" value="${escapeHtml(p.current_city || p.location || '')}"><div id="citySearchResults" class="search-drop-results"></div></div>
-            <div class="field"><label>Hometown</label><input class="input locSearchInput" type="text" id="editHometown" value="${escapeHtml(p.hometown || '')}"><div id="hometownSearchResults" class="search-drop-results"></div></div>
+            <div class="field"><label>Current City</label><input class="input locSearchInput" type="text" id="editCurrentCity" value="${escapeHtml(p.current_city || p.location || '')}"></div>
+            <div class="field"><label>Hometown</label><input class="input locSearchInput" type="text" id="editHometown" value="${escapeHtml(p.hometown || '')}"></div>
             <div class="field"><label>Workplace</label><input class="input" type="text" id="editWorkplace" value="${escapeHtml(p.workplace || '')}"></div>
             <div class="field"><label>Education</label><input class="input" type="text" id="editEducation" value="${escapeHtml(p.education || '')}"></div>
-            <div class="field">
-              <label>Gender</label>
-              <select class="input" id="editGender">
-                <option value="male" ${p.gender === 'male' ? 'selected' : ''}>👨 Male</option>
-                <option value="female" ${p.gender === 'female' ? 'selected' : ''}>👩 Female</option>
-              </select>
-            </div>
           </div>
 
-          <button class="btn primary full" id="saveProfileEditBtn" style="margin-top:14px;">Save All Changes</button>
+          <button class="btn primary full" id="saveProfileEditBtn" style="margin-top:14px;">Save Changes</button>
         </div>
       </div>
     `;
@@ -1510,14 +1754,6 @@ function renderActiveModal() {
         renderActiveModal();
       } catch(err) { alert('Upload error: ' + err.message); }
     };
-    document.getElementById('modalResetAvatarBtn').onclick = async () => {
-      await supabase.from('profiles').update({ avatar_url: '' }).eq('id', state.user.id);
-      await loadUserProfile();
-      renderActiveModal();
-    };
-
-    setupLocationSearchInput('editCurrentCity', 'citySearchResults');
-    setupLocationSearchInput('editHometown', 'hometownSearchResults');
 
     document.getElementById('saveProfileEditBtn').onclick = async () => {
       const full_name = document.getElementById('editFullName').value.trim();
@@ -1528,16 +1764,15 @@ function renderActiveModal() {
       const hometown = document.getElementById('editHometown').value.trim();
       const workplace = document.getElementById('editWorkplace').value.trim();
       const education = document.getElementById('editEducation').value.trim();
-      const gender = document.getElementById('editGender').value;
 
       await supabase.from('profiles').update({
-        full_name, username, bio, phone, current_city, location: current_city, hometown, workplace, education, gender
+        full_name, username, bio, phone, current_city, location: current_city, hometown, workplace, education
       }).eq('id', state.user.id);
 
       await loadUserProfile();
       state.modal = null;
       renderApp();
-      showToast('Profile updated successfully! ✅');
+      showToast('Profile updated! ✅');
     };
   } else if (state.modal === 'create-post') {
     const p = state.profile || {};
@@ -1557,37 +1792,16 @@ function renderActiveModal() {
             <div>
               <b>${escapeHtml(p.full_name || '')}</b>
               <select id="postPrivacySelect" style="border:1px solid #e2e5f2;border-radius:8px;padding:3px 8px;font-size:12px;margin-top:3px;display:block;">
-                <option value="public" ${state.postDraft.privacy === 'public' ? 'selected' : ''}>🌐 Public</option>
-                <option value="friends" ${state.postDraft.privacy === 'friends' ? 'selected' : ''}>👥 Friends Only</option>
-                <option value="only_me" ${state.postDraft.privacy === 'only_me' ? 'selected' : ''}>🔒 Only Me</option>
+                <option value="public">🌐 Public</option>
+                <option value="friends">Friends Only</option>
               </select>
             </div>
           </div>
 
           <textarea class="create-post-textarea" id="createPostText" placeholder="What's on your mind? (Use #tags or @mentions)">${escapeHtml(state.postDraft.content)}</textarea>
 
-          <div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0;">
-            ${state.postDraft.feeling ? `<span class="tag">Feeling: ${escapeHtml(state.postDraft.feeling)} <b id="removeFeeling" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
-            ${state.postDraft.location ? `<span class="tag">📍 ${escapeHtml(state.postDraft.location)} <b id="removeLocation" style="cursor:pointer;margin-left:4px;">✕</b></span>` : ''}
-          </div>
-
           <div id="createPostMediaPreview">
             ${state.postDraft.mediaUrl ? `<div style="position:relative;margin:10px 0;"><img src="${state.postDraft.mediaUrl}" style="max-height:220px;border-radius:12px;width:100%;object-fit:cover;"><button id="removePostMedia" style="position:absolute;top:10px;right:10px;background:#000;color:#fff;border-radius:50%;width:26px;height:26px;">✕</button></div>` : ''}
-          </div>
-
-          <div id="feelingPickerBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
-            <b style="font-size:13px;">How are you feeling?</b>
-            <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
-              ${['Happy 😊', 'Blessed 🙏', 'Excited 🤩', 'Loved ❤️', 'Crazy 🤪', 'Sad 😢', 'Cool 😎'].map((f) => `
-                <button class="btn secondary feelingSelectBtn" data-val="${f}" style="padding:5px 10px;font-size:12px;">${f}</button>
-              `).join('')}
-            </div>
-          </div>
-
-          <div id="locationSearchBox" class="hide card-ui" style="background:#f8f9fe;padding:12px;margin:10px 0;">
-            <b style="font-size:13px;">Search World Location:</b>
-            <input class="input" type="text" id="worldLocationSearchInput" placeholder="e.g. Dhaka, London, Tokyo..." style="margin-top:6px;">
-            <div id="locationSearchResults" class="search-drop-results"></div>
           </div>
 
           <div class="card-ui row between" style="padding:10px 14px;margin-top:14px;background:#f9fbff;">
@@ -1618,21 +1832,6 @@ function renderActiveModal() {
 
     const rmImg = document.getElementById('removePostMedia');
     if (rmImg) rmImg.onclick = () => { state.postDraft.mediaUrl = ''; renderActiveModal(); };
-    const rmFeel = document.getElementById('removeFeeling');
-    if (rmFeel) rmFeel.onclick = () => { state.postDraft.feeling = ''; renderActiveModal(); };
-    const rmLoc = document.getElementById('removeLocation');
-    if (rmLoc) rmLoc.onclick = () => { state.postDraft.location = ''; renderActiveModal(); };
-
-    document.getElementById('toggleFeelingBtn').onclick = () => document.getElementById('feelingPickerBox').classList.toggle('hide');
-    document.querySelectorAll('.feelingSelectBtn').forEach((b) => {
-      b.onclick = () => { state.postDraft.feeling = b.dataset.val; renderActiveModal(); };
-    });
-
-    document.getElementById('toggleLocationBtn').onclick = () => document.getElementById('locationSearchBox').classList.toggle('hide');
-    setupLocationSearchInput('worldLocationSearchInput', 'locationSearchResults', (val) => {
-      state.postDraft.location = val;
-      renderActiveModal();
-    });
 
     document.getElementById('publishPostBtn').onclick = handlePostPublish;
   } else if (state.modal === 'search') {
@@ -1679,105 +1878,9 @@ function renderActiveModal() {
         resEl.innerHTML = `<p class="muted center">No user found.</p>`;
       }
     };
-  } else if (state.modal === 'msg-options') {
-    const msg = state._selectedMsg;
-    const isMine = msg.sender_id === state.user.id;
-
-    container.innerHTML = `
-      <div class="full-modal-back msg-action-sheet-back" id="closeMsgOptionsBack">
-        <div class="msg-action-sheet">
-          <div class="reaction-palette">
-            ${['❤️', '👍', '😂', '😮', '😢', '🔥'].map((emoji) => `
-              <button class="reaction-btn-pop" data-emoji="${emoji}">${emoji}</button>
-            `).join('')}
-          </div>
-
-          <div class="sheet-action-list">
-            <button class="sheet-action-btn" id="sheetReplyBtn">${ICONS.reply} &nbsp; Reply</button>
-            ${isMine ? `
-              <button class="sheet-action-btn" id="sheetDeleteForMeBtn">${ICONS.trash} &nbsp; Delete for Me</button>
-              <button class="sheet-action-btn danger" id="sheetDeleteEveryoneBtn">${ICONS.trash} &nbsp; Delete for Everyone</button>
-            ` : `
-              <button class="sheet-action-btn" id="sheetDeleteForMeBtn">${ICONS.trash} &nbsp; Delete for Me</button>
-            `}
-          </div>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('closeMsgOptionsBack').onclick = (e) => {
-      if (e.target.id === 'closeMsgOptionsBack') { state.modal = null; renderActiveModal(); }
-    };
-
-    document.querySelectorAll('.reaction-btn-pop').forEach((b) => {
-      b.onclick = async () => {
-        const emoji = b.dataset.emoji;
-        const currentReactions = msg.reactions || {};
-        currentReactions[state.user.id] = emoji;
-        await supabase.from('messages').update({ reactions: currentReactions }).eq('id', msg.id);
-        state.modal = null;
-        renderActiveModal();
-        loadChatMessages(state.activeChatUser.id);
-      };
-    });
-
-    document.getElementById('sheetReplyBtn').onclick = () => {
-      state.replyingToMessage = msg;
-      state.modal = null;
-      renderActiveModal();
-      const preview = document.getElementById('chatReplyPreviewBar');
-      if (preview) preview.classList.remove('hide');
-      const input = document.getElementById('chatInputText');
-      if (input) input.focus();
-    };
-
-    const delMe = document.getElementById('sheetDeleteForMeBtn');
-    if (delMe) delMe.onclick = async () => {
-      const deletedFor = msg.deleted_for || [];
-      if (!deletedFor.includes(state.user.id)) deletedFor.push(state.user.id);
-      await supabase.from('messages').update({ deleted_for: deletedFor }).eq('id', msg.id);
-      state.modal = null;
-      renderActiveModal();
-      loadChatMessages(state.activeChatUser.id);
-    };
-
-    const delAll = document.getElementById('sheetDeleteEveryoneBtn');
-    if (delAll) delAll.onclick = async () => {
-      await supabase.from('messages').update({ is_deleted: true, content: '🚫 This message was deleted' }).eq('id', msg.id);
-      state.modal = null;
-      renderActiveModal();
-      loadChatMessages(state.activeChatUser.id);
-    };
   } else {
     container.innerHTML = '';
   }
-}
-
-function setupLocationSearchInput(inputId, resultsDivId, onSelectCallback) {
-  const input = document.getElementById(inputId);
-  const resultsDiv = document.getElementById(resultsDivId);
-  if (!input || !resultsDiv) return;
-
-  input.oninput = async () => {
-    const q = input.value.trim();
-    if (q.length < 2) { resultsDiv.innerHTML = ''; return; }
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=4`);
-      const results = await res.json();
-      resultsDiv.innerHTML = results.map((r) => `
-        <div class="list-row selectLocItem" data-val="${escapeHtml(r.display_name.split(',').slice(0, 2).join(','))}" style="cursor:pointer;padding:6px 0;font-size:12px;">
-          📍 ${escapeHtml(r.display_name.split(',').slice(0, 3).join(','))}
-        </div>
-      `).join('');
-      resultsDiv.querySelectorAll('.selectLocItem').forEach((item) => {
-        item.onclick = () => {
-          input.value = item.dataset.val;
-          resultsDiv.innerHTML = '';
-          if (onSelectCallback) onSelectCallback(item.dataset.val);
-        };
-      });
-    } catch (e) {}
-  };
 }
 
 async function handlePostPublish() {
@@ -1789,9 +1892,7 @@ async function handlePostPublish() {
     user_id: state.user.id,
     content,
     media_url: state.postDraft.mediaUrl,
-    privacy,
-    feeling: state.postDraft.feeling,
-    location: state.postDraft.location
+    privacy
   });
 
   if (error) {
@@ -1828,6 +1929,9 @@ function attachGlobalEvents() {
   bindNav('botProfile', 'profile');
   bindNav('sideSettingsBtn', 'settings');
 
+  const backHash = document.getElementById('backToFeedFromHash');
+  if (backHash) backHash.onclick = () => { state.currentView = 'feed'; renderApp(); };
+
   const topMenu = document.getElementById('topbarHamburgerBtn');
   if (topMenu) topMenu.onclick = () => { state.modal = 'drawer'; renderActiveModal(); };
 
@@ -1846,15 +1950,16 @@ function attachGlobalEvents() {
   const editProf = document.getElementById('openEditProfileModal');
   if (editProf) editProf.onclick = () => { state.modal = 'edit-profile'; renderActiveModal(); };
 
-  // Profile Trigger Post
+  // Profile Fake Input
   const profFakeInput = document.getElementById('profileTriggerCreatePost');
   if (profFakeInput) profFakeInput.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  ['profBtnPhoto', 'profBtnFeeling', 'profBtnLocation', 'profBtnMore', 'profBtnSubmitPost'].forEach((id) => {
+  ['profBtnPhoto', 'profBtnFeeling', 'profBtnLocation', 'profBtnSubmitPost'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
   });
 
+  // Profile Avatar Upload
   const avatarBadge = document.getElementById('cameraBadgeUploadTrigger');
   const avatarFile = document.getElementById('changeAvatarInput');
   if (avatarBadge && avatarFile) {
@@ -1870,6 +1975,35 @@ function attachGlobalEvents() {
         renderApp();
         showToast('Profile photo updated! ✨');
       } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+  }
+
+  // Cover Photo Upload
+  const coverChangeBtn = document.getElementById('changeCoverBtn');
+  const coverChangeInput = document.getElementById('changeCoverInput');
+  if (coverChangeBtn && coverChangeInput) {
+    coverChangeBtn.onclick = () => coverChangeInput.click();
+    coverChangeInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        showToast('Uploading cover photo... 🖼️');
+        const ext = file.name.split('.').pop();
+        const url = await uploadFile('covers', `cover_${state.user.id}_${Date.now()}.${ext}`, file);
+        await supabase.from('profiles').update({ cover_url: url }).eq('id', state.user.id);
+        await loadUserProfile();
+        renderApp();
+        showToast('Cover photo updated! ✨');
+      } catch (err) {
+        const reader = new FileReader();
+        reader.onload = async (re) => {
+          await supabase.from('profiles').update({ cover_url: re.target.result }).eq('id', state.user.id);
+          await loadUserProfile();
+          renderApp();
+          showToast('Cover photo updated! ✨');
+        };
+        reader.readAsDataURL(file);
+      }
     };
   }
 
@@ -1910,7 +2044,7 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
-  // SMOOTH REACT BUTTON
+  // Smooth Like Click
   document.querySelectorAll('.likePostBtn').forEach((btn) => {
     btn.onclick = async () => {
       const postId = btn.dataset.id;
@@ -1990,7 +2124,6 @@ function attachGlobalEvents() {
     };
   });
 
-  // Messenger actions
   const backChat = document.getElementById('backToChatListBtn');
   if (backChat) backChat.onclick = () => {
     state.activeChatUser = null;
@@ -1998,15 +2131,62 @@ function attachGlobalEvents() {
     renderApp();
   };
 
-  // Chat Image Upload (Instant Fail-Safe)
+  const toMsgSettings = document.getElementById('toMessagingSettingsBtn');
+  if (toMsgSettings) toMsgSettings.onclick = () => { state.currentView = 'messaging-settings'; renderApp(); };
+
+  const toMsgRow = document.getElementById('toMessagingSettingsRow');
+  if (toMsgRow) toMsgRow.onclick = () => { state.currentView = 'messaging-settings'; renderApp(); };
+
+  const backFromMsgSettings = document.getElementById('backFromMsgSettings');
+  if (backFromMsgSettings) backFromMsgSettings.onclick = () => { state.currentView = 'settings'; renderApp(); };
+
+  const toggleActiveStatus = document.getElementById('toggleActiveStatusSetting');
+  if (toggleActiveStatus) {
+    toggleActiveStatus.onchange = (e) => {
+      state.chatThemes.activeStatusEnabled = e.target.checked;
+      localStorage.setItem('alapon_active_status', e.target.checked);
+      showToast('Active status updated!');
+    };
+  }
+
+  // Theme option clicks
+  document.querySelectorAll('.theme-option-box').forEach(box => {
+    box.onclick = () => {
+      const bg = box.dataset.bg;
+      state.chatThemes.selectedBg = bg;
+      localStorage.setItem('alapon_chat_bg', bg);
+      showToast('Chat background updated! 🎨');
+    };
+  });
+
+  const customBgBtn = document.getElementById('triggerCustomChatBgUpload');
+  const customBgInput = document.getElementById('customChatBgUpload');
+  if (customBgBtn && customBgInput) {
+    customBgBtn.onclick = () => customBgInput.click();
+    customBgInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (re) => {
+        state.chatThemes.selectedBg = re.target.result;
+        localStorage.setItem('alapon_chat_bg', re.target.result);
+        showToast('Custom chat background set! 🖼️');
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+
+  const openThemeFromChat = document.getElementById('openChatThemeSettingBtn');
+  if (openThemeFromChat) openThemeFromChat.onclick = () => { state.currentView = 'messaging-settings'; renderApp(); };
+
+  // Chat Image Upload
   const triggerImg = document.getElementById('triggerChatPhotoUpload');
   const imgInput = document.getElementById('chatMediaFileInput');
   if (triggerImg && imgInput) {
     triggerImg.onclick = () => imgInput.click();
-    imgInput.onchange = async (e) => {
+    imgInput.onchange = (e) => {
       const file = e.target.files[0];
       if (!file || !state.activeChatUser) return;
-      
       showToast('Sending image... 📤');
       const reader = new FileReader();
       reader.onload = async (re) => {
@@ -2014,50 +2194,6 @@ function attachGlobalEvents() {
         await sendChatMessage({ mediaUrl: localImgUrl, mediaType: 'image' });
       };
       reader.readAsDataURL(file);
-    };
-  }
-
-  // Voice recording (Instant Fail-Safe)
-  const voiceBtn = document.getElementById('toggleVoiceRecordBtn');
-  if (voiceBtn) {
-    voiceBtn.onclick = async () => {
-      if (!isRecordingAudio) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-          
-          mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) audioChunks.push(event.data);
-          };
-          
-          mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            showToast('Sending voice note... 🎙️');
-            
-            const reader = new FileReader();
-            reader.onload = async (re) => {
-              await sendChatMessage({ mediaUrl: re.target.result, mediaType: 'audio' });
-            };
-            reader.readAsDataURL(audioBlob);
-          };
-
-          mediaRecorder.start();
-          isRecordingAudio = true;
-          voiceBtn.classList.add('recording-pulse');
-          showToast('Recording voice note... (Tap mic again to send) 🎙️');
-        } catch (e) {
-          alert('Microphone permission is required.');
-        }
-      } else {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-          mediaRecorder.stop();
-          mediaRecorder.stream.getTracks().forEach((t) => t.stop());
-        }
-        isRecordingAudio = false;
-        voiceBtn.classList.remove('recording-pulse');
-      }
     };
   }
 
@@ -2080,54 +2216,26 @@ function attachGlobalEvents() {
       }
     };
   }
-
-  const cancelReply = document.getElementById('cancelReplyBtn');
-  if (cancelReply) {
-    cancelReply.onclick = () => {
-      state.replyingToMessage = null;
-      document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
-    };
-  }
-
-  const coverChangeBtn = document.getElementById('changeCoverBtn');
-  const coverChangeInput = document.getElementById('changeCoverInput');
-  if (coverChangeBtn && coverChangeInput) {
-    coverChangeBtn.onclick = () => coverChangeInput.click();
-    coverChangeInput.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        const ext = file.name.split('.').pop();
-        const url = await uploadFile('avatars', `cover_${state.user.id}_${Date.now()}.${ext}`, file);
-        await supabase.from('profiles').update({ cover_url: url }).eq('id', state.user.id);
-        await loadUserProfile();
-        renderApp();
-      } catch (err) { alert('Upload error: ' + err.message); }
-    };
-  }
 }
 
 async function sendChatMessage({ text = '', mediaUrl = '', mediaType = null }) {
   if (!state.activeChatUser || (!text && !mediaUrl)) return;
 
   const listEl = document.getElementById('chatMessageList');
-  const tempMsgHtml = `
-    <div class="msg-swipe-wrapper">
-      <div class="msg-container mine">
-        ${mediaUrl && mediaType === 'image' ? `<img src="${mediaUrl}" class="msg-media-img" onclick="window.open('${mediaUrl}')">` : ''}
-        ${mediaUrl && mediaType === 'audio' ? `<audio controls autoplay class="msg-audio-player" src="${mediaUrl}"></audio>` : ''}
-        ${text ? `<div class="msg-text-content">${formatRichText(text)}</div>` : ''}
-        <div class="msg-meta-row">
-          <span class="msg-time-label">Just now</span>
-          <span class="msg-seen-status">✓ Sent</span>
-        </div>
-      </div>
-    </div>
-  `;
+  const tempMsg = {
+    id: `temp_${Date.now()}`,
+    sender_id: state.user.id,
+    receiver_id: state.activeChatUser.id,
+    content: text,
+    media_url: mediaUrl,
+    media_type: mediaType,
+    created_at: new Date().toISOString(),
+    is_read: false
+  };
 
   if (listEl) {
     if (listEl.innerHTML.includes('No messages yet')) listEl.innerHTML = '';
-    listEl.insertAdjacentHTML('beforeend', tempMsgHtml);
+    listEl.insertAdjacentHTML('beforeend', renderSingleMessageHtml(tempMsg, true));
     listEl.scrollTop = listEl.scrollHeight;
   }
 
@@ -2135,13 +2243,34 @@ async function sendChatMessage({ text = '', mediaUrl = '', mediaType = null }) {
     await supabase.from('messages').insert({
       sender_id: state.user.id,
       receiver_id: state.activeChatUser.id,
-      content: text || (mediaType === 'image' ? '📷 Image' : '🎙️ Voice message')
+      content: text || (mediaType === 'image' ? '📷 Image' : '💬 Message')
     });
   } catch (err) {}
 
-  await triggerNotification(state.activeChatUser.id, 'message', `sent you a message: "${text ? text.substring(0, 25) : 'Attachment'}"`);
-  state.replyingToMessage = null;
-  document.getElementById('chatReplyPreviewBar')?.classList.add('hide');
+  await triggerNotification(state.activeChatUser.id, 'message', `sent you a message`);
+}
+
+function renderSingleMessageHtml(m, isMine) {
+  const isImage = m.media_type === 'image' || (m.media_url && m.media_url.includes('data:image'));
+
+  return `
+    <div class="msg-swipe-wrapper">
+      <div class="msg-container ${isMine ? 'mine' : 'theirs'} ${isImage ? 'image-bubble' : ''}">
+        ${isImage ? `
+          <img src="${m.media_url}" class="msg-media-img" loading="lazy" onclick="window.open('${m.media_url}')">
+        ` : ''}
+
+        ${m.content && !isImage ? `
+          <div class="msg-text-content">${formatRichText(m.content)}</div>
+        ` : ''}
+
+        <div class="msg-meta-row">
+          <span class="msg-time-label">${formatClockTime(m.created_at)}</span>
+          ${isMine ? `<span class="msg-seen-status">${m.is_read ? 'Seen' : '✓ Sent'}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 async function loadChatMessages(otherUserId) {
@@ -2160,72 +2289,11 @@ async function loadChatMessages(otherUserId) {
       await supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).in('id', unreadIds);
     }
 
-    const visibleMessages = messages.filter((m) => !(m.deleted_for || []).includes(state.user.id));
-
-    listEl.innerHTML = visibleMessages.map((m) => {
-      const isMine = m.sender_id === state.user.id;
-      const formattedTime = formatClockTime(m.created_at);
-
-      return `
-        <div class="msg-swipe-wrapper" data-msg-id="${m.id}">
-          <div class="msg-container ${isMine ? 'mine' : 'theirs'}">
-            ${m.media_url && m.media_type === 'image' ? `
-              <img src="${m.media_url}" class="msg-media-img" loading="lazy" onclick="window.open('${m.media_url}')">
-            ` : ''}
-
-            ${m.media_url && m.media_type === 'audio' ? `
-              <audio controls class="msg-audio-player" src="${m.media_url}"></audio>
-            ` : ''}
-
-            ${m.content ? `<div class="msg-text-content ${m.is_deleted ? 'msg-deleted-text' : ''}">${formatRichText(m.content)}</div>` : ''}
-
-            <div class="msg-meta-row">
-              <span class="msg-time-label">${formattedTime}</span>
-              ${isMine ? `
-                <span class="msg-seen-status">
-                  ${m.is_read ? `Seen ${formatClockTime(m.read_at || m.created_at)}` : '✓ Sent'}
-                </span>
-              ` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
+    listEl.innerHTML = messages.map((m) => renderSingleMessageHtml(m, m.sender_id === state.user.id)).join('');
     listEl.scrollTop = listEl.scrollHeight;
-    attachMessageInteractions(visibleMessages);
   } else {
-    listEl.innerHTML = `<p class="muted center" style="margin-top:40px;color:#cbd5e1;">No messages yet. Say hello to start chatting! 👋</p>`;
+    listEl.innerHTML = `<p class="muted center" style="margin-top:20px;color:#cbd5e1;">No messages yet. Say hello! 👋</p>`;
   }
-}
-
-function attachMessageInteractions(messagesList) {
-  document.querySelectorAll('.msg-swipe-wrapper').forEach((wrapper) => {
-    const msgId = wrapper.dataset.msgId;
-    const msg = messagesList.find((m) => m.id === msgId);
-    if (!msg) return;
-
-    let pressTimer = null;
-    const startPress = () => {
-      pressTimer = setTimeout(() => {
-        state._selectedMsg = msg;
-        state.modal = 'msg-options';
-        renderActiveModal();
-      }, 520);
-    };
-    const cancelPress = () => clearTimeout(pressTimer);
-
-    wrapper.addEventListener('touchstart', startPress, { passive: true });
-    wrapper.addEventListener('touchend', cancelPress);
-    wrapper.addEventListener('mousedown', startPress);
-    wrapper.addEventListener('mouseup', cancelPress);
-    wrapper.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      state._selectedMsg = msg;
-      state.modal = 'msg-options';
-      renderActiveModal();
-    });
-  });
 }
 
 function escapeHtml(str) {
