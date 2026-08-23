@@ -1,11 +1,12 @@
 /* ============================================================
-   Alapon — Clean Professional UI, Shorts Video, Profile & Messenger
+   Alapon — Facebook Reels UI, Non-Flicker Layout & Full System
    ============================================================ */
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  touch-action: manipulation; /* জুম ইন/আউট এবং স্ক্রিন লাফালাফি বন্ধ */
 }
 
 html, body {
@@ -15,11 +16,11 @@ html, body {
   overflow: hidden !important;
   position: fixed;
   overscroll-behavior: none;
+  background: #0f172a; /* ডার্ক ব্যাকগ্রাউন্ড যা কোনো হোয়াইট ফ্লিকার হতে দেয় না */
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f0f4f9;
   color: #171a2f;
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
@@ -52,6 +53,7 @@ button {
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  background: #f0f4f9;
 }
 
 .topbar {
@@ -199,7 +201,7 @@ button {
 }
 
 /* ============================================================
-   SHORTS VIDEO VIEW (FIXED SINGLE-VIDEO OVERFLOW & HIGHER BUTTONS)
+   FACEBOOK REELS STYLE SHORTS SCREEN (SCREENSHOT MATCHING)
    ============================================================ */
 .shorts-screen-wrapper {
   height: 100%;
@@ -210,55 +212,9 @@ button {
   position: relative;
 }
 
-.shorts-pill-nav-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(14px);
-  z-index: 30;
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex-shrink: 0;
-}
-.shorts-pill-nav-bar::-webkit-scrollbar { display: none; }
-
-.shorts-pill-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  font-size: 12.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-.shorts-pill-tab.active {
-  background: #4f46e5 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-}
-
-.shorts-upload-pill-trigger {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #315cff;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-}
-
 .shorts-scroll-viewport {
   flex: 1;
-  height: calc(100% - 48px);
+  height: 100%;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
@@ -275,7 +231,7 @@ button {
   flex: 0 0 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  overflow: hidden !important; /* ১টি ভিডিওর ভেতর অপ্রয়োজনীয় স্ক্রল বন্ধ */
+  overflow: hidden !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,101 +267,98 @@ button {
   z-index: 10;
 }
 
-.shorts-top-author-header {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 20;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-}
-
-.shorts-author-name {
-  color: #ffffff;
-  font-size: 14.5px;
-  font-weight: 800;
-  display: block;
-  line-height: 1.2;
-}
-
-.shorts-author-time {
-  color: #cbd5e1;
-  font-size: 11px;
-}
-
-/* RIGHT ACTION BAR (HIGHER POSITION) */
-.shorts-side-actions-bar {
+/* RIGHT SIDE ACTION BAR (FACEBOOK REELS ICONS) */
+.fb-reels-actions-bar {
   position: absolute;
   right: 12px;
-  bottom: 85px !important; /* উপরে তুলে দেওয়া হয়েছে */
+  bottom: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   z-index: 25;
 }
 
-.shorts-side-btn {
+.fb-reel-act-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   color: #ffffff;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  background: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
   transition: transform 0.12s ease;
 }
 
-.shorts-side-btn:active {
+.fb-reel-act-btn:active {
   transform: scale(0.9);
 }
 
-.shorts-side-btn.liked {
-  color: #ef4444 !important;
-}
-
-.shorts-side-btn.saved {
-  color: #38bdf8 !important;
-}
-
-.shorts-count-label {
-  font-size: 10.5px;
+.fb-reel-act-count {
+  font-size: 12px;
   font-weight: 800;
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
-.shorts-bottom-meta-box {
+/* BOTTOM LEFT OVERLAY: AUTHOR + FOLLOW BUTTON + CAPTION */
+.fb-reels-bottom-overlay {
   position: absolute;
-  bottom: 8px;
+  bottom: 0;
   left: 0;
-  right: 68px;
-  padding: 14px 12px 6px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+  right: 70px;
+  padding: 16px 14px 10px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.88) 0%, transparent 100%);
   z-index: 20;
   color: #ffffff;
 }
 
-.shorts-caption-title {
+.fb-reels-author-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.fb-reels-author-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.fb-reels-follow-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.fb-reels-follow-btn.following {
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+}
+
+.fb-reels-caption-box {
+  margin-bottom: 8px;
+}
+
+.fb-reels-caption-text {
   font-size: 13.5px;
   line-height: 1.4;
-  margin-bottom: 8px;
+  color: #f1f5f9;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
   word-break: break-word;
 }
 
 .shorts-progress-track {
   width: 100%;
-  height: 3px;
+  height: 2.5px;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 99px;
   overflow: hidden;
@@ -425,21 +378,158 @@ button {
   color: #ffffff;
 }
 
-.short-upload-preview-card {
-  margin-top: 14px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 1.5px dashed #cbd5e1;
-  padding: 20px;
-  text-align: center;
+/* ============================================================
+   FACEBOOK HALF-SHEET COMMENT MODAL (SCREENSHOT 3)
+   ============================================================ */
+.fb-comments-half-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 400;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.15s ease-out;
 }
 
-.short-placeholder-box {
+.fb-comments-half-sheet {
+  width: 100%;
+  height: 65vh;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpSheet 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpSheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.fb-sheet-drag-handle {
+  width: 38px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 99px;
+  margin: 10px auto 4px;
+}
+
+.fb-half-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+.fb-sheet-like-icon {
+  display: inline-flex;
+  font-size: 16px;
+}
+
+.fb-half-sheet-comments-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================================
+   FACEBOOK SHARE & MORE OPTIONS BOTTOM SHEETS (SCREENSHOTS 5 & 6)
+   ============================================================ */
+.fb-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 450;
+  display: flex;
+  align-items: flex-end;
+}
+
+.fb-share-bottom-sheet, .fb-more-options-sheet {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 22px 22px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: slideUpSheet 0.22s ease-out;
+  overflow: hidden;
+}
+
+.fb-share-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-share-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  font-size: 11.5px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.fb-share-circle-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+.fb-share-messenger-stream {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 16px 20px;
+  scrollbar-width: none;
+}
+.fb-share-messenger-stream::-webkit-scrollbar { display: none; }
+
+.fb-share-friend-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  cursor: pointer;
+}
+
+.fb-share-friend-label {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #334155;
+}
+
+.fb-more-option-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8fafc;
+}
+.fb-more-option-row:hover { background: #f8fafc; }
+
+.fb-more-opt-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: grid;
+  place-items: center;
+  color: #0f172a;
 }
 
 /* ============================================================
@@ -477,11 +567,6 @@ button {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.premium-change-cover-btn:active {
-  transform: scale(0.95);
 }
 
 .premium-profile-header-wrap {
@@ -525,7 +610,6 @@ button {
   border: 2px solid #ffffff;
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   cursor: pointer;
 }
 
@@ -602,6 +686,7 @@ button {
   font-weight: 500;
 }
 
+/* 4 STATS CARDS */
 .premium-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -710,7 +795,7 @@ button {
 }
 
 /* ============================================================
-   PRO MESSENGER VIEW
+   MESSENGER & CHAT UI
    ============================================================ */
 .chat-fullscreen-wrapper {
   height: 100%;
@@ -946,119 +1031,8 @@ button {
 }
 
 /* ============================================================
-   FACEBOOK STYLE POST DETAIL & NESTED COMMENTS SCREEN
+   FACEBOOK STYLE COMMENTS & NESTED ROWS
    ============================================================ */
-.fb-post-detail-screen {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  background: #ffffff;
-  z-index: 300;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: fbSlideIn 0.2s ease-out;
-}
-
-@keyframes fbSlideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-.fb-detail-topbar {
-  height: 56px;
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  background: #ffffff;
-  border-bottom: 1px solid #eef0f6;
-  flex-shrink: 0;
-}
-
-.fb-detail-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #1e293b;
-}
-
-.fb-detail-scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  background: #ffffff;
-}
-
-.fb-post-author-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px 8px;
-}
-
-.fb-post-text-content {
-  padding: 6px 16px 10px;
-  font-size: 15.5px;
-  line-height: 1.5;
-  color: #0f172a;
-}
-
-.fb-post-media-wrap {
-  width: 100%;
-  background: #000000;
-  margin-bottom: 8px;
-}
-
-.fb-post-full-image {
-  width: 100%;
-  max-height: 580px;
-  object-fit: contain;
-  display: block;
-}
-
-.fb-post-reactions-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.fb-post-actions-dock {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 4px 8px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.fb-action-tab-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 6px;
-  border-radius: 8px;
-  color: #475569;
-  font-weight: 700;
-  font-size: 13.5px;
-  cursor: pointer;
-}
-
-.fb-action-tab-btn.liked {
-  color: #ef4444 !important;
-}
-
-.fb-comments-stream {
-  padding: 10px 16px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .fb-comment-block {
   display: flex;
   flex-direction: column;
@@ -1436,24 +1410,6 @@ button {
   padding: 40px 20px 0;
 }
 
-.floating-badge {
-  position: absolute;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px);
-  display: grid;
-  place-items: center;
-  color: #fff;
-}
-
-.badge-top-left { top: 12%; left: 8%; }
-.badge-top-right { top: 10%; right: 10%; }
-.badge-mid-left { top: 38%; left: 6%; }
-.badge-mid-right { top: 36%; right: 8%; }
-
 .splash-3d-center {
   margin-top: auto;
   margin-bottom: auto;
@@ -1491,7 +1447,7 @@ button {
   width: 0%;
   background: linear-gradient(90deg, #ec4899, #8b5cf6, #38bdf8);
   border-radius: 99px;
-  animation: fillProgress3D 3.2s forwards;
+  animation: fillProgress3D 2.2s forwards;
 }
 
 @keyframes fillProgress3D {
@@ -1503,17 +1459,6 @@ button {
   font-size: 13px;
   color: #cbd5e1;
   margin-top: 10px;
-}
-
-.splash-3d-globe-wrap {
-  width: 100%;
-  max-width: 500px;
-}
-
-.splash-3d-globe {
-  width: 100%;
-  height: auto;
-  display: block;
 }
 
 .photos-grid {
@@ -1567,4 +1512,4 @@ button {
     border-radius: 0;
     padding: 16px;
   }
-}
+   }
