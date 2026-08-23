@@ -1,4 +1,4 @@
-// app.js — Alapon (Rock-Solid Crash-Proof Startup, Instant Auth, Shorts, Profile & Facebook Comments)
+// app.js — Alapon (Seamless Full-Width Reels Gradient, Zero Black Box, Auto Thumbnail & Crash-Proof Engine)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,7 +9,7 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Vector / SVG Icons
+// Pure Vector / SVG Icons (No Emojis as UI Icons)
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
@@ -22,7 +22,7 @@ const ICONS = {
   profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   fbLike: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
@@ -46,7 +46,7 @@ const ICONS = {
   link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
 };
 
-// Global App State
+// Global State
 const state = {
   user: null,
   profile: null,
@@ -257,8 +257,7 @@ async function init() {
     const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
     const session = sessionRes?.data?.session || null;
 
-    // Smooth delay for branding
-    await new Promise((resolve) => setTimeout(resolve, 1400));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     if (session?.user) {
       state.user = session.user;
@@ -985,13 +984,14 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// FACEBOOK REELS STYLE SHORTS VIEW
+// FACEBOOK REELS STYLE SHORTS VIEW (SEAMLESS FULL-WIDTH OVERLAY)
 // ----------------------------------------------------
 function renderShortsView() {
   const filteredShorts = state.shorts;
 
   return `
     <div class="shorts-screen-wrapper">
+      <!-- VERTICAL SNAP SCROLL VIEWPORT -->
       <div class="shorts-scroll-viewport" id="shortsScrollViewport">
         ${filteredShorts.length === 0 ? `
           <div class="shorts-empty-card">
@@ -1023,6 +1023,7 @@ function renderShortsView() {
                 class="shorts-video-element"
               ></video>
 
+              <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
               <!-- RIGHT SIDE ACTION BAR (FACEBOOK REELS STYLE) -->
@@ -1047,10 +1048,10 @@ function renderShortsView() {
                 </button>
               </div>
 
-              <!-- BOTTOM LEFT OVERLAY: AUTHOR + FOLLOW BUTTON + CAPTION -->
+              <!-- BOTTOM FULL-WIDTH GRADIENT (NO CUT-OFF STRIP / NO BLACK RECTANGLE) -->
               <div class="fb-reels-bottom-overlay">
                 <div class="fb-reels-author-line">
-                  <div class="avatar" style="width:36px;height:36px;border:1.5px solid #fff;">
+                  <div class="avatar" style="width:36px;height:36px;border:1.5px solid #fff;flex-shrink:0;">
                     <img src="${authorAvatar}">
                   </div>
                   <b class="fb-reels-author-name">${escapeHtml(s.profiles?.full_name || 'User')}</b>
@@ -1083,6 +1084,7 @@ function bindShortsInteractions() {
 
   const cards = document.querySelectorAll('.shorts-item-card');
 
+  // Intersection Observer to Auto-Play & Mute/Pause on scroll
   shortsObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const card = entry.target;
@@ -1598,7 +1600,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
+// FACEBOOK STYLE POST DETAIL & NESTED COMMENTS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
