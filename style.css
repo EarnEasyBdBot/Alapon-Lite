@@ -1,12 +1,12 @@
 /* ============================================================
-   Alapon — Facebook Reels UI, Non-Flicker Layout & Full System
+   Alapon — Clean Professional UI, Shorts Video, Profile & Messenger
    ============================================================ */
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  touch-action: manipulation; /* জুম ইন/আউট এবং স্ক্রিন লাফালাফি বন্ধ */
+  touch-action: manipulation;
 }
 
 html, body {
@@ -16,7 +16,7 @@ html, body {
   overflow: hidden !important;
   position: fixed;
   overscroll-behavior: none;
-  background: #0f172a; /* ডার্ক ব্যাকগ্রাউন্ড যা কোনো হোয়াইট ফ্লিকার হতে দেয় না */
+  background: #0f172a;
 }
 
 body {
@@ -201,7 +201,7 @@ button {
 }
 
 /* ============================================================
-   FACEBOOK REELS STYLE SHORTS SCREEN (SCREENSHOT MATCHING)
+   FACEBOOK REELS STYLE SHORTS SCREEN
    ============================================================ */
 .shorts-screen-wrapper {
   height: 100%;
@@ -210,6 +210,7 @@ button {
   background: #000000;
   overflow: hidden;
   position: relative;
+  touch-action: pan-y;
 }
 
 .shorts-scroll-viewport {
@@ -267,7 +268,6 @@ button {
   z-index: 10;
 }
 
-/* RIGHT SIDE ACTION BAR (FACEBOOK REELS ICONS) */
 .fb-reels-actions-bar {
   position: absolute;
   right: 12px;
@@ -301,7 +301,6 @@ button {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
-/* BOTTOM LEFT OVERLAY: AUTHOR + FOLLOW BUTTON + CAPTION */
 .fb-reels-bottom-overlay {
   position: absolute;
   bottom: 0;
@@ -337,6 +336,7 @@ button {
   font-size: 12px;
   font-weight: 700;
   margin-left: 4px;
+  cursor: pointer;
 }
 
 .fb-reels-follow-btn.following {
@@ -379,7 +379,7 @@ button {
 }
 
 /* ============================================================
-   FACEBOOK HALF-SHEET COMMENT MODAL (SCREENSHOT 3)
+   FACEBOOK HALF-SHEET COMMENT MODAL
    ============================================================ */
 .fb-comments-half-sheet-backdrop {
   position: fixed;
@@ -388,7 +388,6 @@ button {
   z-index: 400;
   display: flex;
   align-items: flex-end;
-  animation: fadeIn 0.15s ease-out;
 }
 
 .fb-comments-half-sheet {
@@ -438,7 +437,7 @@ button {
 }
 
 /* ============================================================
-   FACEBOOK SHARE & MORE OPTIONS BOTTOM SHEETS (SCREENSHOTS 5 & 6)
+   FACEBOOK SHARE & MORE OPTIONS BOTTOM SHEETS
    ============================================================ */
 .fb-sheet-backdrop {
   position: fixed;
@@ -520,7 +519,6 @@ button {
   cursor: pointer;
   border-bottom: 1px solid #f8fafc;
 }
-.fb-more-option-row:hover { background: #f8fafc; }
 
 .fb-more-opt-icon {
   width: 38px;
@@ -530,6 +528,23 @@ button {
   display: grid;
   place-items: center;
   color: #0f172a;
+}
+
+.short-upload-preview-card {
+  margin-top: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  padding: 20px;
+  text-align: center;
+}
+
+.short-placeholder-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ============================================================
@@ -567,6 +582,11 @@ button {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.premium-change-cover-btn:active {
+  transform: scale(0.95);
 }
 
 .premium-profile-header-wrap {
@@ -610,6 +630,7 @@ button {
   border: 2px solid #ffffff;
   display: grid;
   place-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   cursor: pointer;
 }
 
@@ -686,7 +707,7 @@ button {
   font-weight: 500;
 }
 
-/* 4 STATS CARDS */
+/* 4 STATS CARDS (PURE SVG ICONS) */
 .premium-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -726,6 +747,7 @@ button {
   font-weight: 600;
 }
 
+/* PROFILE TABS */
 .premium-profile-tabs-bar {
   display: flex;
   gap: 8px;
@@ -750,6 +772,7 @@ button {
   color: #4338ca;
 }
 
+/* PROFILE CREATE POST DOCK */
 .profile-create-post-dock {
   padding: 14px 16px;
 }
@@ -795,7 +818,7 @@ button {
 }
 
 /* ============================================================
-   MESSENGER & CHAT UI
+   PRO MESSENGER VIEW
    ============================================================ */
 .chat-fullscreen-wrapper {
   height: 100%;
@@ -1031,8 +1054,119 @@ button {
 }
 
 /* ============================================================
-   FACEBOOK STYLE COMMENTS & NESTED ROWS
+   FACEBOOK STYLE POST DETAIL & NESTED COMMENTS SCREEN
    ============================================================ */
+.fb-post-detail-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #ffffff;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fbSlideIn 0.2s ease-out;
+}
+
+@keyframes fbSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.fb-detail-topbar {
+  height: 56px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f6;
+  flex-shrink: 0;
+}
+
+.fb-detail-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.fb-detail-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background: #ffffff;
+}
+
+.fb-post-author-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 8px;
+}
+
+.fb-post-text-content {
+  padding: 6px 16px 10px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #0f172a;
+}
+
+.fb-post-media-wrap {
+  width: 100%;
+  background: #000000;
+  margin-bottom: 8px;
+}
+
+.fb-post-full-image {
+  width: 100%;
+  max-height: 580px;
+  object-fit: contain;
+  display: block;
+}
+
+.fb-post-reactions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-post-actions-dock {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-action-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 8px;
+  color: #475569;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.fb-action-tab-btn.liked {
+  color: #ef4444 !important;
+}
+
+.fb-comments-stream {
+  padding: 10px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .fb-comment-block {
   display: flex;
   flex-direction: column;
@@ -1512,4 +1646,4 @@ button {
     border-radius: 0;
     padding: 16px;
   }
-   }
+}
