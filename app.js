@@ -1,4 +1,4 @@
-// app.js — Alapon (Seamless Full-Width Reels Gradient, Zero Black Box, Auto Thumbnail & Crash-Proof Engine)
+// app.js — Alapon (Hashtag Video Player Fix, Video Detection in Feed/Search, Instant Auth, Shorts & Profile)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,7 +9,7 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Vector / SVG Icons (No Emojis as UI Icons)
+// Pure Vector / SVG Icons
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
@@ -22,7 +22,7 @@ const ICONS = {
   profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   fbLike: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
@@ -643,7 +643,7 @@ function renderSignupStep() {
     </div>
   `;
 
-  document.getElementById('toLoginFromWizard').onclick = (e) => { e.preventDefault(); renderAuth('login'); };
+  document.getElementById('toLoginFromWizard').onclick = (e) => { e.preventDefault(); state.signupStep = 1; renderAuth('login'); };
   document.getElementById('stepBackBtn').onclick = () => {
     if (state.signupStep > 1) { state.signupStep--; renderSignupStep(); }
     else { renderAuth('login'); }
@@ -930,12 +930,18 @@ function renderFeedView() {
   `;
 }
 
+// ----------------------------------------------------
+// UNIVERSAL POST CARD (VIDEO & IMAGE SAFE)
+// ----------------------------------------------------
 function renderPostCard(post) {
   const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
   const likesCount = post.post_likes?.length || 0;
   const commentsCount = post.comments?.length || 0;
   const sharesCount = post.post_shares?.length || 0;
   const postAuthorAvatar = getUserAvatar(post.profiles);
+  
+  // Safe video detection
+  const isVideo = post.media_type === 'video' || (post.media_url && (post.media_url.includes('shorts/') || post.media_url.includes('.mp4') || post.media_url.includes('.webm') || post.media_url.includes('.mov')));
 
   return `
     <div class="card-ui post-card" data-post-id="${post.id}">
@@ -955,9 +961,17 @@ function renderPostCard(post) {
       </div>
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
-      ${post.media_url ? `
-        <img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">
-      ` : ''}
+
+      <!-- RENDER VIDEO PLAYER IF VIDEO OR IMAGE IF PHOTO -->
+      ${post.media_url ? (
+        isVideo ? `
+          <div class="post-video-container" style="position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;margin-top:8px;">
+            <video src="${post.media_url}" poster="${post.thumbnail_url || ''}" controls playsinline preload="metadata" style="width:100%;max-height:480px;object-fit:contain;display:block;"></video>
+          </div>
+        ` : `
+          <img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">
+        `
+      ) : ''}
 
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
@@ -984,14 +998,13 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// FACEBOOK REELS STYLE SHORTS VIEW (SEAMLESS FULL-WIDTH OVERLAY)
+// FACEBOOK REELS STYLE SHORTS VIEW
 // ----------------------------------------------------
 function renderShortsView() {
   const filteredShorts = state.shorts;
 
   return `
     <div class="shorts-screen-wrapper">
-      <!-- VERTICAL SNAP SCROLL VIEWPORT -->
       <div class="shorts-scroll-viewport" id="shortsScrollViewport">
         ${filteredShorts.length === 0 ? `
           <div class="shorts-empty-card">
@@ -1023,7 +1036,6 @@ function renderShortsView() {
                 class="shorts-video-element"
               ></video>
 
-              <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
               <!-- RIGHT SIDE ACTION BAR (FACEBOOK REELS STYLE) -->
@@ -1048,7 +1060,7 @@ function renderShortsView() {
                 </button>
               </div>
 
-              <!-- BOTTOM FULL-WIDTH GRADIENT (NO CUT-OFF STRIP / NO BLACK RECTANGLE) -->
+              <!-- BOTTOM FULL-WIDTH GRADIENT OVERLAY -->
               <div class="fb-reels-bottom-overlay">
                 <div class="fb-reels-author-line">
                   <div class="avatar" style="width:36px;height:36px;border:1.5px solid #fff;flex-shrink:0;">
@@ -1084,7 +1096,6 @@ function bindShortsInteractions() {
 
   const cards = document.querySelectorAll('.shorts-item-card');
 
-  // Intersection Observer to Auto-Play & Mute/Pause on scroll
   shortsObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const card = entry.target;
@@ -1600,7 +1611,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL & NESTED COMMENTS
+// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
