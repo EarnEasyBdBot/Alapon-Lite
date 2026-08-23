@@ -1,4 +1,4 @@
-// app.js — Alapon (Hashtag Video Player Fix, Video Detection in Feed/Search, Instant Auth, Shorts & Profile)
+// app.js — Alapon (Video Frame & Custom Thumbnail Selector, 3-Second Real View Counter, Shorts, Facebook Comments & Messenger)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -22,7 +22,7 @@ const ICONS = {
   profile: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   fbLike: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
@@ -30,6 +30,7 @@ const ICONS = {
   comment: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
   share: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
   bookmark: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
+  eye: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
   image: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
   video: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -65,6 +66,7 @@ const state = {
   notifications: [],
   followingUsers: new Set(),
   savedPosts: new Set(),
+  viewedVideosHistory: new Map(), // postId -> lastViewTimestamp
   activeCommentsPost: null,
   activeShortsItem: null,
   commentsList: [],
@@ -79,11 +81,12 @@ const state = {
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' },
-  shortDraft: { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 }
+  shortDraft: { content: '', videoUrl: '', thumbnailUrl: '', duration: 0, rawVideoFile: null }
 };
 
 const app = document.getElementById('app');
 let shortsObserver = null;
+const videoWatchTimers = new Map();
 
 function getUserAvatar(prof) {
   if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
@@ -116,33 +119,80 @@ function playReactionSound() {
 }
 
 // ----------------------------------------------------
-// AUTO THUMBNAIL GENERATOR
+// 3-SECOND VIDEO VIEW COUNTING ENGINE
 // ----------------------------------------------------
-function generateVideoThumbnail(videoFile) {
+async function registerVideoView(postId) {
+  if (!postId) return;
+  const now = Date.now();
+  const lastViewTime = state.viewedVideosHistory.get(postId) || 0;
+
+  // 1 User = 1 View per session (cooldown 35 seconds before counting again)
+  if (now - lastViewTime < 35000) return;
+  state.viewedVideosHistory.set(postId, now);
+
+  // Update in Local State
+  const post = state.posts.find(p => p.id === postId) || state.shorts.find(s => s.id === postId);
+  if (post) {
+    post.views = (post.views || 0) + 1;
+    // Update live DOM counter
+    document.querySelectorAll(`.post-views-count[data-id="${postId}"]`).forEach(el => {
+      el.innerText = post.views;
+    });
+  }
+
+  // Update in Supabase (Fail-Safe)
+  try {
+    const currentViews = (post?.views || 1);
+    await supabase.from('posts').update({ views: currentViews }).eq('id', postId);
+  } catch (err) {}
+}
+
+function attachVideoViewTracker(videoElement, postId) {
+  if (!videoElement || !postId) return;
+
+  let playStartTime = 0;
+  let accumulatedTime = 0;
+  let hasTriggeredView = false;
+
+  videoElement.addEventListener('play', () => {
+    playStartTime = Date.now();
+    hasTriggeredView = false;
+  });
+
+  videoElement.addEventListener('timeupdate', () => {
+    if (!videoElement.paused && videoElement.currentTime >= 3 && !hasTriggeredView) {
+      hasTriggeredView = true;
+      registerVideoView(postId);
+    }
+  });
+
+  videoElement.addEventListener('pause', () => {
+    if (playStartTime > 0) {
+      accumulatedTime += (Date.now() - playStartTime) / 1000;
+      if (accumulatedTime >= 3 && !hasTriggeredView) {
+        hasTriggeredView = true;
+        registerVideoView(postId);
+      }
+    }
+  });
+}
+
+// ----------------------------------------------------
+// CAPTURE FRAME AT SPECIFIC TIME (FRAME SELECTOR)
+// ----------------------------------------------------
+function captureVideoFrameAtTime(videoElement, timeInSec) {
   return new Promise((resolve) => {
     try {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.muted = true;
-      video.playsInline = true;
-      video.src = URL.createObjectURL(videoFile);
-
-      video.onloadeddata = () => {
-        video.currentTime = Math.min(1.0, (video.duration || 2) / 2);
-      };
-
-      video.onseeked = () => {
+      videoElement.currentTime = timeInSec;
+      videoElement.onseeked = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth || 480;
-        canvas.height = video.videoHeight || 854;
+        canvas.width = videoElement.videoWidth || 480;
+        canvas.height = videoElement.videoHeight || 854;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        URL.revokeObjectURL(video.src);
         resolve(dataUrl);
       };
-
-      video.onerror = () => resolve('');
     } catch (e) {
       resolve('');
     }
@@ -857,6 +907,11 @@ function renderApp() {
   if (state.currentView === 'shorts') {
     bindShortsInteractions();
   }
+
+  // Attach 3-second view trackers to all video elements in the DOM
+  document.querySelectorAll('video[data-post-id]').forEach(video => {
+    attachVideoViewTracker(video, video.dataset.postId);
+  });
 }
 
 function renderFriendRequestsSidebar() {
@@ -931,16 +986,16 @@ function renderFeedView() {
 }
 
 // ----------------------------------------------------
-// UNIVERSAL POST CARD (VIDEO & IMAGE SAFE)
+// UNIVERSAL POST CARD (VIDEO + IMAGE + 3S VIEW COUNT SAFE)
 // ----------------------------------------------------
 function renderPostCard(post) {
   const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
   const likesCount = post.post_likes?.length || 0;
   const commentsCount = post.comments?.length || 0;
   const sharesCount = post.post_shares?.length || 0;
+  const viewsCount = post.views || 0;
   const postAuthorAvatar = getUserAvatar(post.profiles);
   
-  // Safe video detection
   const isVideo = post.media_type === 'video' || (post.media_url && (post.media_url.includes('shorts/') || post.media_url.includes('.mp4') || post.media_url.includes('.webm') || post.media_url.includes('.mov')));
 
   return `
@@ -962,20 +1017,32 @@ function renderPostCard(post) {
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
 
-      <!-- RENDER VIDEO PLAYER IF VIDEO OR IMAGE IF PHOTO -->
+      <!-- VIDEO WITH POSTER OR IMAGE WITH ONCLICK PREVIEW -->
       ${post.media_url ? (
         isVideo ? `
           <div class="post-video-container" style="position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;margin-top:8px;">
-            <video src="${post.media_url}" poster="${post.thumbnail_url || ''}" controls playsinline preload="metadata" style="width:100%;max-height:480px;object-fit:contain;display:block;"></video>
+            <video 
+              src="${post.media_url}" 
+              poster="${post.thumbnail_url || ''}" 
+              controls 
+              playsinline 
+              preload="metadata" 
+              data-post-id="${post.id}"
+              style="width:100%;max-height:480px;object-fit:contain;display:block;"
+            ></video>
           </div>
         ` : `
           <img class="post-media" src="${post.media_url}" loading="lazy" onclick="window.openPostDetail('${post.id}')">
         `
       ) : ''}
 
+      <!-- COUNTERS (VIEWS + LIKES + COMMENTS + SHARES) -->
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
-        <div><span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span></div>
+        <div class="post-right-meta-counts">
+          ${isVideo ? `<span class="post-views-count-wrap">${ICONS.eye} <b class="post-views-count" data-id="${post.id}">${viewsCount}</b> Views</span> • ` : ''}
+          <span>${commentsCount} Comments</span> • <span>${sharesCount} Shares</span>
+        </div>
       </div>
 
       <div class="post-actions">
@@ -998,7 +1065,7 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// FACEBOOK REELS STYLE SHORTS VIEW
+// FACEBOOK REELS STYLE SHORTS VIEW (WITH 3S VIEW COUNTING)
 // ----------------------------------------------------
 function renderShortsView() {
   const filteredShorts = state.shorts;
@@ -1033,6 +1100,7 @@ function renderShortsView() {
                 loop 
                 playsinline 
                 preload="metadata" 
+                data-post-id="${s.id}"
                 class="shorts-video-element"
               ></video>
 
@@ -1102,12 +1170,15 @@ function bindShortsInteractions() {
       const video = card.querySelector('.shorts-video-element');
       const playIcon = card.querySelector('.shorts-center-play-indicator');
       const progressFill = card.querySelector('.shorts-progress-fill');
+      const shortId = card.dataset.shortId;
 
       if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
         if (video) {
           video.play().then(() => {
             if (playIcon) playIcon.style.opacity = '0';
           }).catch(() => {});
+
+          attachVideoViewTracker(video, shortId);
 
           video.ontimeupdate = () => {
             if (progressFill && video.duration) {
@@ -1205,7 +1276,7 @@ function openFbReelsMoreSheet(postId, authorId) {
 }
 
 function openShortsUploadModal() {
-  state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
+  state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0, rawVideoFile: null };
   state.modal = 'upload-short';
   renderActiveModal();
 }
@@ -1611,7 +1682,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
+// FACEBOOK STYLE POST DETAIL & NESTED COMMENTS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
@@ -1736,7 +1807,7 @@ function attachCommentInteractions() {
 }
 
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER (Facebook Reels Half-Sheets & Upload)
+// ALL MODALS CONTROLLER (INTERACTIVE THUMBNAIL SCRUBBER & SHEETS)
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -1902,19 +1973,45 @@ function renderActiveModal() {
           <div style="margin:16px 0;">
             <div class="field">
               <label>Caption & Hashtags</label>
-              <textarea class="create-post-textarea" id="shortCaptionInput" placeholder="Write caption (e.g. My amazing travel #Alapon #Reels)" rows="3"></textarea>
+              <textarea class="create-post-textarea" id="shortCaptionInput" placeholder="Write caption (e.g. My amazing video #Alapon #Viral)" rows="2">${escapeHtml(state.shortDraft.content)}</textarea>
             </div>
 
+            <!-- INTERACTIVE VIDEO & THUMBNAIL SELECTOR -->
             <div id="shortVideoPreviewArea" class="short-upload-preview-card">
               <input type="file" id="shortVideoFileInput" accept="video/*" style="display:none;">
-              <div id="shortPlaceholderBox" class="short-placeholder-box">
-                <div style="font-size:36px;margin-bottom:8px;">📹</div>
-                <b>Select Vertical Short Video</b>
-                <p class="muted" style="font-size:12px;margin-top:4px;">MP4 or WebM (Max 60s)</p>
-                <button type="button" class="btn secondary" id="triggerShortVideoPick" style="margin-top:12px;">
-                  Choose Video
-                </button>
-              </div>
+              <input type="file" id="customThumbnailFileInput" accept="image/*" style="display:none;">
+
+              ${state.shortDraft.videoUrl ? `
+                <div style="position:relative;width:100%;height:260px;background:#000;border-radius:14px;overflow:hidden;">
+                  <video id="thumbScrubberVideo" src="${state.shortDraft.videoUrl}" playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+                  <button id="repickShortVideoBtn" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;width:30px;height:30px;">✕</button>
+                </div>
+
+                <!-- FRAME SCRUBBER SLIDER -->
+                <div style="margin-top:12px;background:#fff;padding:10px;border-radius:12px;border:1px solid #e2e8f0;">
+                  <b style="font-size:12px;display:block;margin-bottom:6px;color:#334155;">Select Video Frame as Thumbnail:</b>
+                  <input type="range" id="frameScrubberRange" min="0" max="10" step="0.1" value="0.5" style="width:100%;cursor:pointer;">
+                </div>
+
+                <!-- CUSTOM THUMBNAIL UPLOAD FROM GALLERY -->
+                <div class="row between" style="margin-top:10px;">
+                  <button type="button" class="btn secondary" id="triggerCustomThumbPick" style="padding:8px 12px;font-size:12px;">
+                    ${ICONS.image} Choose Thumbnail from Gallery
+                  </button>
+                  <div id="thumbMiniPreview" style="width:40px;height:40px;border-radius:8px;overflow:hidden;border:1px solid #cbd5e1;background:#eee;">
+                    ${state.shortDraft.thumbnailUrl ? `<img src="${state.shortDraft.thumbnailUrl}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+                  </div>
+                </div>
+              ` : `
+                <div id="shortPlaceholderBox" class="short-placeholder-box">
+                  <div style="font-size:36px;margin-bottom:8px;">📹</div>
+                  <b>Select Vertical Short Video</b>
+                  <p class="muted" style="font-size:12px;margin-top:4px;">MP4 or WebM format</p>
+                  <button type="button" class="btn secondary" id="triggerShortVideoPick" style="margin-top:12px;">
+                    Choose Video
+                  </button>
+                </div>
+              `}
             </div>
           </div>
         </div>
@@ -1925,7 +2022,11 @@ function renderActiveModal() {
 
     const videoInput = document.getElementById('shortVideoFileInput');
     const triggerPick = document.getElementById('triggerShortVideoPick');
-    const previewArea = document.getElementById('shortVideoPreviewArea');
+    const customThumbInput = document.getElementById('customThumbnailFileInput');
+    const triggerCustomThumb = document.getElementById('triggerCustomThumbPick');
+    const scrubberVideo = document.getElementById('thumbScrubberVideo');
+    const frameScrubber = document.getElementById('frameScrubberRange');
+    const thumbMiniPreview = document.getElementById('thumbMiniPreview');
 
     if (triggerPick && videoInput) {
       triggerPick.onclick = () => videoInput.click();
@@ -1933,35 +2034,67 @@ function renderActiveModal() {
         const file = e.target.files[0];
         if (!file) return;
 
-        showToast('Preparing video & thumbnail... 🎬');
+        showToast('Preparing video & capturing frame... 🎬');
+        state.shortDraft.rawVideoFile = file;
 
-        const thumbDataUrl = await generateVideoThumbnail(file);
-        state.shortDraft.thumbnailUrl = thumbDataUrl;
+        // Auto frame thumbnail
+        const autoThumb = await generateVideoThumbnail(file);
+        state.shortDraft.thumbnailUrl = autoThumb;
 
-        const videoBlobUrl = URL.createObjectURL(file);
-        previewArea.innerHTML = `
-          <div style="position:relative;width:100%;height:300px;background:#000;border-radius:14px;overflow:hidden;">
-            <video src="${videoBlobUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video>
-            <button id="repickShortVideoBtn" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;width:30px;height:30px;">✕</button>
-          </div>
-          <small class="muted" style="display:block;margin-top:8px;font-size:12px;">✓ Auto thumbnail generated</small>
-        `;
+        const blobUrl = URL.createObjectURL(file);
+        state.shortDraft.videoUrl = blobUrl;
+        renderActiveModal();
 
-        document.getElementById('repickShortVideoBtn').onclick = () => {
-          state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
-          openShortsUploadModal();
-        };
-
+        // Background Upload to Storage
         try {
           const ext = file.name.split('.').pop();
           const uploadedUrl = await uploadFile('post-media', `shorts/${Date.now()}_video.${ext}`, file);
           state.shortDraft.videoUrl = uploadedUrl;
-          showToast('Video ready to publish! 🚀');
         } catch (err) {
           const reader = new FileReader();
           reader.onload = (re) => { state.shortDraft.videoUrl = re.target.result; };
           reader.readAsDataURL(file);
         }
+      };
+    }
+
+    if (scrubberVideo && frameScrubber) {
+      scrubberVideo.onloadedmetadata = () => {
+        frameScrubber.max = scrubberVideo.duration || 10;
+      };
+
+      frameScrubber.oninput = async () => {
+        const time = parseFloat(frameScrubber.value);
+        const capturedFrame = await captureVideoFrameAtTime(scrubberVideo, time);
+        state.shortDraft.thumbnailUrl = capturedFrame;
+        if (thumbMiniPreview) {
+          thumbMiniPreview.innerHTML = `<img src="${capturedFrame}" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+      };
+    }
+
+    if (triggerCustomThumb && customThumbInput) {
+      triggerCustomThumb.onclick = () => customThumbInput.click();
+      customThumbInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          state.shortDraft.thumbnailUrl = re.target.result;
+          if (thumbMiniPreview) {
+            thumbMiniPreview.innerHTML = `<img src="${re.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+          }
+          showToast('Custom thumbnail selected! 🖼️');
+        };
+        reader.readAsDataURL(file);
+      };
+    }
+
+    const repickBtn = document.getElementById('repickShortVideoBtn');
+    if (repickBtn) {
+      repickBtn.onclick = () => {
+        state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0, rawVideoFile: null };
+        openShortsUploadModal();
       };
     }
 
@@ -1975,7 +2108,8 @@ function renderActiveModal() {
         user_id: state.user.id,
         content: caption,
         media_url: state.shortDraft.videoUrl,
-        privacy: 'public'
+        privacy: 'public',
+        views: 0
       };
 
       let { error } = await supabase.from('posts').insert({
@@ -1983,7 +2117,7 @@ function renderActiveModal() {
         media_type: 'video'
       });
 
-      if (error && error.message && error.message.includes('media_type')) {
+      if (error) {
         const res = await supabase.from('posts').insert(insertPayload);
         error = res.error;
       }
@@ -1992,7 +2126,7 @@ function renderActiveModal() {
         alert('Error publishing short: ' + error.message);
       } else {
         state.modal = null;
-        state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
+        state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0, rawVideoFile: null };
         await loadShorts();
         state.currentView = 'shorts';
         renderApp();
@@ -2410,7 +2544,8 @@ async function handlePostPublish() {
     content,
     media_url: state.postDraft.mediaUrl,
     media_type: 'image',
-    privacy
+    privacy,
+    views: 0
   });
 
   if (error) {
@@ -2862,4 +2997,4 @@ function formatTimeAgo(isoString) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-init();
+init();r
