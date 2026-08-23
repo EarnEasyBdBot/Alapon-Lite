@@ -1,4 +1,4 @@
-pp.js — Alapon (Facebook Reels UI, Zero-Flicker Layout, No-Zoom, Nested Half-Sheet Comments & FB Share/Options Sheet)
+// app.js — Alapon (Rock-Solid Crash-Proof Startup, Instant Auth, Shorts, Profile & Facebook Comments)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -46,11 +46,11 @@ const ICONS = {
   link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
 };
 
-// Global State
+// Global App State
 const state = {
   user: null,
   profile: null,
-  currentView: 'feed', // 'feed', 'shorts', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
+  currentView: 'feed',
   profileTab: 'posts',
   activeChatUser: null,
   activeHashtag: '',
@@ -75,7 +75,7 @@ const state = {
     selectedBg: localStorage.getItem('alapon_chat_bg') || ASSETS.defaultChatBg,
     activeStatusEnabled: localStorage.getItem('alapon_active_status') !== 'false'
   },
-  modal: null, // 'upload-short', 'post-comments', 'fb-share-sheet', 'fb-more-sheet', 'drawer', 'notifications', 'search', 'edit-profile', 'create-post'
+  modal: null,
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' },
@@ -236,7 +236,7 @@ function handleNotificationClick(n) {
 }
 
 // ----------------------------------------------------
-// APP INITIALIZATION
+// CRASH-PROOF APPLICATION STARTUP (INIT)
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
@@ -253,25 +253,31 @@ async function init() {
 
   render3DSplashScreen();
 
-  const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2200));
-  const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
+  try {
+    const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+    const session = sessionRes?.data?.session || null;
 
-  if (session?.user) {
-    state.user = session.user;
-    await loadUserProfile();
-    await loadInitialData();
-    setupRealtime();
-    renderApp();
-  } else {
+    // Smooth delay for branding
+    await new Promise((resolve) => setTimeout(resolve, 1400));
+
+    if (session?.user) {
+      state.user = session.user;
+      try { await loadUserProfile(); } catch (e) {}
+      try { await loadInitialData(); } catch (e) {}
+      setupRealtime();
+      renderApp();
+    } else {
+      renderAuth('login');
+    }
+  } catch (err) {
     renderAuth('login');
   }
 
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
       state.user = session.user;
-      await loadUserProfile();
-      await loadInitialData();
+      try { await loadUserProfile(); } catch (e) {}
+      try { await loadInitialData(); } catch (e) {}
       setupRealtime();
       state.currentView = 'feed';
       renderApp();
@@ -307,7 +313,7 @@ async function loadUserProfile() {
 }
 
 async function loadInitialData() {
-  await Promise.all([
+  await Promise.allSettled([
     loadFeed(),
     loadShorts(),
     loadStories(),
@@ -986,7 +992,6 @@ function renderShortsView() {
 
   return `
     <div class="shorts-screen-wrapper">
-      <!-- VERTICAL SNAP SCROLL VIEWPORT -->
       <div class="shorts-scroll-viewport" id="shortsScrollViewport">
         ${filteredShorts.length === 0 ? `
           <div class="shorts-empty-card">
@@ -1018,7 +1023,6 @@ function renderShortsView() {
                 class="shorts-video-element"
               ></video>
 
-              <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
               <!-- RIGHT SIDE ACTION BAR (FACEBOOK REELS STYLE) -->
@@ -1079,7 +1083,6 @@ function bindShortsInteractions() {
 
   const cards = document.querySelectorAll('.shorts-item-card');
 
-  // Intersection Observer to Auto-Play & Mute/Pause on scroll
   shortsObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const card = entry.target;
@@ -1130,7 +1133,6 @@ function bindShortsInteractions() {
     };
   });
 
-  // Follow Button Interaction
   document.querySelectorAll('.fb-reels-follow-btn').forEach((btn) => {
     btn.onclick = (e) => {
       e.stopPropagation();
@@ -1149,7 +1151,6 @@ function bindShortsInteractions() {
     };
   });
 
-  // Open Facebook Half-Sheet Comment Modal
   document.querySelectorAll('.openReelsCommentBtn').forEach((btn) => {
     btn.onclick = (e) => {
       e.stopPropagation();
@@ -1157,7 +1158,6 @@ function bindShortsInteractions() {
     };
   });
 
-  // Open Facebook Share Sheet
   document.querySelectorAll('.openReelsShareBtn').forEach((btn) => {
     btn.onclick = (e) => {
       e.stopPropagation();
@@ -1165,7 +1165,6 @@ function bindShortsInteractions() {
     };
   });
 
-  // Open Facebook Reels More Options Sheet
   document.querySelectorAll('.openReelsMoreOptionsBtn').forEach((btn) => {
     btn.onclick = (e) => {
       e.stopPropagation();
@@ -1178,7 +1177,7 @@ function bindShortsInteractions() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK BOTTOM SHEETS (COMMENTS, SHARE, MORE OPTIONS)
+// FACEBOOK BOTTOM SHEETS
 // ----------------------------------------------------
 function openFbShareSheet(postId, authorId, postText) {
   state.activeShortsItem = { id: postId, authorId, postText };
@@ -1599,7 +1598,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL & NESTED COMMENTS
+// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
@@ -1997,7 +1996,6 @@ function renderActiveModal() {
         <div class="fb-comments-half-sheet">
           <div class="fb-sheet-drag-handle"></div>
 
-          <!-- TOP HEADER STATS -->
           <div class="fb-half-sheet-header">
             <div class="row" style="gap:6px;align-items:center;">
               <span class="fb-sheet-like-icon">${ICONS.fbLikeFilled}</span>
@@ -2018,12 +2016,10 @@ function renderActiveModal() {
             <b style="font-size:13px;color:#475569;">Most relevant ⌵</b>
           </div>
 
-          <!-- COMMENTS SCROLL AREA -->
           <div class="fb-half-sheet-comments-stream" id="fbPostCommentsStream">
             <p class="muted center" style="padding:20px 0;">Loading comments...</p>
           </div>
 
-          <!-- BOTTOM COMMENT COMPOSER -->
           <form class="fb-comment-input-bar" id="submitFbCommentForm">
             <input type="file" id="fbCommentMediaInput" accept="image/*" style="display:none;">
             <button type="button" class="icon-btn-minimal" id="triggerFbCommentMedia">${ICONS.image}</button>
