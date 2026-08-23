@@ -1,4 +1,1576 @@
-// app.js — Alapon (Video Frame & Custom Thumbnail Selector, 3-Second Real View Counter, Shorts, Facebook Comments & Messenger)
+/* ============================================================
+   Alapon — Clean Professional UI, Shorts Video, Profile & Messenger
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  touch-action: manipulation;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden !important;
+  position: fixed;
+  overscroll-behavior: none;
+  background: #0f172a;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #171a2f;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+/* ============================================================
+   APP SHELL & TOPBAR
+   ============================================================ */
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background: #f0f4f9;
+}
+
+.topbar {
+  height: 60px;
+  min-height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaf1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 max(14px, calc((100vw - 1280px) / 2));
+  flex-shrink: 0;
+  z-index: 40;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #171a2f;
+  letter-spacing: -0.3px;
+}
+
+.top-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: #f0f2ff;
+  color: #3445d2;
+  position: relative;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  transition: 0.15s;
+}
+
+.icon-btn:hover {
+  background: #e4e7ff;
+}
+
+.badge {
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.bottom-nav {
+  display: none;
+  height: 60px;
+  min-height: 60px;
+  background: #ffffff;
+  border-top: 1px solid #e2e5f2;
+  flex-shrink: 0;
+  z-index: 40;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav .navitem {
+  width: auto;
+  min-width: 48px;
+  text-align: center;
+  padding: 4px;
+  font-size: 11px;
+  margin: 0;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+  color: #475569;
+}
+
+.navitem.active {
+  color: #315cff !important;
+}
+
+.bot-create-btn {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #315cff, #7142ff) !important;
+  color: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  box-shadow: 0 6px 16px rgba(49, 92, 255, 0.35);
+}
+
+/* ============================================================
+   LAYOUT & FEED
+   ============================================================ */
+.layout {
+  flex: 1;
+  width: min(1280px, 100%);
+  margin: auto;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 680px) 270px;
+  gap: 20px;
+  padding: 14px 16px;
+  overflow: hidden;
+  height: calc(100% - 60px);
+}
+
+.side, .rightbar {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.feed {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-bottom: 24px;
+}
+
+.feed::-webkit-scrollbar {
+  width: 4px;
+}
+.feed::-webkit-scrollbar-thumb {
+  background: #dbe2ef;
+  border-radius: 10px;
+}
+
+/* ============================================================
+   FACEBOOK REELS STYLE SHORTS SCREEN
+   ============================================================ */
+.shorts-screen-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  overflow: hidden;
+  position: relative;
+  touch-action: pan-y;
+}
+
+/* TOP RIGHT CREATE BUTTON */
+.shorts-top-header {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shorts-create-top-btn {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, background 0.2s;
+}
+
+.shorts-create-top-btn:active {
+  transform: scale(0.93);
+  background: rgba(49, 92, 255, 0.85);
+}
+
+.shorts-scroll-viewport {
+  flex: 1;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.shorts-item-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  user-select: none;
+}
+
+.shorts-video-element {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shorts-center-play-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+/* 3-ZONE TOUCH & DOUBLE-TAP SEEK OVERLAY */
+.shorts-touch-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  z-index: 15;
+  pointer-events: auto;
+}
+
+.shorts-touch-zone {
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.shorts-seek-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.5);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 800;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.22s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.shorts-touch-zone.left .shorts-seek-indicator {
+  left: 20px;
+}
+
+.shorts-touch-zone.right .shorts-seek-indicator {
+  right: 20px;
+}
+
+.shorts-seek-indicator.active-seek {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.fb-reels-actions-bar {
+  position: absolute;
+  right: 12px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 25;
+}
+
+.fb-reel-act-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #ffffff;
+  background: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  transition: transform 0.12s ease;
+}
+
+.fb-reel-act-btn:active {
+  transform: scale(0.9);
+}
+
+.fb-reel-act-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* BOTTOM OVERLAY */
+.fb-reels-bottom-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 40px 75px 12px 14px !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.35) 40%, rgba(0, 0, 0, 0.75) 100%) !important;
+  z-index: 20;
+  color: #ffffff;
+  pointer-events: none !important;
+}
+
+.fb-reels-author-line,
+.fb-reels-caption-box,
+.shorts-progress-track {
+  pointer-events: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+}
+
+.fb-reels-author-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.fb-reels-author-name {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.fb-reels-follow-btn {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.fb-reels-follow-btn.following {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+}
+
+.fb-reels-caption-box {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  background: transparent !important;
+}
+
+.fb-reels-caption-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  display: inline;
+  background: transparent !important;
+}
+
+/* CLEAN HASHTAG TEXT */
+.shorts-screen-wrapper .rich-hashtag {
+  display: inline !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 4px 0 0 !important;
+  margin: 0 !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  vertical-align: baseline !important;
+}
+
+.shorts-screen-wrapper .rich-hashtag:hover,
+.shorts-screen-wrapper .rich-hashtag:active {
+  color: #38bdf8 !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+}
+
+.shorts-progress-track {
+  width: 100%;
+  height: 2.5px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.shorts-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #38bdf8;
+  transition: width 0.1s linear;
+}
+
+.shorts-empty-card {
+  margin: auto;
+  text-align: center;
+  padding: 40px 20px;
+  color: #ffffff;
+}
+
+/* ============================================================
+   FACEBOOK HALF-SHEET COMMENT MODAL
+   ============================================================ */
+.fb-comments-half-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 400;
+  display: flex;
+  align-items: flex-end;
+}
+
+.fb-comments-half-sheet {
+  width: 100%;
+  height: 65vh;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpSheet 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpSheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.fb-sheet-drag-handle {
+  width: 38px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 99px;
+  margin: 10px auto 4px;
+}
+
+.fb-half-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+.fb-sheet-like-icon {
+  display: inline-flex;
+  font-size: 16px;
+}
+
+.fb-half-sheet-comments-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================================
+   FACEBOOK SHARE & MORE OPTIONS BOTTOM SHEETS
+   ============================================================ */
+.fb-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 450;
+  display: flex;
+  align-items: flex-end;
+}
+
+.fb-share-bottom-sheet, .fb-more-options-sheet {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 22px 22px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: slideUpSheet 0.22s ease-out;
+  overflow: hidden;
+}
+
+.fb-share-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fb-share-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  font-size: 11.5px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.fb-share-circle-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+.fb-share-messenger-stream {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 16px 20px;
+  scrollbar-width: none;
+}
+.fb-share-messenger-stream::-webkit-scrollbar { display: none; }
+
+.fb-share-friend-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  cursor: pointer;
+}
+
+.fb-share-friend-label {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #334155;
+}
+
+.fb-more-option-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.fb-more-opt-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: grid;
+  place-items: center;
+  color: #0f172a;
+}
+
+.short-upload-preview-card {
+  margin-top: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  padding: 20px;
+  text-align: center;
+}
+
+.short-placeholder-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   PREMIUM PROFILE CARD
+   ============================================================ */
+.premium-profile-card {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.premium-profile-cover {
+  height: 190px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #ea580c 80%, #fbbf24 100%);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.premium-change-cover-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 7px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.premium-change-cover-btn:active {
+  transform: scale(0.95);
+}
+
+.premium-profile-header-wrap {
+  padding: 0 20px 16px;
+  position: relative;
+}
+
+.premium-avatar-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: -55px;
+}
+
+.premium-avatar-glow-box {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 3px #3b82f6, 0 10px 25px rgba(59, 130, 246, 0.35);
+  background: #ffffff;
+}
+
+.premium-big-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.premium-avatar-camera-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #315cff;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.premium-verified-sub-badge, .verified-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.premium-verified-sub-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 26px;
+  height: 26px;
+  border: 2.5px solid #ffffff;
+}
+
+.verified-badge-pill {
+  width: 18px;
+  height: 18px;
+  margin-left: 3px;
+}
+
+.premium-edit-profile-pill-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  padding: 9px 20px;
+  border-radius: 99px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.premium-user-info-meta {
+  margin-top: 12px;
+}
+
+.premium-profile-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.premium-name-tick {
+  color: #2563eb;
+  font-size: 16px;
+}
+
+.premium-profile-username {
+  font-size: 13.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.premium-profile-bio {
+  font-size: 14.5px;
+  color: #334155;
+  margin: 6px 0 16px;
+  font-weight: 500;
+}
+
+/* STATS CARDS */
+.premium-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.premium-stat-card {
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 12px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #475569;
+}
+
+.stat-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  color: #315cff;
+}
+
+.stat-card-number {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.stat-card-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* PROFILE TABS */
+.premium-profile-tabs-bar {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+}
+
+.premium-tab-btn {
+  padding: 9px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.premium-tab-btn.active {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+/* PROFILE CREATE POST DOCK */
+.profile-create-post-dock {
+  padding: 14px 16px;
+}
+
+.profile-create-fake-input {
+  flex: 1;
+  background: #f1f5f9;
+  border-radius: 99px;
+  padding: 10px 18px;
+  font-size: 14px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.profile-create-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  overflow-x: auto;
+}
+
+.profile-post-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  white-space: nowrap;
+}
+
+.profile-quick-post-btn {
+  margin-left: auto;
+  padding: 7px 16px !important;
+  border-radius: 99px !important;
+  font-size: 13px !important;
+}
+
+/* ============================================================
+   PRO MESSENGER VIEW
+   ============================================================ */
+.chat-fullscreen-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e8f0;
+  overflow: hidden;
+  position: relative;
+}
+
+.chat-header-bar {
+  height: 58px;
+  min-height: 58px;
+  padding: 0 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.icon-btn-minimal {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #475569;
+  cursor: pointer;
+}
+
+.icon-btn-minimal:hover {
+  background: #f1f5f9;
+}
+
+.chat-wallpaper-container {
+  flex: 1;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-dark-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.chat-inner-profile-card {
+  text-align: center;
+  padding: 24px 10px 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.chat-scroll-stream {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding: 14px 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.msg-swipe-wrapper {
+  position: relative;
+  display: flex;
+  margin: 6px 0;
+}
+
+.msg-container {
+  max-width: 75%;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  word-break: break-word;
+}
+
+.msg-container.mine {
+  margin-left: auto;
+  background: linear-gradient(135deg, #0084ff, #0066ff);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.msg-container.theirs {
+  margin-right: auto;
+  background: #ffffff;
+  color: #0f172a;
+  border-bottom-left-radius: 4px;
+}
+
+.msg-container.image-bubble {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.msg-media-img {
+  max-width: 260px;
+  max-height: 340px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.msg-text-content {
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.msg-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 10px;
+  margin-top: 3px;
+  opacity: 0.85;
+}
+
+.image-bubble .msg-meta-row {
+  color: #ffffff;
+  background: rgba(0,0,0,0.5);
+  padding: 2px 6px;
+  border-radius: 99px;
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  margin-top: 0;
+}
+
+.chat-input-dock {
+  min-height: 56px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.chat-auto-input {
+  flex: 1;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 9px 16px;
+  outline: none;
+  font-size: 14px;
+  resize: none;
+  max-height: 80px;
+  background: #f8fafc;
+}
+
+.chat-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #315cff, #7142ff);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(49, 92, 255, 0.35);
+  cursor: pointer;
+}
+
+.messenger-inbox-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.messenger-chat-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 6px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.messenger-chat-row:hover {
+  background: #f8fafc;
+}
+
+.messenger-online-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 2.5px solid #ffffff;
+}
+
+.chat-theme-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.theme-option-box {
+  height: 70px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ============================================================
+   CLICKABLE HASHTAGS & MENTIONS
+   ============================================================ */
+.rich-link {
+  color: #315cff !important;
+  text-decoration: none;
+  font-weight: 600;
+}
+.rich-link:hover { text-decoration: underline; }
+
+.rich-mention {
+  color: #315cff !important;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 1px 4px;
+  background: #eef2ff;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.rich-hashtag {
+  color: #4f46e5 !important;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 1px 4px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  display: inline-block;
+}
+.rich-hashtag:hover {
+  text-decoration: underline;
+  background: #e0e7ff;
+}
+
+/* ============================================================
+   COMMONS, CARDS & MODALS
+   ============================================================ */
+.card-ui {
+  background: #fff;
+  border: 1px solid #e5e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eef2ff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stories {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.stories::-webkit-scrollbar { display: none; }
+
+.story {
+  min-width: 70px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-card { padding: 14px 16px; }
+.post-head { display: flex; gap: 12px; align-items: center; }
+.post-caption { margin: 10px 0 6px; font-size: 15px; }
+.post-media { width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px; margin-top: 8px; cursor: pointer; }
+.post-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #edf0f5;
+  margin-top: 10px;
+  padding-top: 6px;
+}
+
+.post-actions button {
+  padding: 8px 6px;
+  border-radius: 10px;
+  color: #555c77;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #edf0f5;
+}
+.list-row:last-child { border-bottom: none; }
+
+.navitem {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  text-align: left;
+  color: #3d435f;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.navitem:hover, .navitem.active { background: #e9ecff; color: #3445d2; }
+
+.full-modal-back {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 18, 61, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.full-modal {
+  background: #fff;
+  width: min(580px, 100%);
+  height: min(680px, 100vh);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.drawer-modal {
+  background: #fff;
+  width: 280px;
+  height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-post-textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 16px;
+  min-height: 120px;
+  margin-top: 10px;
+}
+
+.toast-popup {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #171a2f;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 350;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+}
+
+.hide { display: none !important; }
+
+/* Auth */
+.auth {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  background: #111a52;
+}
+
+.auth-hero {
+  padding: 60px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 20% 20%, #4e72ff 0%, #2736d7 45%, #111a52 100%);
+}
+
+.hero-inner h1 {
+  font-size: 50px;
+  letter-spacing: -2px;
+  margin: 12px 0 6px;
+  font-weight: 900;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: 38px 0 0 38px;
+  padding: 45px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card { width: min(100%, 450px); }
+.card h2 { font-size: 26px; font-weight: 800; }
+.muted { color: #7c839b; }
+
+.field { margin: 14px 0; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #30364f;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e3e6ef;
+  border-radius: 14px;
+  background: #fafbfe;
+  outline: none;
+  color: #171a2f;
+}
+
+.input:focus {
+  border-color: #315cff;
+  background: #fff;
+}
+
+.btn {
+  padding: 12px 18px;
+  border-radius: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary {
+  color: #fff;
+  background: linear-gradient(100deg, #315cff, #7142ff);
+  box-shadow: 0 8px 20px rgba(49, 92, 255, 0.22);
+}
+
+.secondary { background: #eef1ff; color: #3544cc; }
+.ghost { background: transparent; color: #3a4bdb; }
+.full { width: 100%; }
+.row { display: flex; gap: 10px; align-items: center; }
+.between { justify-content: space-between; }
+.center { text-align: center; }
+.grow { flex: 1; }
+
+/* Splash */
+.splash-3d-screen {
+  min-height: 100vh;
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, #3b14a8 0%, #170459 55%, #070024 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 40px 20px 0;
+}
+
+.splash-3d-center {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-3d-title {
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.splash-3d-tagline {
+  font-size: 15px;
+  color: #c7d2fe;
+  margin-bottom: 24px;
+}
+
+.splash-3d-progress-container {
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.splash-3d-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ec4899, #8b5cf6, #38bdf8);
+  border-radius: 99px;
+  animation: fillProgress3D 1.2s forwards;
+}
+
+@keyframes fillProgress3D {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.splash-3d-loading-text {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-top: 10px;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.photos-grid img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ============================================================
+   RESPONSIVE (Mobile Viewports)
+   ============================================================ */
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 6px 0;
+    height: calc(100dvh - 60px - 60px);
+  }
+  .side, .rightbar {
+    display: none;
+  }
+  .bottom-nav {
+    display: flex;
+  }
+  .in-chat-mode .layout {
+    height: 100dvh !important;
+    padding: 0 !important;
+  }
+  .in-chat-mode .topbar {
+    display: none;
+  }
+  .in-chat-mode .chat-fullscreen-wrapper {
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .auth { grid-template-columns: 1fr; }
+  .auth-hero { display: none; }
+  .auth-card { border-radius: 0; padding: 24px; }
+  .full-modal {
+    height: 100dvh;
+    border-radius: 0;
+    padding: 16px;
+  }
+}
+
+২. সম্পূর্ণ app.js ফাইল:
+
+// app.js — Alapon (Video Frame & Custom Thumbnail Selector, 3-Second Real View Counter, Shorts with 3-Zone Gestures, Facebook Comments & Messenger)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -66,7 +1638,7 @@ const state = {
   notifications: [],
   followingUsers: new Set(),
   savedPosts: new Set(),
-  viewedVideosHistory: new Map(), // postId -> lastViewTimestamp
+  viewedVideosHistory: new Map(),
   activeCommentsPost: null,
   activeShortsItem: null,
   commentsList: [],
@@ -86,16 +1658,13 @@ const state = {
 
 const app = document.getElementById('app');
 let shortsObserver = null;
-const videoWatchTimers = new Map();
 
 function getUserAvatar(prof) {
   if (prof?.avatar_url && prof.avatar_url.trim().length > 5) return prof.avatar_url;
   return prof?.gender === 'female' ? ASSETS.femaleAvatar : ASSETS.maleAvatar;
 }
 
-// ----------------------------------------------------
-// AUDIBLE POP REACTION SOUND SYSTEM
-// ----------------------------------------------------
+// Reaction Sound
 function playReactionSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -118,29 +1687,23 @@ function playReactionSound() {
   } catch (e) {}
 }
 
-// ----------------------------------------------------
-// 3-SECOND VIDEO VIEW COUNTING ENGINE
-// ----------------------------------------------------
+// 3-Second View Engine
 async function registerVideoView(postId) {
   if (!postId) return;
   const now = Date.now();
   const lastViewTime = state.viewedVideosHistory.get(postId) || 0;
 
-  // 1 User = 1 View per session (cooldown 35 seconds before counting again)
   if (now - lastViewTime < 35000) return;
   state.viewedVideosHistory.set(postId, now);
 
-  // Update in Local State
   const post = state.posts.find(p => p.id === postId) || state.shorts.find(s => s.id === postId);
   if (post) {
     post.views = (post.views || 0) + 1;
-    // Update live DOM counter
     document.querySelectorAll(`.post-views-count[data-id="${postId}"]`).forEach(el => {
       el.innerText = post.views;
     });
   }
 
-  // Update in Supabase (Fail-Safe)
   try {
     const currentViews = (post?.views || 1);
     await supabase.from('posts').update({ views: currentViews }).eq('id', postId);
@@ -177,9 +1740,6 @@ function attachVideoViewTracker(videoElement, postId) {
   });
 }
 
-// ----------------------------------------------------
-// CAPTURE FRAME AT SPECIFIC TIME (FRAME SELECTOR)
-// ----------------------------------------------------
 function captureVideoFrameAtTime(videoElement, timeInSec) {
   return new Promise((resolve) => {
     try {
@@ -199,9 +1759,6 @@ function captureVideoFrameAtTime(videoElement, timeInSec) {
   });
 }
 
-// ----------------------------------------------------
-// HASHTAG & RICH TEXT PARSER
-// ----------------------------------------------------
 function formatRichText(rawText) {
   if (!rawText) return '';
   let text = escapeHtml(rawText);
@@ -254,9 +1811,6 @@ function showToast(msg) {
   setTimeout(() => toast.remove(), 2600);
 }
 
-// ----------------------------------------------------
-// NOTIFICATIONS
-// ----------------------------------------------------
 async function triggerNotification(targetUserId, type, message, targetId = null) {
   if (!targetUserId || targetUserId === state.user?.id) return;
   await supabase.from('notifications').insert({
@@ -286,7 +1840,7 @@ function handleNotificationClick(n) {
 }
 
 // ----------------------------------------------------
-// CRASH-PROOF APPLICATION STARTUP (INIT)
+// APPLICATION STARTUP (INIT)
 // ----------------------------------------------------
 async function init() {
   if (!isConfigured()) {
@@ -908,7 +2462,7 @@ function renderApp() {
     bindShortsInteractions();
   }
 
-  // Attach 3-second view trackers to all video elements in the DOM
+  // Attach 3-second view trackers to all video elements
   document.querySelectorAll('video[data-post-id]').forEach(video => {
     attachVideoViewTracker(video, video.dataset.postId);
   });
@@ -985,9 +2539,6 @@ function renderFeedView() {
   `;
 }
 
-// ----------------------------------------------------
-// UNIVERSAL POST CARD (VIDEO + IMAGE + 3S VIEW COUNT SAFE)
-// ----------------------------------------------------
 function renderPostCard(post) {
   const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
   const likesCount = post.post_likes?.length || 0;
@@ -1017,7 +2568,6 @@ function renderPostCard(post) {
 
       ${post.content ? `<div class="post-caption">${formatRichText(post.content)}</div>` : ''}
 
-      <!-- VIDEO WITH POSTER OR IMAGE WITH ONCLICK PREVIEW -->
       ${post.media_url ? (
         isVideo ? `
           <div class="post-video-container" style="position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;margin-top:8px;">
@@ -1036,7 +2586,6 @@ function renderPostCard(post) {
         `
       ) : ''}
 
-      <!-- COUNTERS (VIEWS + LIKES + COMMENTS + SHARES) -->
       <div class="row between muted post-counters">
         <div class="row" style="gap:4px;"><span style="color:#e63946;">${ICONS.heart}</span> <b class="post-like-count">${likesCount}</b></div>
         <div class="post-right-meta-counts">
@@ -1065,13 +2614,21 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// FACEBOOK REELS STYLE SHORTS VIEW (WITH 3S VIEW COUNTING)
+// FACEBOOK REELS STYLE SHORTS VIEW (WITH TOP CREATE & 3-ZONE SEEK)
 // ----------------------------------------------------
 function renderShortsView() {
   const filteredShorts = state.shorts;
 
   return `
     <div class="shorts-screen-wrapper">
+      <!-- TOP RIGHT CREATE SHORTS BUTTON -->
+      <div class="shorts-top-header">
+        <button class="shorts-create-top-btn" id="shortsTopCreateBtn">
+          ${ICONS.camera}
+          <span>Create</span>
+        </button>
+      </div>
+
       <div class="shorts-scroll-viewport" id="shortsScrollViewport">
         ${filteredShorts.length === 0 ? `
           <div class="shorts-empty-card">
@@ -1106,7 +2663,23 @@ function renderShortsView() {
 
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
-              <!-- RIGHT SIDE ACTION BAR (FACEBOOK REELS STYLE) -->
+              <!-- 3-ZONE TOUCH & DOUBLE-TAP SEEK OVERLAY -->
+              <div class="shorts-touch-grid">
+                <!-- LEFT: Double Tap = -3s Rewind -->
+                <div class="shorts-touch-zone left">
+                  <div class="shorts-seek-indicator left-indicator">⏪ -3s</div>
+                </div>
+
+                <!-- CENTER: Single Tap = Play / Pause -->
+                <div class="shorts-touch-zone center"></div>
+
+                <!-- RIGHT: Double Tap = +3s Forward -->
+                <div class="shorts-touch-zone right">
+                  <div class="shorts-seek-indicator right-indicator">+3s ⏩</div>
+                </div>
+              </div>
+
+              <!-- RIGHT SIDE ACTION BAR -->
               <div class="fb-reels-actions-bar">
                 <button class="fb-reel-act-btn likePostBtn ${isLiked ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
                   <span class="like-icon-holder">${isLiked ? ICONS.fbLikeFilled : ICONS.fbLike}</span>
@@ -1203,19 +2776,79 @@ function bindShortsInteractions() {
     const video = c.querySelector('.shorts-video-element');
     const playIcon = c.querySelector('.shorts-center-play-indicator');
 
-    c.onclick = (e) => {
-      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.rich-hashtag')) return;
-      if (!video) return;
+    const leftZone = c.querySelector('.shorts-touch-zone.left');
+    const centerZone = c.querySelector('.shorts-touch-zone.center');
+    const rightZone = c.querySelector('.shorts-touch-zone.right');
 
-      if (video.paused) {
-        video.play();
-        if (playIcon) playIcon.style.opacity = '0';
-      } else {
-        video.pause();
-        if (playIcon) playIcon.style.opacity = '1';
-      }
-    };
+    const leftIndicator = c.querySelector('.left-indicator');
+    const rightIndicator = c.querySelector('.right-indicator');
+
+    // 1. CENTER TAP: PLAY / PAUSE
+    if (centerZone) {
+      centerZone.onclick = (e) => {
+        e.stopPropagation();
+        if (!video) return;
+        if (video.paused) {
+          video.play();
+          if (playIcon) playIcon.style.opacity = '0';
+        } else {
+          video.pause();
+          if (playIcon) playIcon.style.opacity = '1';
+        }
+      };
+    }
+
+    // 2. LEFT ZONE: DOUBLE TAP = -3s REWIND
+    let lastLeftClick = 0;
+    if (leftZone) {
+      leftZone.onclick = (e) => {
+        e.stopPropagation();
+        const now = Date.now();
+        if (now - lastLeftClick < 300) {
+          if (video) {
+            video.currentTime = Math.max(0, video.currentTime - 3);
+            if (leftIndicator) {
+              leftIndicator.classList.add('active-seek');
+              setTimeout(() => leftIndicator.classList.remove('active-seek'), 500);
+            }
+          }
+          lastLeftClick = 0;
+        } else {
+          lastLeftClick = now;
+        }
+      };
+    }
+
+    // 3. RIGHT ZONE: DOUBLE TAP = +3s FORWARD
+    let lastRightClick = 0;
+    if (rightZone) {
+      rightZone.onclick = (e) => {
+        e.stopPropagation();
+        const now = Date.now();
+        if (now - lastRightClick < 300) {
+          if (video) {
+            video.currentTime = Math.min(video.duration || 999, video.currentTime + 3);
+            if (rightIndicator) {
+              rightIndicator.classList.add('active-seek');
+              setTimeout(() => rightIndicator.classList.remove('active-seek'), 500);
+            }
+          }
+          lastRightClick = 0;
+        } else {
+          lastRightClick = now;
+        }
+      };
+    }
   });
+
+  // Top Right Create Button Trigger
+  const topCreateBtn = document.getElementById('shortsTopCreateBtn');
+  if (topCreateBtn) {
+    topCreateBtn.onclick = (e) => {
+      e.stopPropagation();
+      openShortsUploadModal();
+    };
+  }
 
   document.querySelectorAll('.fb-reels-follow-btn').forEach((btn) => {
     btn.onclick = (e) => {
@@ -1521,7 +3154,7 @@ function renderMessagesView() {
             </small>
           </div>
           <button class="icon-btn-minimal" id="openChatThemeSettingBtn" title="Theme & Settings">
-            ${ICONS.palette}
+            ${ICONS.settings}
           </button>
         </div>
 
@@ -1807,7 +3440,7 @@ function attachCommentInteractions() {
 }
 
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER (INTERACTIVE THUMBNAIL SCRUBBER & SHEETS)
+// ALL MODALS CONTROLLER
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -2037,15 +3670,10 @@ function renderActiveModal() {
         showToast('Preparing video & capturing frame... 🎬');
         state.shortDraft.rawVideoFile = file;
 
-        // Auto frame thumbnail
-        const autoThumb = await generateVideoThumbnail(file);
-        state.shortDraft.thumbnailUrl = autoThumb;
-
         const blobUrl = URL.createObjectURL(file);
         state.shortDraft.videoUrl = blobUrl;
         renderActiveModal();
 
-        // Background Upload to Storage
         try {
           const ext = file.name.split('.').pop();
           const uploadedUrl = await uploadFile('post-media', `shorts/${Date.now()}_video.${ext}`, file);
@@ -2724,7 +4352,6 @@ function attachGlobalEvents() {
   const tAbout = document.getElementById('tabAboutBtn');
   if (tAbout) tAbout.onclick = () => { state.profileTab = 'about'; renderApp(); };
 
-  // Smooth Like Click with Reaction Pop Sound
   document.querySelectorAll('.likePostBtn').forEach((btn) => {
     btn.onclick = async (e) => {
       e.stopPropagation();
@@ -2997,4 +4624,4 @@ function formatTimeAgo(isoString) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-init();r
+init();
