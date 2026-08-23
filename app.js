@@ -1,4 +1,4 @@
-// app.js — Alapon (Shorts Screen 100% UI Match, Auto Thumbnail, Scroll Video Mute/Pause, Dedicated Shorts Upload, Real Counts)
+// app.js — Alapon (Instant Auth, Pop Sound, Shorts Feature, Pro Profile & Messenger - Schema Safe)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,7 +9,7 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Vector / SVG Icons
+// Pure Vector / SVG Icons (No Emojis as UI Icons)
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
@@ -23,11 +23,11 @@ const ICONS = {
   bell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
   settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
-  heart: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-  heartOutline: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-  comment: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  share: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  bookmark: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
+  heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  share: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  bookmark: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
   image: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
   video: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -52,7 +52,7 @@ const state = {
   profile: null,
   currentView: 'feed', // 'feed', 'shorts', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
   profileTab: 'posts',
-  shortsFilter: 'shorts', // 'shorts', 'foryou', 'following', 'popular'
+  shortsFilter: 'shorts',
   activeChatUser: null,
   activeHashtag: '',
   hashtagPosts: [],
@@ -90,7 +90,7 @@ function getUserAvatar(prof) {
 }
 
 // ----------------------------------------------------
-// AUDIBLE POP REACTION SOUND SYSTEM (Higher Punchy Volume)
+// AUDIBLE POP REACTION SOUND SYSTEM
 // ----------------------------------------------------
 function playReactionSound() {
   try {
@@ -103,7 +103,7 @@ function playReactionSound() {
     osc.frequency.setValueAtTime(280, now);
     osc.frequency.exponentialRampToValueAtTime(840, now + 0.09);
 
-    gain.gain.setValueAtTime(0.38, now); // Higher volume
+    gain.gain.setValueAtTime(0.38, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
 
     osc.connect(gain);
@@ -343,18 +343,23 @@ async function loadFeed() {
   const { data } = await supabase
     .from('posts')
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
-    .neq('media_type', 'video') // Regular feed shows posts & photos
     .order('created_at', { ascending: false });
-  if (data) state.posts = data;
+  if (data) {
+    state.posts = data.filter(p => !p.media_url || !p.media_url.includes('shorts/'));
+  }
 }
 
 async function loadShorts() {
   const { data } = await supabase
     .from('posts')
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
-    .eq('media_type', 'video')
     .order('created_at', { ascending: false });
-  state.shorts = data || [];
+  
+  // Safe filtering for shorts video posts
+  state.shorts = (data || []).filter(p => 
+    p.media_type === 'video' || 
+    (p.media_url && (p.media_url.includes('shorts/') || p.media_url.includes('.mp4') || p.media_url.includes('.webm') || p.media_url.includes('.mov')))
+  );
 }
 
 async function loadStories() {
@@ -634,7 +639,7 @@ function renderSignupStep() {
       <div class="auth-hero">
         <div class="hero-inner">
           <div style="width:68px;height:68px;margin-bottom:16px;overflow:hidden;">
-            <img src="${ASSETS.appLogo}" alt="Alapon Lite" style="width:68px;height:68px;object-fit:contain;display:block;">
+            <img src="${ASSETS.appLogo}" alt="Alapon" style="width:68px;height:68px;object-fit:contain;display:block;">
           </div>
           <h1>Alapon</h1>
           <p>Connect • Share • Grow</p>
@@ -733,7 +738,7 @@ async function handleFinalSignup() {
   if (error) {
     alert(error.message);
   } else {
-    // Instant Auto Login without requiring restart
+    // Instant direct login and home entry without requiring restart
     const { data: logData, error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
     if (!loginErr && logData?.session?.user) {
       state.user = logData.session.user;
@@ -1004,7 +1009,7 @@ function renderShortsView() {
 
   return `
     <div class="shorts-screen-wrapper">
-      <!-- TOP PILL TABS BAR (EXACT SCREENSHOT) -->
+      <!-- TOP PILL TABS BAR -->
       <div class="shorts-pill-nav-bar">
         <button class="shorts-pill-tab ${state.shortsFilter === 'shorts' ? 'active' : ''}" data-filter="shorts">
           ${ICONS.shorts} <span>Shorts</span>
@@ -1041,7 +1046,6 @@ function renderShortsView() {
           const isLiked = s.post_likes?.some(l => l.user_id === state.user?.id);
           const likesCount = s.post_likes?.length || 0;
           const commentsCount = s.comments?.length || 0;
-          const sharesCount = s.post_shares?.length || 0;
           const authorAvatar = getUserAvatar(s.profiles);
           const isSaved = state.savedPosts.has(s.id);
 
@@ -1059,7 +1063,7 @@ function renderShortsView() {
               <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
-              <!-- TOP AUTHOR OVERLAY (INSIDE VIDEO CARD) -->
+              <!-- TOP AUTHOR OVERLAY -->
               <div class="shorts-top-author-header">
                 <div class="avatar" style="width:38px;height:38px;border:2px solid #fff;">
                   <img src="${authorAvatar}">
@@ -1071,7 +1075,7 @@ function renderShortsView() {
                 <button class="btn ghost shorts-more-btn" style="margin-left:auto;color:#fff;">${ICONS.more}</button>
               </div>
 
-              <!-- RIGHT SIDE FLOATING ACTION ICONS (EXACT SCREENSHOT) -->
+              <!-- RIGHT SIDE FLOATING ACTION ICONS -->
               <div class="shorts-side-actions-bar">
                 <button class="shorts-side-btn likePostBtn ${isLiked ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
                   <span class="like-icon-holder">${isLiked ? ICONS.heart : ICONS.heartOutline}</span>
@@ -1094,7 +1098,7 @@ function renderShortsView() {
                 </button>
               </div>
 
-              <!-- BOTTOM CAPTION & HASHTAGS (EXACT SCREENSHOT) -->
+              <!-- BOTTOM CAPTION & HASHTAGS -->
               <div class="shorts-bottom-meta-box">
                 <div class="shorts-caption-title">${formatRichText(s.content || '')}</div>
                 
@@ -1114,7 +1118,6 @@ function renderShortsView() {
 function bindShortsInteractions() {
   if (shortsObserver) shortsObserver.disconnect();
 
-  const viewport = document.getElementById('shortsScrollViewport');
   const cards = document.querySelectorAll('.shorts-item-card');
 
   // INTERSECTION OBSERVER FOR AUTO PLAY/PAUSE & SOUND MUTE ON SCROLL
@@ -1126,7 +1129,6 @@ function bindShortsInteractions() {
       const progressFill = card.querySelector('.shorts-progress-fill');
 
       if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
-        // Active video: Play
         if (video) {
           video.play().then(() => {
             if (playIcon) playIcon.style.opacity = '0';
@@ -1140,7 +1142,6 @@ function bindShortsInteractions() {
           };
         }
       } else {
-        // Scrolled away: Automatically Pause and Mute sound
         if (video) {
           video.pause();
           video.currentTime = 0;
@@ -1153,7 +1154,6 @@ function bindShortsInteractions() {
   cards.forEach((c) => {
     shortsObserver.observe(c);
 
-    // Tap on video to toggle play/pause
     const video = c.querySelector('.shorts-video-element');
     const playIcon = c.querySelector('.shorts-center-play-indicator');
 
@@ -1235,7 +1235,7 @@ function renderHashtagSearchView() {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (Exact 10:24 Reference Matching, Real Counts Only)
+// PROFILE VIEW (Real Counts Only)
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -1484,7 +1484,7 @@ function renderMessagesView() {
           </div>
         </div>
 
-        <!-- MESSENGER COMPACT COMPOSER (GALLERY, INPUT, SEND) -->
+        <!-- MESSENGER COMPACT COMPOSER -->
         <div class="chat-input-dock" id="normalChatInputDock">
           <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
           <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
@@ -1752,7 +1752,7 @@ function attachCommentInteractions() {
 }
 
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER
+// ALL MODALS CONTROLLER (Schema-Safe & Instant Updates)
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
@@ -1805,7 +1805,6 @@ function renderActiveModal() {
 
         showToast('Generating thumbnail & preparing video... 🎬');
 
-        // Auto Generate Thumbnail from Video Frame
         const thumbDataUrl = await generateVideoThumbnail(file);
         state.shortDraft.thumbnailUrl = thumbDataUrl;
 
@@ -1823,14 +1822,12 @@ function renderActiveModal() {
           openShortsUploadModal();
         };
 
-        // Upload Video to Storage
         try {
           const ext = file.name.split('.').pop();
           const uploadedUrl = await uploadFile('post-media', `shorts/${Date.now()}_video.${ext}`, file);
           state.shortDraft.videoUrl = uploadedUrl;
           showToast('Video ready to publish! 🚀');
         } catch (err) {
-          // Base64 fallback if storage upload blocked
           const reader = new FileReader();
           reader.onload = (re) => { state.shortDraft.videoUrl = re.target.result; };
           reader.readAsDataURL(file);
@@ -1838,19 +1835,31 @@ function renderActiveModal() {
       };
     }
 
+    // Schema-Safe Short Publishing
     document.getElementById('publishShortBtn').onclick = async () => {
       const caption = document.getElementById('shortCaptionInput').value.trim();
       if (!state.shortDraft.videoUrl) return alert('Please select a video first.');
 
       showToast('Publishing Short Video... ⏳');
-      const { error } = await supabase.from('posts').insert({
+
+      const insertPayload = {
         user_id: state.user.id,
         content: caption,
         media_url: state.shortDraft.videoUrl,
-        media_type: 'video',
-        thumbnail_url: state.shortDraft.thumbnailUrl,
         privacy: 'public'
+      };
+
+      // Try inserting with media_type
+      let { error } = await supabase.from('posts').insert({
+        ...insertPayload,
+        media_type: 'video'
       });
+
+      // Fallback if media_type column is missing
+      if (error && error.message && error.message.includes('media_type')) {
+        const res = await supabase.from('posts').insert(insertPayload);
+        error = res.error;
+      }
 
       if (error) {
         alert('Error publishing short: ' + error.message);
@@ -1900,7 +1909,7 @@ function renderActiveModal() {
             </div>
           ` : ''}
 
-          ${post.media_url ? (post.media_type === 'video' ? `
+          ${post.media_url ? (post.media_type === 'video' || post.media_url.includes('shorts/') ? `
             <div class="post-video-wrap">
               <video src="${post.media_url}" controls playsinline class="post-media-video"></video>
             </div>
