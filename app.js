@@ -1,4 +1,4 @@
-// app.js — Alapon (Instant Auth, Pop Sound, Shorts Feature, Pro Profile & Messenger - Schema Safe)
+pp.js — Alapon (Facebook Reels UI, Zero-Flicker Layout, No-Zoom, Nested Half-Sheet Comments & FB Share/Options Sheet)
 import { supabase, isConfigured, uploadFile } from './supabase.js';
 
 // Assets
@@ -9,7 +9,7 @@ const ASSETS = {
   femaleAvatar: `https://i.postimg.cc/J4VbXk3x/woman-icon-for-user-profile-female-icon-human-or-people-sign-and-symbol-vector.jpg`
 };
 
-// Pure Vector / SVG Icons (No Emojis as UI Icons)
+// Pure Vector / SVG Icons
 const ICONS = {
   home: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   shorts: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="2" width="12" height="20" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg>`,
@@ -25,9 +25,11 @@ const ICONS = {
   settings: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   heart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#e63946"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
   heartOutline: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-  comment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  share: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  bookmark: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
+  fbLike: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
+  fbLikeFilled: `<svg width="28" height="28" viewBox="0 0 24 24" fill="#2563eb" stroke="#2563eb" stroke-width="1.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
+  comment: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  share: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
+  bookmark: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
   image: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
   video: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
   location: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -38,21 +40,18 @@ const ICONS = {
   logout: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
   more: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
+  moreHoriz: `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>`,
   menu: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`,
-  info: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
-  playBtn: `<svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`,
-  fire: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
-  chart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`
+  playBtn: `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`,
+  link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
 };
 
-// Global App State
+// Global State
 const state = {
   user: null,
   profile: null,
   currentView: 'feed', // 'feed', 'shorts', 'profile', 'friends', 'messages', 'settings', 'hashtag-search', 'messaging-settings'
   profileTab: 'posts',
-  shortsFilter: 'shorts',
   activeChatUser: null,
   activeHashtag: '',
   hashtagPosts: [],
@@ -64,8 +63,10 @@ const state = {
   friendRequests: [],
   suggestedUsers: [],
   notifications: [],
+  followingUsers: new Set(),
   savedPosts: new Set(),
   activeCommentsPost: null,
+  activeShortsItem: null,
   commentsList: [],
   replyingToCommentId: null,
   unreadMessagesCount: 0,
@@ -74,7 +75,7 @@ const state = {
     selectedBg: localStorage.getItem('alapon_chat_bg') || ASSETS.defaultChatBg,
     activeStatusEnabled: localStorage.getItem('alapon_active_status') !== 'false'
   },
-  modal: null,
+  modal: null, // 'upload-short', 'post-comments', 'fb-share-sheet', 'fb-more-sheet', 'drawer', 'notifications', 'search', 'edit-profile', 'create-post'
   signupStep: 1,
   signupDraft: { fullName: '', email: '', username: '', password: '', birthDate: '', gender: 'male', avatarUrl: '' },
   postDraft: { content: '', mediaUrl: '', mediaType: 'image', privacy: 'public', location: '', feeling: '' },
@@ -115,7 +116,7 @@ function playReactionSound() {
 }
 
 // ----------------------------------------------------
-// AUTO THUMBNAIL GENERATOR (Canvas Frame Capture)
+// AUTO THUMBNAIL GENERATOR
 // ----------------------------------------------------
 function generateVideoThumbnail(videoFile) {
   return new Promise((resolve) => {
@@ -200,7 +201,7 @@ function showToast(msg) {
   toast.className = 'toast-popup';
   toast.innerText = msg;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2800);
+  setTimeout(() => toast.remove(), 2600);
 }
 
 // ----------------------------------------------------
@@ -253,7 +254,7 @@ async function init() {
   render3DSplashScreen();
 
   const sessionPromise = supabase.auth.getSession();
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2400));
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 2200));
   const [{ data: { session } }] = await Promise.all([sessionPromise, delayPromise]);
 
   if (session?.user) {
@@ -285,36 +286,14 @@ async function init() {
 function render3DSplashScreen() {
   app.innerHTML = `
     <div class="splash-3d-screen">
-      <div class="floating-badge badge-top-left">${ICONS.friends}</div>
-      <div class="floating-badge badge-top-right">${ICONS.messages}</div>
-      <div class="floating-badge badge-mid-left">${ICONS.heart}</div>
-      <div class="floating-badge badge-mid-right">${ICONS.search}</div>
-
       <div class="splash-3d-center">
-        <div style="width:96px;height:96px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:96px;height:96px;object-fit:contain;display:block;">
+        <div style="width:92px;height:92px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${ASSETS.appLogo}" alt="Alapon Logo" style="width:92px;height:92px;object-fit:contain;display:block;">
         </div>
         <h1 class="splash-3d-title">Alapon</h1>
         <p class="splash-3d-tagline">Connect • Share • Grow</p>
         <div class="splash-3d-progress-container"><div class="splash-3d-progress-bar"></div></div>
         <span class="splash-3d-loading-text">Loading...</span>
-      </div>
-
-      <div class="splash-3d-globe-wrap">
-        <svg class="splash-3d-globe" viewBox="0 0 400 200" fill="none">
-          <ellipse cx="200" cy="200" rx="190" ry="120" fill="url(#globeGrad)" opacity="0.85"/>
-          <path d="M30 180 Q200 80 370 180" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <path d="M80 190 Q200 110 320 190" stroke="#818cf8" stroke-width="1.5"/>
-          <circle cx="90" cy="155" r="4" fill="#38bdf8"/>
-          <circle cx="200" cy="115" r="5" fill="#f43f5e"/>
-          <circle cx="310" cy="155" r="4" fill="#a855f7"/>
-          <defs>
-            <linearGradient id="globeGrad" x1="200" y1="80" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#312e81"/>
-              <stop offset="1" stop-color="#090527"/>
-            </linearGradient>
-          </defs>
-        </svg>
       </div>
     </div>
   `;
@@ -355,7 +334,6 @@ async function loadShorts() {
     .select(`*, profiles:user_id (id, full_name, username, avatar_url, gender, is_verified), post_likes (id, user_id), comments (id), post_shares (id)`)
     .order('created_at', { ascending: false });
   
-  // Safe filtering for shorts video posts
   state.shorts = (data || []).filter(p => 
     p.media_type === 'video' || 
     (p.media_url && (p.media_url.includes('shorts/') || p.media_url.includes('.mp4') || p.media_url.includes('.webm') || p.media_url.includes('.mov')))
@@ -738,7 +716,6 @@ async function handleFinalSignup() {
   if (error) {
     alert(error.message);
   } else {
-    // Instant direct login and home entry without requiring restart
     const { data: logData, error: loginErr } = await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
     if (!loginErr && logData?.session?.user) {
       state.user = logData.session.user;
@@ -1002,34 +979,14 @@ window.openPostDetail = (postId) => {
 };
 
 // ----------------------------------------------------
-// SHORTS VIDEO VIEW (EXACT SCREENSHOT MATCHING)
+// FACEBOOK REELS STYLE SHORTS VIEW
 // ----------------------------------------------------
 function renderShortsView() {
   const filteredShorts = state.shorts;
 
   return `
     <div class="shorts-screen-wrapper">
-      <!-- TOP PILL TABS BAR -->
-      <div class="shorts-pill-nav-bar">
-        <button class="shorts-pill-tab ${state.shortsFilter === 'shorts' ? 'active' : ''}" data-filter="shorts">
-          ${ICONS.shorts} <span>Shorts</span>
-        </button>
-        <button class="shorts-pill-tab ${state.shortsFilter === 'foryou' ? 'active' : ''}" data-filter="foryou">
-          ${ICONS.fire} <span>For You</span>
-        </button>
-        <button class="shorts-pill-tab ${state.shortsFilter === 'following' ? 'active' : ''}" data-filter="following">
-          ${ICONS.friends} <span>Following</span>
-        </button>
-        <button class="shorts-pill-tab ${state.shortsFilter === 'popular' ? 'active' : ''}" data-filter="popular">
-          ${ICONS.chart} <span>Popular</span>
-        </button>
-
-        <button class="shorts-upload-pill-trigger" id="openShortsUploadModalBtn" title="Upload Short">
-          ${ICONS.plus}
-        </button>
-      </div>
-
-      <!-- VERTICAL SNAP SCROLL FEED -->
+      <!-- VERTICAL SNAP SCROLL VIEWPORT -->
       <div class="shorts-scroll-viewport" id="shortsScrollViewport">
         ${filteredShorts.length === 0 ? `
           <div class="shorts-empty-card">
@@ -1046,8 +1003,9 @@ function renderShortsView() {
           const isLiked = s.post_likes?.some(l => l.user_id === state.user?.id);
           const likesCount = s.post_likes?.length || 0;
           const commentsCount = s.comments?.length || 0;
+          const sharesCount = s.post_shares?.length || 0;
           const authorAvatar = getUserAvatar(s.profiles);
-          const isSaved = state.savedPosts.has(s.id);
+          const isFollowing = state.followingUsers.has(s.user_id);
 
           return `
             <div class="shorts-item-card" data-short-id="${s.id}" data-index="${idx}">
@@ -1063,46 +1021,47 @@ function renderShortsView() {
               <!-- CENTER PLAY/PAUSE ICON OVERLAY -->
               <div class="shorts-center-play-indicator">${ICONS.playBtn}</div>
 
-              <!-- TOP AUTHOR OVERLAY -->
-              <div class="shorts-top-author-header">
-                <div class="avatar" style="width:38px;height:38px;border:2px solid #fff;">
-                  <img src="${authorAvatar}">
-                </div>
-                <div>
-                  <b class="shorts-author-name">${escapeHtml(s.profiles?.full_name || 'User')}</b>
-                  <small class="shorts-author-time">🌐 ${formatTimeAgo(s.created_at)}</small>
-                </div>
-                <button class="btn ghost shorts-more-btn" style="margin-left:auto;color:#fff;">${ICONS.more}</button>
-              </div>
-
-              <!-- RIGHT SIDE FLOATING ACTION ICONS -->
-              <div class="shorts-side-actions-bar">
-                <button class="shorts-side-btn likePostBtn ${isLiked ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
-                  <span class="like-icon-holder">${isLiked ? ICONS.heart : ICONS.heartOutline}</span>
-                  <span class="shorts-count-label post-like-count">${likesCount}</span>
+              <!-- RIGHT SIDE ACTION BAR (FACEBOOK REELS STYLE) -->
+              <div class="fb-reels-actions-bar">
+                <button class="fb-reel-act-btn likePostBtn ${isLiked ? 'liked' : ''}" data-id="${s.id}" data-author="${s.user_id}">
+                  <span class="like-icon-holder">${isLiked ? ICONS.fbLikeFilled : ICONS.fbLike}</span>
+                  <span class="fb-reel-act-count post-like-count">${likesCount}</span>
                 </button>
 
-                <button class="shorts-side-btn commentPostBtn" data-id="${s.id}">
+                <button class="fb-reel-act-btn openReelsCommentBtn" data-id="${s.id}">
                   ${ICONS.comment}
-                  <span class="shorts-count-label">${commentsCount}</span>
+                  <span class="fb-reel-act-count">${commentsCount}</span>
                 </button>
 
-                <button class="shorts-side-btn sharePostBtn" data-id="${s.id}" data-author="${s.user_id}" data-text="${escapeHtml(s.content || '')}">
+                <button class="fb-reel-act-btn openReelsShareBtn" data-id="${s.id}" data-author="${s.user_id}" data-text="${escapeHtml(s.content || '')}">
                   ${ICONS.share}
-                  <span class="shorts-count-label">Share</span>
+                  <span class="fb-reel-act-count">${sharesCount > 0 ? sharesCount : 'Share'}</span>
                 </button>
 
-                <button class="shorts-side-btn saveShortBtn ${isSaved ? 'saved' : ''}" data-id="${s.id}">
-                  ${ICONS.bookmark}
-                  <span class="shorts-count-label">Save</span>
+                <button class="fb-reel-act-btn openReelsMoreOptionsBtn" data-id="${s.id}" data-author="${s.user_id}">
+                  ${ICONS.moreHoriz}
                 </button>
               </div>
 
-              <!-- BOTTOM CAPTION & HASHTAGS -->
-              <div class="shorts-bottom-meta-box">
-                <div class="shorts-caption-title">${formatRichText(s.content || '')}</div>
-                
-                <!-- PLAYBACK PROGRESS BAR -->
+              <!-- BOTTOM LEFT OVERLAY: AUTHOR + FOLLOW BUTTON + CAPTION -->
+              <div class="fb-reels-bottom-overlay">
+                <div class="fb-reels-author-line">
+                  <div class="avatar" style="width:36px;height:36px;border:1.5px solid #fff;">
+                    <img src="${authorAvatar}">
+                  </div>
+                  <b class="fb-reels-author-name">${escapeHtml(s.profiles?.full_name || 'User')}</b>
+                  ${s.profiles?.is_verified ? `<span class="verified-badge-pill">✔</span>` : ''}
+                  
+                  <button class="fb-reels-follow-btn ${isFollowing ? 'following' : ''}" data-user-id="${s.user_id}">
+                    ${isFollowing ? 'Following' : '+ Follow'}
+                  </button>
+                </div>
+
+                <div class="fb-reels-caption-box">
+                  <p class="fb-reels-caption-text">${formatRichText(s.content || '')}</p>
+                </div>
+
+                <!-- BOTTOM PROGRESS BAR -->
                 <div class="shorts-progress-track">
                   <div class="shorts-progress-fill"></div>
                 </div>
@@ -1120,7 +1079,7 @@ function bindShortsInteractions() {
 
   const cards = document.querySelectorAll('.shorts-item-card');
 
-  // INTERSECTION OBSERVER FOR AUTO PLAY/PAUSE & SOUND MUTE ON SCROLL
+  // Intersection Observer to Auto-Play & Mute/Pause on scroll
   shortsObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const card = entry.target;
@@ -1171,42 +1130,68 @@ function bindShortsInteractions() {
     };
   });
 
-  // Shorts Pill Filters
-  document.querySelectorAll('.shorts-pill-tab').forEach((pill) => {
-    pill.onclick = () => {
-      state.shortsFilter = pill.dataset.filter;
-      renderApp();
-    };
-  });
-
-  // Save Bookmark button
-  document.querySelectorAll('.saveShortBtn').forEach((btn) => {
+  // Follow Button Interaction
+  document.querySelectorAll('.fb-reels-follow-btn').forEach((btn) => {
     btn.onclick = (e) => {
       e.stopPropagation();
       playReactionSound();
-      const sId = btn.dataset.id;
-      if (state.savedPosts.has(sId)) {
-        state.savedPosts.delete(sId);
-        btn.classList.remove('saved');
-        showToast('Removed from Saved');
+      const uId = btn.dataset.userId;
+      if (state.followingUsers.has(uId)) {
+        state.followingUsers.delete(uId);
+        btn.classList.remove('following');
+        btn.innerText = '+ Follow';
       } else {
-        state.savedPosts.add(sId);
-        btn.classList.add('saved');
-        showToast('Saved to your collection! 🔖');
+        state.followingUsers.add(uId);
+        btn.classList.add('following');
+        btn.innerText = 'Following';
+        showToast('You are now following this creator!');
       }
     };
   });
 
-  const uploadTrigger = document.getElementById('openShortsUploadModalBtn');
-  if (uploadTrigger) uploadTrigger.onclick = () => openShortsUploadModal();
+  // Open Facebook Half-Sheet Comment Modal
+  document.querySelectorAll('.openReelsCommentBtn').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      openCommentsModal(btn.dataset.id);
+    };
+  });
+
+  // Open Facebook Share Sheet
+  document.querySelectorAll('.openReelsShareBtn').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      openFbShareSheet(btn.dataset.id, btn.dataset.author, btn.dataset.text);
+    };
+  });
+
+  // Open Facebook Reels More Options Sheet
+  document.querySelectorAll('.openReelsMoreOptionsBtn').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      openFbReelsMoreSheet(btn.dataset.id, btn.dataset.author);
+    };
+  });
 
   const emptyUploadBtn = document.getElementById('emptyUploadShortsBtn');
   if (emptyUploadBtn) emptyUploadBtn.onclick = () => openShortsUploadModal();
 }
 
 // ----------------------------------------------------
-// DEDICATED SHORTS UPLOAD MODAL
+// FACEBOOK BOTTOM SHEETS (COMMENTS, SHARE, MORE OPTIONS)
 // ----------------------------------------------------
+function openFbShareSheet(postId, authorId, postText) {
+  state.activeShortsItem = { id: postId, authorId, postText };
+  state.modal = 'fb-share-sheet';
+  renderActiveModal();
+}
+
+function openFbReelsMoreSheet(postId, authorId) {
+  state.activeShortsItem = { id: postId, authorId };
+  state.modal = 'fb-more-sheet';
+  renderActiveModal();
+}
+
 function openShortsUploadModal() {
   state.shortDraft = { content: '', videoUrl: '', thumbnailUrl: '', duration: 0 };
   state.modal = 'upload-short';
@@ -1235,7 +1220,7 @@ function renderHashtagSearchView() {
 }
 
 // ----------------------------------------------------
-// PROFILE VIEW (Real Counts Only)
+// PROFILE VIEW
 // ----------------------------------------------------
 function renderProfileView() {
   const p = state.profile || {};
@@ -1246,7 +1231,6 @@ function renderProfileView() {
   let tabContentHtml = '';
   if (state.profileTab === 'posts') {
     tabContentHtml = `
-      <!-- CREATE POST DOCK IN PROFILE -->
       <div class="card-ui profile-create-post-dock">
         <div class="row" style="gap:10px;align-items:center;">
           <div class="avatar" style="width:40px;height:40px;"><img src="${userAvatar}"></div>
@@ -1256,15 +1240,14 @@ function renderProfileView() {
         </div>
         <div class="profile-create-actions-row">
           <button class="profile-post-action-btn" id="profBtnPhoto">${ICONS.image} <span>Photo</span></button>
+          <button class="profile-post-action-btn" id="profBtnVideo">${ICONS.shorts} <span>Video</span></button>
           <button class="profile-post-action-btn" id="profBtnFeeling">${ICONS.smile} <span>Feeling</span></button>
-          <button class="profile-post-action-btn" id="profBtnLocation">${ICONS.location} <span>Check In</span></button>
           <button class="btn primary profile-quick-post-btn" id="profBtnSubmitPost">
             ${ICONS.send} Post
           </button>
         </div>
       </div>
 
-      <!-- POSTS STREAM -->
       <div class="profile-posts-list">
         ${myPosts.length === 0 ? `<div class="card-ui empty"><p class="muted center" style="padding:20px 0;">You haven't created any posts yet.</p></div>` : ''}
         ${myPosts.map((post) => renderPostCard(post)).join('')}
@@ -1302,7 +1285,6 @@ function renderProfileView() {
 
   return `
     <div class="premium-profile-card">
-      <!-- COVER PHOTO WITH WORKING GALLERY UPLOAD -->
       <div class="premium-profile-cover" id="coverPhotoBox" style="${p.cover_url ? `background-image:url('${p.cover_url}');` : ''}">
         <input type="file" id="changeCoverInput" accept="image/*" style="display:none;">
         <button class="premium-change-cover-btn" id="changeCoverBtn" type="button">
@@ -1310,10 +1292,8 @@ function renderProfileView() {
         </button>
       </div>
 
-      <!-- PROFILE HEADER MAIN -->
       <div class="premium-profile-header-wrap">
         <div class="premium-avatar-row">
-          <!-- AVATAR WITH WORKING CAMERA BADGE -->
           <div class="premium-avatar-glow-box">
             <img src="${userAvatar}" class="premium-big-avatar" alt="Avatar">
             <button class="premium-avatar-camera-btn" id="cameraBadgeUploadTrigger" title="Upload Photo">
@@ -1323,13 +1303,11 @@ function renderProfileView() {
           </div>
           <input type="file" id="changeAvatarInput" accept="image/*" style="display:none;">
 
-          <!-- EDIT PROFILE BUTTON -->
           <button class="premium-edit-profile-pill-btn" id="openEditProfileModal">
             ${ICONS.edit} <span>Edit Profile</span>
           </button>
         </div>
 
-        <!-- USER INFO -->
         <div class="premium-user-info-meta">
           <h2 class="premium-profile-name">
             ${escapeHtml(p.full_name || 'User')}
@@ -1339,7 +1317,6 @@ function renderProfileView() {
           ${p.bio ? `<p class="premium-profile-bio">${escapeHtml(p.bio)}</p>` : `<p class="premium-profile-bio muted" style="font-size:13px;font-style:italic;">No bio added yet.</p>`}
         </div>
 
-        <!-- STATS CARDS (ORIGINAL ICONS, REAL COUNTS ONLY) -->
         <div class="premium-stats-grid">
           <div class="premium-stat-card">
             <span class="stat-card-icon">${ICONS.postsDoc}</span>
@@ -1363,7 +1340,6 @@ function renderProfileView() {
           </div>
         </div>
 
-        <!-- TABS ROW (ORIGINAL ICONS) -->
         <div class="premium-profile-tabs-bar">
           <button class="premium-tab-btn ${state.profileTab === 'posts' ? 'active' : ''}" id="tabPostsBtn">
             ${ICONS.postsDoc} <span>Posts</span>
@@ -1444,7 +1420,7 @@ function renderFriendsView() {
 }
 
 // ----------------------------------------------------
-// PRO MESSENGER VIEW (Natural Messenger Bubble, Text & Image)
+// PRO MESSENGER VIEW
 // ----------------------------------------------------
 function renderMessagesView() {
   if (state.activeChatUser) {
@@ -1452,7 +1428,6 @@ function renderMessagesView() {
 
     return `
       <div class="chat-fullscreen-wrapper">
-        <!-- FIXED CHAT HEADER -->
         <div class="chat-header-bar">
           <button class="icon-btn-minimal" id="backToChatListBtn" title="Back">${ICONS.back}</button>
           <div class="avatar" style="width:40px;height:40px;margin-left:4px;"><img src="${friendAvatar}"></div>
@@ -1467,7 +1442,6 @@ function renderMessagesView() {
           </button>
         </div>
 
-        <!-- CHAT STREAM WITH CHOSEN THEME -->
         <div class="chat-wallpaper-container" style="background-image: url('${state.chatThemes.selectedBg}');">
           <div class="chat-dark-overlay"></div>
           
@@ -1484,7 +1458,6 @@ function renderMessagesView() {
           </div>
         </div>
 
-        <!-- MESSENGER COMPACT COMPOSER -->
         <div class="chat-input-dock" id="normalChatInputDock">
           <input type="file" id="chatMediaFileInput" accept="image/*" style="display:none;">
           <button class="icon-btn-minimal" id="triggerChatPhotoUpload" title="Send Image">${ICONS.image}</button>
@@ -1497,7 +1470,6 @@ function renderMessagesView() {
     `;
   }
 
-  // INBOX CONVERSATION LIST
   return `
     <div class="card-ui" style="padding:14px 16px;">
       <div class="row between" style="margin-bottom:12px;">
@@ -1627,7 +1599,7 @@ function renderSettingsView() {
 }
 
 // ----------------------------------------------------
-// FACEBOOK STYLE POST DETAIL, NESTED COMMENTS & REACTIONS
+// FACEBOOK STYLE POST DETAIL & NESTED COMMENTS
 // ----------------------------------------------------
 async function openCommentsModal(postId) {
   let post = state.posts.find((p) => p.id === postId) || state.shorts.find((s) => s.id === postId);
@@ -1752,13 +1724,160 @@ function attachCommentInteractions() {
 }
 
 // ----------------------------------------------------
-// ALL MODALS CONTROLLER (Schema-Safe & Instant Updates)
+// ALL MODALS CONTROLLER (Facebook Reels Half-Sheets & Upload)
 // ----------------------------------------------------
 function renderActiveModal() {
   const container = document.getElementById('modalContainer');
   if (!container) return;
 
-  if (state.modal === 'upload-short') {
+  if (state.modal === 'fb-share-sheet') {
+    const item = state.activeShortsItem || {};
+    container.innerHTML = `
+      <div class="fb-sheet-backdrop" id="closeFbShareBackdrop">
+        <div class="fb-share-bottom-sheet">
+          <div class="fb-sheet-drag-handle"></div>
+          <h3 style="font-size:17px;font-weight:800;padding:12px 16px 8px;margin:0;">Share to</h3>
+
+          <div class="fb-share-action-grid">
+            <div class="fb-share-item" id="fbCopyLinkAction">
+              <div class="fb-share-circle-btn">${ICONS.link}</div>
+              <span>Copy link</span>
+            </div>
+            <div class="fb-share-item" id="fbPostFeedAction">
+              <div class="fb-share-circle-btn">${ICONS.postsDoc}</div>
+              <span>Post</span>
+            </div>
+            <div class="fb-share-item" id="fbGroupShareAction">
+              <div class="fb-share-circle-btn">${ICONS.friends}</div>
+              <span>Groups</span>
+            </div>
+            <div class="fb-share-item" id="fbFriendProfileAction">
+              <div class="fb-share-circle-btn">${ICONS.followers}</div>
+              <span>Friend's profile</span>
+            </div>
+          </div>
+
+          <h4 style="font-size:14px;font-weight:800;padding:12px 16px 8px;margin:0;color:#64748b;">Send in Messenger</h4>
+          <div class="fb-share-messenger-stream">
+            ${state.friends.map(fr => `
+              <div class="fb-share-friend-node" data-user-id="${fr.id}">
+                <div class="avatar" style="width:48px;height:48px;margin:auto;"><img src="${getUserAvatar(fr)}"></div>
+                <span class="fb-share-friend-label">${escapeHtml(fr.full_name?.split(' ')[0] || 'Friend')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeFbShareBackdrop').onclick = (e) => {
+      if (e.target.id === 'closeFbShareBackdrop') { state.modal = null; renderActiveModal(); }
+    };
+
+    document.getElementById('fbCopyLinkAction').onclick = () => {
+      navigator.clipboard.writeText(window.location.href);
+      state.modal = null;
+      renderActiveModal();
+      showToast('Link copied to clipboard! 📋');
+    };
+
+    document.getElementById('fbPostFeedAction').onclick = async () => {
+      if (item.id) await recordShare(item.id, item.authorId);
+      state.modal = null;
+      renderActiveModal();
+      showToast('Shared to your Feed! 🚀');
+    };
+
+    document.querySelectorAll('.fb-share-friend-node').forEach(node => {
+      node.onclick = async () => {
+        const fId = node.dataset.userId;
+        await supabase.from('messages').insert({
+          sender_id: state.user.id,
+          receiver_id: fId,
+          content: `Check out this reel: ${window.location.href}`
+        });
+        state.modal = null;
+        renderActiveModal();
+        showToast('Sent in Messenger! 💬');
+      };
+    });
+  } else if (state.modal === 'fb-more-sheet') {
+    const item = state.activeShortsItem || {};
+    container.innerHTML = `
+      <div class="fb-sheet-backdrop" id="closeFbMoreBackdrop">
+        <div class="fb-more-options-sheet">
+          <div class="fb-sheet-drag-handle"></div>
+
+          <div class="fb-more-option-row" id="fbSaveReelAction">
+            <div class="fb-more-opt-icon">${ICONS.bookmark}</div>
+            <div class="grow">
+              <b>Save reel</b>
+              <small class="muted" style="display:block;">Add this to your saved reels</small>
+            </div>
+          </div>
+
+          <div class="fb-more-option-row" id="fbCopyReelLinkAction">
+            <div class="fb-more-opt-icon">${ICONS.link}</div>
+            <div class="grow">
+              <b>Copy link</b>
+            </div>
+          </div>
+
+          <div class="fb-more-option-row" id="fbSpeedReelAction">
+            <div class="fb-more-opt-icon">⚡</div>
+            <div class="grow">
+              <b>Playback speed</b>
+              <small class="muted" style="display:block;" id="currentSpeedText">1x (Normal)</small>
+            </div>
+          </div>
+
+          <div class="fb-more-option-row" id="fbHideReelAction">
+            <div class="fb-more-opt-icon">🚫</div>
+            <div class="grow">
+              <b>Hide reel</b>
+              <small class="muted" style="display:block;">See fewer reels like this</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('closeFbMoreBackdrop').onclick = (e) => {
+      if (e.target.id === 'closeFbMoreBackdrop') { state.modal = null; renderActiveModal(); }
+    };
+
+    document.getElementById('fbSaveReelAction').onclick = () => {
+      if (item.id) state.savedPosts.add(item.id);
+      state.modal = null;
+      renderActiveModal();
+      showToast('Reel saved to collection! 🔖');
+    };
+
+    document.getElementById('fbCopyReelLinkAction').onclick = () => {
+      navigator.clipboard.writeText(window.location.href);
+      state.modal = null;
+      renderActiveModal();
+      showToast('Reel link copied! 📋');
+    };
+
+    document.getElementById('fbHideReelAction').onclick = () => {
+      if (item.id) state.shorts = state.shorts.filter(s => s.id !== item.id);
+      state.modal = null;
+      renderActiveModal();
+      renderApp();
+      showToast('Reel hidden');
+    };
+
+    let speeds = [1, 1.5, 2, 0.5];
+    let curIdx = 0;
+    document.getElementById('fbSpeedReelAction').onclick = () => {
+      curIdx = (curIdx + 1) % speeds.length;
+      const spd = speeds[curIdx];
+      document.querySelectorAll('.shorts-video-element').forEach(v => { v.playbackRate = spd; });
+      document.getElementById('currentSpeedText').innerText = `${spd}x`;
+      showToast(`Speed set to ${spd}x`);
+    };
+  } else if (state.modal === 'upload-short') {
     container.innerHTML = `
       <div class="full-modal-back">
         <div class="full-modal">
@@ -1771,10 +1890,9 @@ function renderActiveModal() {
           <div style="margin:16px 0;">
             <div class="field">
               <label>Caption & Hashtags</label>
-              <textarea class="create-post-textarea" id="shortCaptionInput" placeholder="Write a short video title (e.g. My amazing travel #Alapon #Shorts)" rows="3"></textarea>
+              <textarea class="create-post-textarea" id="shortCaptionInput" placeholder="Write caption (e.g. My amazing travel #Alapon #Reels)" rows="3"></textarea>
             </div>
 
-            <!-- PREVIEW AREA -->
             <div id="shortVideoPreviewArea" class="short-upload-preview-card">
               <input type="file" id="shortVideoFileInput" accept="video/*" style="display:none;">
               <div id="shortPlaceholderBox" class="short-placeholder-box">
@@ -1803,14 +1921,14 @@ function renderActiveModal() {
         const file = e.target.files[0];
         if (!file) return;
 
-        showToast('Generating thumbnail & preparing video... 🎬');
+        showToast('Preparing video & thumbnail... 🎬');
 
         const thumbDataUrl = await generateVideoThumbnail(file);
         state.shortDraft.thumbnailUrl = thumbDataUrl;
 
         const videoBlobUrl = URL.createObjectURL(file);
         previewArea.innerHTML = `
-          <div style="position:relative;width:100%;height:320px;background:#000;border-radius:14px;overflow:hidden;">
+          <div style="position:relative;width:100%;height:300px;background:#000;border-radius:14px;overflow:hidden;">
             <video src="${videoBlobUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video>
             <button id="repickShortVideoBtn" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;width:30px;height:30px;">✕</button>
           </div>
@@ -1835,7 +1953,6 @@ function renderActiveModal() {
       };
     }
 
-    // Schema-Safe Short Publishing
     document.getElementById('publishShortBtn').onclick = async () => {
       const caption = document.getElementById('shortCaptionInput').value.trim();
       if (!state.shortDraft.videoUrl) return alert('Please select a video first.');
@@ -1849,13 +1966,11 @@ function renderActiveModal() {
         privacy: 'public'
       };
 
-      // Try inserting with media_type
       let { error } = await supabase.from('posts').insert({
         ...insertPayload,
         media_type: 'video'
       });
 
-      // Fallback if media_type column is missing
       if (error && error.message && error.message.includes('media_type')) {
         const res = await supabase.from('posts').insert(insertPayload);
         error = res.error;
@@ -1874,123 +1989,82 @@ function renderActiveModal() {
     };
   } else if (state.modal === 'post-comments' && state.activeCommentsPost) {
     const post = state.activeCommentsPost;
-    const authorAvatar = getUserAvatar(post.profiles);
     const isLiked = post.post_likes?.some((l) => l.user_id === state.user?.id);
     const likesCount = post.post_likes?.length || 0;
-    const commentsCount = post.comments?.length || state.commentsList.length;
-    const sharesCount = post.post_shares?.length || 0;
 
     container.innerHTML = `
-      <div class="fb-post-detail-screen">
-        <div class="fb-detail-topbar">
-          <button class="icon-btn-minimal" id="closePostDetailBtn">${ICONS.back}</button>
-          <b class="fb-detail-title">${escapeHtml(post.profiles?.full_name || 'User')}'s post</b>
-          <button class="icon-btn-minimal" id="detailSearchBtn">${ICONS.search}</button>
-        </div>
+      <div class="fb-comments-half-sheet-backdrop" id="closeFbCommentsBackdrop">
+        <div class="fb-comments-half-sheet">
+          <div class="fb-sheet-drag-handle"></div>
 
-        <div class="fb-detail-scroll-area">
-          <div class="fb-post-author-row">
-            <div class="avatar" style="width:44px;height:44px;"><img src="${authorAvatar}"></div>
-            <div>
-              <div style="font-weight:800;font-size:15px;display:flex;align-items:center;gap:4px;">
-                ${escapeHtml(post.profiles?.full_name || 'User')}
-                ${post.profiles?.is_verified ? `<span class="verified-badge-pill">✔</span>` : ''}
-              </div>
-              <small class="muted" style="font-size:12px;">
-                ${formatTimeAgo(post.created_at)} • 🌐
-              </small>
+          <!-- TOP HEADER STATS -->
+          <div class="fb-half-sheet-header">
+            <div class="row" style="gap:6px;align-items:center;">
+              <span class="fb-sheet-like-icon">${ICONS.fbLikeFilled}</span>
+              <b style="font-size:14px;color:#1e293b;">${likesCount}</b>
+              <span class="muted" style="font-size:12px;">❯</span>
             </div>
-            <button class="btn ghost" style="margin-left:auto;padding:4px;">${ICONS.more}</button>
-          </div>
-
-          ${post.content ? `
-            <div class="fb-post-text-content">
-              ${formatRichText(post.content)}
-            </div>
-          ` : ''}
-
-          ${post.media_url ? (post.media_type === 'video' || post.media_url.includes('shorts/') ? `
-            <div class="post-video-wrap">
-              <video src="${post.media_url}" controls playsinline class="post-media-video"></video>
-            </div>
-          ` : `
-            <div class="fb-post-media-wrap">
-              <img src="${post.media_url}" class="fb-post-full-image" loading="lazy">
-            </div>
-          `) : ''}
-
-          <div class="fb-post-reactions-bar">
-            <div class="row" style="gap:4px;align-items:center;">
-              <span style="color:#e63946;">${ICONS.heart}</span>
-              <b style="font-size:13px;color:#475569;">${likesCount}</b>
-            </div>
-            <div class="row" style="gap:10px;font-size:12.5px;color:#64748b;">
-              <span>${commentsCount} Comments</span>
-              <span>${sharesCount} Shares</span>
+            <div class="row" style="gap:12px;">
+              <button class="icon-btn-minimal ${isLiked ? 'liked' : ''}" id="sheetLikeToggleBtn" style="color:${isLiked ? '#2563eb' : '#64748b'};">
+                ${isLiked ? ICONS.fbLikeFilled : ICONS.fbLike}
+              </button>
+              <button class="icon-btn-minimal" id="sheetShareTriggerBtn">
+                ${ICONS.share}
+              </button>
             </div>
           </div>
 
-          <div class="fb-post-actions-dock">
-            <button class="fb-action-tab-btn ${isLiked ? 'liked' : ''}" id="detailPostLikeBtn">
-              ${isLiked ? ICONS.heart : ICONS.heartOutline} &nbsp; <span>Like</span>
-            </button>
-            <button class="fb-action-tab-btn" id="focusCommentInputBtn">
-              ${ICONS.comment} &nbsp; <span>Comment</span>
-            </button>
-            <button class="fb-action-tab-btn" id="detailPostShareBtn">
-              ${ICONS.share} &nbsp; <span>Share</span>
-            </button>
+          <div class="fb-comments-filter-row" style="padding:8px 16px 4px;border-top:1px solid #f1f5f9;">
+            <b style="font-size:13px;color:#475569;">Most relevant ⌵</b>
           </div>
 
-          <div class="fb-comments-stream" id="fbPostCommentsStream">
+          <!-- COMMENTS SCROLL AREA -->
+          <div class="fb-half-sheet-comments-stream" id="fbPostCommentsStream">
             <p class="muted center" style="padding:20px 0;">Loading comments...</p>
           </div>
-        </div>
 
-        <form class="fb-comment-input-bar" id="submitFbCommentForm">
-          <input type="file" id="fbCommentMediaInput" accept="image/*" style="display:none;">
-          <button type="button" class="icon-btn-minimal" id="triggerFbCommentMedia">${ICONS.image}</button>
-          
-          <input class="fb-comment-input-field" type="text" id="fbCommentTextInput" placeholder="Write a comment..." autocomplete="off">
-          
-          <button type="submit" class="chat-send-btn" style="width:36px;height:36px;">${ICONS.send}</button>
-        </form>
+          <!-- BOTTOM COMMENT COMPOSER -->
+          <form class="fb-comment-input-bar" id="submitFbCommentForm">
+            <input type="file" id="fbCommentMediaInput" accept="image/*" style="display:none;">
+            <button type="button" class="icon-btn-minimal" id="triggerFbCommentMedia">${ICONS.image}</button>
+            
+            <input class="fb-comment-input-field" type="text" id="fbCommentTextInput" placeholder="Write a comment..." autocomplete="off">
+            
+            <button type="submit" class="chat-send-btn" style="width:36px;height:36px;">${ICONS.send}</button>
+          </form>
+        </div>
       </div>
     `;
 
-    document.getElementById('closePostDetailBtn').onclick = () => { 
-      state.modal = null; 
-      state.activeCommentsPost = null; 
-      renderActiveModal(); 
+    document.getElementById('closeFbCommentsBackdrop').onclick = (e) => { 
+      if (e.target.id === 'closeFbCommentsBackdrop') {
+        state.modal = null; 
+        state.activeCommentsPost = null; 
+        renderActiveModal();
+      }
     };
 
-    document.getElementById('focusCommentInputBtn').onclick = () => {
-      document.getElementById('fbCommentTextInput')?.focus();
+    document.getElementById('sheetShareTriggerBtn').onclick = () => {
+      openFbShareSheet(post.id, post.user_id, post.content);
     };
 
-    document.getElementById('detailPostLikeBtn').onclick = async () => {
+    document.getElementById('sheetLikeToggleBtn').onclick = async () => {
       playReactionSound();
-      const btn = document.getElementById('detailPostLikeBtn');
       const authorId = post.user_id;
       const existingIndex = post.post_likes?.findIndex((l) => l.user_id === state.user.id);
       const isCurrentlyLiked = existingIndex > -1;
 
       if (isCurrentlyLiked) {
         post.post_likes.splice(existingIndex, 1);
-        btn.classList.remove('liked');
         await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', state.user.id);
       } else {
         if (!post.post_likes) post.post_likes = [];
         post.post_likes.push({ post_id: post.id, user_id: state.user.id });
-        btn.classList.add('liked');
         await supabase.from('post_likes').insert({ post_id: post.id, user_id: state.user.id });
         await triggerNotification(authorId, 'post_like', `reacted to your post`, post.id);
       }
+      openCommentsModal(post.id);
       loadFeed();
-    };
-
-    document.getElementById('detailPostShareBtn').onclick = () => {
-      handleSharePost(post.id, post.user_id, post.content);
     };
 
     const mediaTrigger = document.getElementById('triggerFbCommentMedia');
@@ -2418,7 +2492,7 @@ function attachGlobalEvents() {
   const profFakeInput = document.getElementById('profileTriggerCreatePost');
   if (profFakeInput) profFakeInput.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
 
-  ['profBtnPhoto', 'profBtnFeeling', 'profBtnLocation', 'profBtnSubmitPost'].forEach((id) => {
+  ['profBtnPhoto', 'profBtnVideo', 'profBtnFeeling', 'profBtnSubmitPost'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.onclick = () => { state.modal = 'create-post'; renderActiveModal(); };
   });
@@ -2525,17 +2599,17 @@ function attachGlobalEvents() {
       if (isCurrentlyLiked) {
         post.post_likes.splice(existingIndex, 1);
         btn.classList.remove('liked');
-        if (iconHolder) iconHolder.innerHTML = ICONS.heartOutline;
+        if (iconHolder) iconHolder.innerHTML = btn.classList.contains('fb-reel-act-btn') ? ICONS.fbLike : ICONS.heartOutline;
         if (counterEl) counterEl.innerText = Math.max(0, parseInt(counterEl.innerText || 1) - 1);
         await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', state.user.id);
       } else {
         if (!post.post_likes) post.post_likes = [];
         post.post_likes.push({ post_id: postId, user_id: state.user.id });
         btn.classList.add('liked');
-        if (iconHolder) iconHolder.innerHTML = ICONS.heart;
+        if (iconHolder) iconHolder.innerHTML = btn.classList.contains('fb-reel-act-btn') ? ICONS.fbLikeFilled : ICONS.heart;
         if (counterEl) counterEl.innerText = parseInt(counterEl.innerText || 0) + 1;
         await supabase.from('post_likes').insert({ post_id: postId, user_id: state.user.id });
-        await triggerNotification(authorId, 'post_like', `reacted ❤️ to your post`, postId);
+        await triggerNotification(authorId, 'post_like', `reacted to your post`, postId);
       }
     };
   });
